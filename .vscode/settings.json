@@ -1,9 +1,6 @@
 {
     "files.associations": {
-        "usart.h": "c",
-        "main.h": "c",
-        "dwin.h": "c",
-        "cmsis_os.h": "c",
-        "tim.h": "c"
+        "tim.h": "c",
+        "dwin.h": "c"
     }
 }
