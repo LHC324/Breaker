@@ -58,3 +58,4 @@ breaker\main.o: ../Core/Inc/dma.h
 breaker\main.o: ../Core/Inc/tim.h
 breaker\main.o: ../Core/Inc/usart.h
 breaker\main.o: ../Core/Inc/gpio.h
+breaker\main.o: ../Core/Inc/Dwin.h

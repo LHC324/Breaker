@@ -27,6 +27,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "usart.h"
+#include "Dwin.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -148,18 +149,19 @@ void Uart_TxTask(void const * argument)
   for (;;)
   {
     /*接收完成标志*/
-    if (Dma_Rx.recv_end_flag)
-    {
-      HAL_UART_Transmit_DMA(&huart1, Dma_Rx.rx_buffer, Dma_Rx.rx_len);
-      /*清除计数*/
-      Dma_Rx.rx_len = 0;
-      /*清除接收结束标志 */
-      Dma_Rx.recv_end_flag = false;
+    // if (Dma_Rx.recv_end_flag)
+    // {
+    //   HAL_UART_Transmit_DMA(&huart1, Dma_Rx.rx_buffer, Dma_Rx.rx_len);
+    //   /*清除计数*/
+    //   Dma_Rx.rx_len = 0;
+    //   /*清除接收结束标志 */
+    //   Dma_Rx.recv_end_flag = false;
 
-      memset(Dma_Rx.rx_buffer, 0, Dma_Rx.rx_len);
-      /*重新打开DMA接收*/
-      HAL_UART_Receive_DMA(&huart1, Dma_Rx.rx_buffer, BUFFER_SIZE);
-    }
+    //   memset(Dma_Rx.rx_buffer, 0, Dma_Rx.rx_len);
+    //   /*重新打开DMA接收*/
+    //   HAL_UART_Receive_DMA(&huart1, Dma_Rx.rx_buffer, BUFFER_SIZE);
+    // }
+    Wave_Handle();
     osDelay(1);
   }
   /* USER CODE END Uart_TxTask */

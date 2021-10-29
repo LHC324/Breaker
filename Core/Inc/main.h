@@ -36,6 +36,7 @@ extern "C" {
 #include <string.h>
 #include <stdarg.h>
 #include <stdio.h>
+#include <math.h>
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -67,37 +68,48 @@ void Error_Handler(void);
 #define LIST_SIZE     6U
 #define LISTNODE_SIZE 10U
 #define DLINKX(x) (DLink##x)
+/*Buffer size*/
 #define LIST_BUF_SIZE 32U
+/*Timeout*/
 #define OVERTIMES 10U
+/*Overflow times,Time unit: US*/
+#define OVERFLOW_COUNTS(times, bits, fosc) ((times * (1000000UL)) / ((uint32_t)(pow(2U, bits) / (fosc))))
 
+typedef enum class
+{ 
+  Falling_Edge = 0U,
+  Rising_Edge = !Falling_Edge
+}EDGE;
 typedef struct
 {
-	/*通id*/
+	/*Channel ID*/
 	uint8_t id;
-	/*数据接收完成标志*/
+	/*Data receiving completion flag*/
 	bool data_flag;
-	/*数据长度*/
+	/*Data length*/
 	uint8_t data_len;
-	/*数据缓冲�??*/
+	/*Data buffer*/
 	uint16_t data_buf[LIST_BUF_SIZE];
-	/*时�??*/
-	uint32_t consum_times;
+	/*Time consumption*/
+	float consum_times;
 }Dwin_Dcb;
 
 typedef struct DLink
 {
-	/*每个通道记录10次波形数�??*/
+	/*Record 10 times of waveform data for each channel*/
 	Dwin_Dcb dcb_data[LISTNODE_SIZE];
-	/*节点指针*/
-	struct DLink *next;
-  /*记录当前节点*/
+  /*First detection mark*/
+  uint8_t first_flag;
+  /*Record current node*/
   uint8_t current_node;
-  /*当前捕获的边沿极�?*/
-  uint8_t current_edge;
-  /*数据块超时时�?*/
+  /*Edge polarity currently captured*/
+  EDGE current_edge;
+  /*Block timeout*/
   uint16_t overtimes;
-  /*计数器溢出次数*/
-  uint8_t overflows_num;
+  /*Counter overflow times*/
+  uint32_t overflows_num;
+  /*Node pointer*/
+	struct DLink *next;
 }Dwin_List;
 
 extern Dwin_List List_Map[LIST_SIZE];

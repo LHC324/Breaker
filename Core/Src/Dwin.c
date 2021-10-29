@@ -38,7 +38,9 @@ void Wave_Handle(void)
 		{
 			if(List_Map[i].dcb_data[j].data_flag)
 			{
-				Dwin_Curve_SchMd(&List_Map[i], j);
+				// Dwin_Curve_SchMd(&List_Map[i], j);
+				for(uint8_t k = 0; k < List_Map[i].dcb_data[j].data_len; k++)
+				DmaPrintf("current value is %d, overflows counts is %d .\r\n", List_Map[i].dcb_data[j].data_buf[k], List_Map[i].overflows_num);
 				List_Map[i].dcb_data[j].data_flag = false;
 			}
 		}
@@ -77,12 +79,13 @@ void Init_List(Dwin_List *list, uint8_t channel_id)
 	for(; i < LISTNODE_SIZE; i++)
 	{	
 		list->current_node = 0;
-		list->current_edge = 0;
+		list->first_flag = false;
+		list->current_edge = Falling_Edge;
 		list->overtimes = 10U;
 		list->dcb_data[i].id = channel_id;
 		list->dcb_data[i].data_flag = false;
 		list->dcb_data[i].data_len = 0;
-		list->dcb_data[i].consum_times = 0;
+		list->dcb_data[i].consum_times = 0.0F;
 	}
 }
 

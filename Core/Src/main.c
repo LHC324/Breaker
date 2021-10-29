@@ -27,7 +27,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "Dwin.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -102,6 +102,11 @@ int main(void)
   HAL_TIM_IC_Start_IT(&htim3, TIM_CHANNEL_4);
   /*open timer5*/
   HAL_TIM_Base_Start_IT(&htim5);
+  /*Initialize linked list*/
+  for(uint8_t i = 0; i < LIST_SIZE; i++)
+  {
+    Init_List(&List_Map[i], i);
+  }
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in freertos.c) */
@@ -216,8 +221,20 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
         List_Map[0].dcb_data[List_Map[0].current_node].data_flag = true;
         /*Point to the next node*/
         List_Map[0].current_node++;
-        /*Calculate the settling time*/
-        
+        /*Counter overflow, time greater than 6.5536ms*/
+        if(List_Map[0].overflows_num > OVERFLOW_COUNTS(1U, 16U, 10U))
+        {
+          List_Map[0].dcb_data[List_Map[0].current_node].consum_times = \
+          List_Map[0].overflows_num * 6.5536F + List_Map[0].dcb_data[List_Map[0].current_node].data_buf[List_Map[0].dcb_data[List_Map[0].current_node].data_len] / 10000.0F;
+        }
+        else/*The counter does not overflow and the time is within 6.5536ms*/
+        {
+          /*Calculate the settling time*/
+          List_Map[0].dcb_data[List_Map[0].current_node].consum_times = \
+          List_Map[0].dcb_data[List_Map[0].current_node].data_buf[List_Map[0].dcb_data[List_Map[0].current_node].data_len] / 10000.0F;
+        }
+        /*ReSet first detection flag*/
+        List_Map[0].first_flag = false;
         /*Clear counter overflow times*/
         List_Map[0].overflows_num = 0;
       }

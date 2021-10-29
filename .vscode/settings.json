@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "tim.h": "c",
-        "dwin.h": "c"
+        "dwin.h": "c",
+        "main.h": "c"
     }
 }

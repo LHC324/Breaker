@@ -250,25 +250,38 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) /*Execute when capture 
 {
   if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1)
   {
-    /*Stores the currently captured counter value*/
-    Save_CounterValue(0U);
     /*Refresh the capture time of the current channel*/
     List_Map[0].overtimes = OVERTIMES;
-    if (List_Map[0].current_edge == 0U)
+    if (List_Map[0].current_edge == Falling_Edge)
     {
       /*High level is currently captured*/
-      List_Map[0].current_edge = 1;
+      List_Map[0].current_edge = Rising_Edge;
       /*Switching capture polarity*/
       __HAL_TIM_SET_CAPTUREPOLARITY(&htim3, TIM_CHANNEL_1, TIM_INPUTCHANNELPOLARITY_FALLING);
+      if(!List_Map[0].first_flag)
+      {
+        /*Set first detection flag*/
+        List_Map[0].first_flag = true;
+        /*Turn off counter3*/
+        __HAL_TIM_DISABLE(&htim3); 
+        /*Set counter 3 value to 0*/
+        __HAL_TIM_SET_COUNTER(&htim3, 0U);
+        /*Turn on counter 3*/
+        __HAL_TIM_ENABLE(&htim3); 
+        /*Clear counter overflow times*/
+        List_Map[0].overflows_num = 0;
+      }
     }
     else
     {
       /*Low level is currently captured*/
-      List_Map[0].current_edge = 0;
+      List_Map[0].current_edge = Falling_Edge;
       /*Switching capture polarity*/
-      __HAL_TIM_SET_CAPTUREPOLARITY(&htim3, TIM_CHANNEL_1, TIM_INPUTCHANNELPOLARITY_FALLING);
+      __HAL_TIM_SET_CAPTUREPOLARITY(&htim3, TIM_CHANNEL_1, TIM_INPUTCHANNELPOLARITY_RISING);
       HAL_TIM_IC_Start_IT(&htim3, TIM_CHANNEL_1);
     }
+    /*Stores the currently captured counter value*/
+    Save_CounterValue(0U);
     /*open the capture interrupt*/
     HAL_TIM_IC_Start_IT(&htim3, TIM_CHANNEL_1);
   }
