@@ -69,7 +69,7 @@ void Error_Handler(void);
 #define LISTNODE_SIZE 10U
 #define DLINKX(x) (DLink##x)
 /*Buffer size*/
-#define LIST_BUF_SIZE 32U
+#define LIST_BUF_SIZE 64U
 /*Timeout*/
 #define OVERTIMES 10U
 /*Overflow times,Time unit: US*/
@@ -88,8 +88,12 @@ typedef struct
 	bool data_flag;
 	/*Data length*/
 	uint8_t data_len;
-	/*Data buffer*/
-	uint16_t data_buf[LIST_BUF_SIZE];
+  /*Data buffer*/
+  uint16_t buf[LIST_BUF_SIZE];
+  /*Block timeout*/
+  uint16_t overtimes;
+  /*Counter overflow times*/
+  uint32_t overflows_num;
 	/*Time consumption*/
 	float consum_times;
 }Dwin_Dcb;
@@ -104,10 +108,6 @@ typedef struct DLink
   uint8_t current_node;
   /*Edge polarity currently captured*/
   EDGE current_edge;
-  /*Block timeout*/
-  uint16_t overtimes;
-  /*Counter overflow times*/
-  uint32_t overflows_num;
   /*Node pointer*/
 	struct DLink *next;
 }Dwin_List;

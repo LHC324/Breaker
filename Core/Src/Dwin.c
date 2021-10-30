@@ -14,12 +14,12 @@ Dwin_T g_Dwin;
 DwinMap g_map[100];
 uint8_t mapindex = 0;
 /*定义6条链表*/
-Dwin_List DLink0, DLink1, DLink2, DLink3, DLink4, DLink5;
+// Dwin_List DLink0, DLink1, DLink2, DLink3, DLink4, DLink5;
 
 /*6行10列的二维数组*/
-Dwin_List List_Map[LIST_SIZE]= { 0 };
+Dwin_List List_Map[LIST_SIZE] = {0};
 /*记录当前波形采集的节点*/
-//uint8_t g_CurNode[LIST_SIZE][LISTNODE_SIZE] = { 0 };          
+// uint8_t g_CurNode[LIST_SIZE][LISTNODE_SIZE] = { 0 };
 
 //#define LIST_SIZE (sizeof(List_Map) / sizeof(Dwin_List))
 
@@ -31,17 +31,25 @@ Dwin_List List_Map[LIST_SIZE]= { 0 };
 void Wave_Handle(void)
 {
 	uint8_t i = 0, j = 0;
-	
-	for(; i < LIST_SIZE; i++)
+	// DmaPrintf("current value is %d, time consuming is , buf size is  .\r\n", 10);
+	// for (; i < LIST_SIZE; i++)
 	{
-		for(j = 0; j < LISTNODE_SIZE; j++)
+		for (j = 0; j < LISTNODE_SIZE; j++)
 		{
-			if(List_Map[i].dcb_data[j].data_flag)
+			if (List_Map[i].dcb_data[j].data_flag)
 			{
-				// Dwin_Curve_SchMd(&List_Map[i], j);
-				for(uint8_t k = 0; k < List_Map[i].dcb_data[j].data_len; k++)
-				DmaPrintf("current value is %d, overflows counts is %d .\r\n", List_Map[i].dcb_data[j].data_buf[k], List_Map[i].overflows_num);
+				// Dwin_Curve_SchMd(&List_Map[i]);
+				// DmaPrintf("data len is %d\r\n", List_Map[i].dcb_data[List_Map[i].current_node].data_len);
+
+				for (uint16_t k = 0; k < List_Map[i].dcb_data[j].data_len; k++)
+					DmaPrintf("node is %d, counts %d, buf[%d] value is %d, times is %f.\r\n",
+							  List_Map[i].current_node, List_Map[i].dcb_data[j].overflows_num, k, List_Map[i].dcb_data[j].buf[k], List_Map[i].dcb_data[j].consum_times);
+
 				List_Map[i].dcb_data[j].data_flag = false;
+				List_Map[i].dcb_data[j].data_len = 0;
+				List_Map[i].dcb_data[j].consum_times = 0;
+				/*Clear counter overflow times*/
+				List_Map[i].dcb_data[j].overflows_num = 0;
 			}
 		}
 	}
@@ -52,7 +60,7 @@ void Wave_Handle(void)
  * @param  list 首节点指针
  * @retval None
  */
-//void Init_List(Dwin_List *list, uint8_t channel_id)
+// void Init_List(Dwin_List *list, uint8_t channel_id)
 //{
 //	uint8_t i = 0;
 //	Dwin_List *p = NULL;
@@ -60,9 +68,9 @@ void Wave_Handle(void)
 ////	list->next = NULL;
 //	list->dcb_data.data_flag = false;
 //	list->dcb_data.data_len = 0;
-//	
+//
 //	for(i = 1; i < LISTNODE_SIZE; i++)
-//	{	
+//	{
 //		p = (Dwin_List *)pvPortMalloc(sizeof(Dwin_List));
 //		p->dcb_data.id = channel_id;
 //		p->dcb_data.data_flag = false;
@@ -74,17 +82,18 @@ void Wave_Handle(void)
 
 void Init_List(Dwin_List *list, uint8_t channel_id)
 {
-	uint8_t i = 0;
-	
-	for(; i < LISTNODE_SIZE; i++)
-	{	
+	uint16_t i = 0;
+
+	for (; i < LISTNODE_SIZE; i++)
+	{
 		list->current_node = 0;
 		list->first_flag = false;
 		list->current_edge = Falling_Edge;
-		list->overtimes = 10U;
+		list->dcb_data[i].overtimes = 10U;
 		list->dcb_data[i].id = channel_id;
 		list->dcb_data[i].data_flag = false;
 		list->dcb_data[i].data_len = 0;
+		list->dcb_data[i].overflows_num = 0;
 		list->dcb_data[i].consum_times = 0.0F;
 	}
 }
@@ -362,7 +371,6 @@ void DWIN_TouchAction(TouchType type, uint16_t Pos_x, uint16_t Pos_y)
 	DWIN_Send(g_Dwin.TxBuf, g_Dwin.TxCount);
 }
 
-
 /**
  * @brief  发送曲线点
  * @param  Channel 通道号
@@ -391,8 +399,8 @@ void DWIN_CURVE(uint16_t Channel, uint16_t *dat, uint16_t length)
 	for (; i < length; i++)
 	{
 #if (USING_LITTLE == 1)
-	/*先对数据进行转换*/
-	Endian_Swap((uint8_t *)&dat[i], 0, sizeof(uint16_t));
+		/*先对数据进行转换*/
+		Endian_Swap((uint8_t *)&dat[i], 0, sizeof(uint16_t));
 #endif
 		g_Dwin.TxBuf[g_Dwin.TxCount++] = dat[i] >> 8;
 		g_Dwin.TxBuf[g_Dwin.TxCount++] = dat[i];
@@ -439,34 +447,35 @@ void DWIN_CURVE_MULTICHANNEL(uint16_t Channelnum, DwinCurve *dat)
  * @param  list 当前链表首节点指针
  * @retval None
  */
-void Dwin_Curve_SchMd(Dwin_List *list, uint8_t node)
+void Dwin_Curve_SchMd(Dwin_List *list)
 {
-	uint8_t i = 0;
-
-	g_Dwin.TxCount = 0;
-	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x5A;
-	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0xA5;
-	g_Dwin.TxBuf[g_Dwin.TxCount++] = 9U + list->dcb_data[node].data_len * 2U; 
-	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x82;
-	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x03; /*通道起始地址*/
-	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x10;
-	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x5A;
-	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0xA5;
-	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x01; /*通道块数*/
-	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x00; /*低字节无效*/
-	g_Dwin.TxBuf[g_Dwin.TxCount++] = list->dcb_data[node].id;
-	g_Dwin.TxBuf[g_Dwin.TxCount++] = list->dcb_data[node].data_len;
-			
-	for(; i < list->dcb_data[node].data_len; i++)
+	for (uint16_t i = 0; i < OVERTIMES; i++)
 	{
+		g_Dwin.TxCount = 0;
+		g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x5A;
+		g_Dwin.TxBuf[g_Dwin.TxCount++] = 0xA5;
+		g_Dwin.TxBuf[g_Dwin.TxCount++] = 9U + list->dcb_data[list->current_node].data_len * 2U;
+		g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x82;
+		g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x03; /*通道起始地址*/
+		g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x10;
+		g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x5A;
+		g_Dwin.TxBuf[g_Dwin.TxCount++] = 0xA5;
+		g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x01; /*通道块数*/
+		g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x00; /*低字节无效*/
+		g_Dwin.TxBuf[g_Dwin.TxCount++] = list->dcb_data[list->current_node].id;
+		g_Dwin.TxBuf[g_Dwin.TxCount++] = list->dcb_data[list->current_node].data_len;
+
+		for (uint16_t j = 0; j < list->dcb_data[list->current_node].data_len; j++)
+		{
 #if (USING_LITTLE == 1)
-	/*先对数据进行转换*/
-	Endian_Swap((uint8_t *)&list->dcb_data[node].data_buf[i], 0, sizeof(uint16_t));
+			/*先对数据进行转换*/
+			Endian_Swap((uint8_t *)&list->dcb_data[list->current_node].buf[j], 0, sizeof(uint16_t));
 #endif
-		g_Dwin.TxBuf[g_Dwin.TxCount++] = list->dcb_data[node].data_buf[i] >> 8U;
-		g_Dwin.TxBuf[g_Dwin.TxCount++] = list->dcb_data[node].data_buf[i];
+			g_Dwin.TxBuf[g_Dwin.TxCount++] = list->dcb_data[list->current_node].buf[j] >> 8U;
+			g_Dwin.TxBuf[g_Dwin.TxCount++] = list->dcb_data[list->current_node].buf[j];
+		}
 	}
-	
+
 	DWIN_Send(g_Dwin.TxBuf, g_Dwin.TxCount);
 }
 
@@ -536,7 +545,6 @@ uint16_t Get_Crc16(uint8_t *ptr, uint8_t length, uint16_t init_dat)
 	}
 	return (crc16);
 }
-
 
 /**
  * @brief  大小端数据类型交换

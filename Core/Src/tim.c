@@ -70,7 +70,7 @@ void MX_TIM3_Init(void)
   sConfigIC.ICPolarity = TIM_INPUTCHANNELPOLARITY_RISING;
   sConfigIC.ICSelection = TIM_ICSELECTION_DIRECTTI;
   sConfigIC.ICPrescaler = TIM_ICPSC_DIV1;
-  sConfigIC.ICFilter = 0;
+  sConfigIC.ICFilter = 10;
   if (HAL_TIM_IC_ConfigChannel(&htim3, &sConfigIC, TIM_CHANNEL_1) != HAL_OK)
   {
     Error_Handler();
@@ -250,27 +250,29 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) /*Execute when capture 
 {
   if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1)
   {
+    /*Stores the currently captured counter value*/
+    Save_CounterValue(0U);
     /*Refresh the capture time of the current channel*/
-    List_Map[0].overtimes = OVERTIMES;
+    List_Map[0].dcb_data[List_Map[0].current_node].overtimes = OVERTIMES;
     if (List_Map[0].current_edge == Falling_Edge)
     {
       /*High level is currently captured*/
       List_Map[0].current_edge = Rising_Edge;
       /*Switching capture polarity*/
       __HAL_TIM_SET_CAPTUREPOLARITY(&htim3, TIM_CHANNEL_1, TIM_INPUTCHANNELPOLARITY_FALLING);
-      if(!List_Map[0].first_flag)
-      {
-        /*Set first detection flag*/
-        List_Map[0].first_flag = true;
-        /*Turn off counter3*/
-        __HAL_TIM_DISABLE(&htim3); 
-        /*Set counter 3 value to 0*/
-        __HAL_TIM_SET_COUNTER(&htim3, 0U);
-        /*Turn on counter 3*/
-        __HAL_TIM_ENABLE(&htim3); 
-        /*Clear counter overflow times*/
-        List_Map[0].overflows_num = 0;
-      }
+      // if(!List_Map[0].first_flag)
+      // {
+      //   /*Set first detection flag*/
+      //   List_Map[0].first_flag = true;
+      //   /*Turn off counter3*/
+      //   __HAL_TIM_DISABLE(&htim3); 
+      //   /*Set counter 3 value to 0*/
+      //   __HAL_TIM_SET_COUNTER(&htim3, 0U);
+      //   /*Turn on counter 3*/
+      //   __HAL_TIM_ENABLE(&htim3); 
+      //   /*Clear counter overflow times*/
+      //   List_Map[0].overflows_num = 0;
+      // }
     }
     else
     {
@@ -278,10 +280,7 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) /*Execute when capture 
       List_Map[0].current_edge = Falling_Edge;
       /*Switching capture polarity*/
       __HAL_TIM_SET_CAPTUREPOLARITY(&htim3, TIM_CHANNEL_1, TIM_INPUTCHANNELPOLARITY_RISING);
-      HAL_TIM_IC_Start_IT(&htim3, TIM_CHANNEL_1);
     }
-    /*Stores the currently captured counter value*/
-    Save_CounterValue(0U);
     /*open the capture interrupt*/
     HAL_TIM_IC_Start_IT(&htim3, TIM_CHANNEL_1);
   }
@@ -307,14 +306,13 @@ void Save_CounterValue(uint8_t channel_id)
   // {
 
   // }
-  /*Node cyclic storage*/
-  List_Map[channel_id].current_node %= LISTNODE_SIZE;
   if (List_Map[channel_id].dcb_data[List_Map[channel_id].current_node].data_flag == false)
   {
     /*Buffer circular storage*/
     List_Map[channel_id].dcb_data[List_Map[channel_id].current_node].data_len %= LIST_BUF_SIZE;
     /*Get rising edge time point*/
-    List_Map[channel_id].dcb_data[List_Map[channel_id].current_node].data_buf[List_Map[channel_id].dcb_data[List_Map[channel_id].current_node].data_len++] = HAL_TIM_ReadCapturedValue(&htim3, TIM_CHANNEL_1);
+    List_Map[channel_id].dcb_data[List_Map[channel_id].current_node].buf[List_Map[0].dcb_data[List_Map[channel_id].current_node].data_len++] 
+    = HAL_TIM_ReadCapturedValue(&htim3, TIM_CHANNEL_1);
   }
   // List_Map[channel_id].current_node++;
 }

@@ -100,6 +100,8 @@ int main(void)
   HAL_TIM_IC_Start_IT(&htim3, TIM_CHANNEL_2);
   HAL_TIM_IC_Start_IT(&htim3, TIM_CHANNEL_3);
   HAL_TIM_IC_Start_IT(&htim3, TIM_CHANNEL_4);
+  /*使能更新中断*/
+  __HAL_TIM_ENABLE_IT(&htim3,TIM_IT_UPDATE); 
   /*open timer5*/
   HAL_TIM_Base_Start_IT(&htim5);
   /*Initialize linked list*/
@@ -120,7 +122,7 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-
+    
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -142,9 +144,7 @@ void SystemClock_Config(void)
   */
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE0);
 
-  while (!__HAL_PWR_GET_FLAG(PWR_FLAG_VOSRDY))
-  {
-  }
+  while(!__HAL_PWR_GET_FLAG(PWR_FLAG_VOSRDY)) {}
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
@@ -167,7 +167,9 @@ void SystemClock_Config(void)
   }
   /** Initializes the CPU, AHB and APB buses clocks
   */
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2 | RCC_CLOCKTYPE_D3PCLK1 | RCC_CLOCKTYPE_D1PCLK1;
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
+                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2
+                              |RCC_CLOCKTYPE_D3PCLK1|RCC_CLOCKTYPE_D1PCLK1;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.SYSCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_HCLK_DIV2;
@@ -183,10 +185,31 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-
+/**
+ * @brief  获得每个节点消耗的时间
+ * @param  list 当前链表首节点指针
+ * @retval None
+ */
+static void Get_NodeTimes(Dwin_List *list)
+{
+	/*Counter overflow, time greater than 6.5536ms*/
+	if (list->dcb_data[list->current_node].overflows_num > OVERFLOW_COUNTS(1U, 16U, 10U))
+	{
+		list->dcb_data[list->current_node].consum_times =
+		(list->dcb_data[list->current_node].overflows_num - 1U) * 6.5536F + 
+    list->dcb_data[list->current_node].buf[list->dcb_data[list->current_node].data_len] / 10000.0F;
+	}
+	else /*The counter does not overflow and the time is within 6.5536ms*/
+	{
+		/*Calculate the settling time*/
+		list->dcb_data[list->current_node].consum_times =
+			(list->dcb_data[list->current_node].buf[list->dcb_data[list->current_node].data_len]) / 10000.0F;/* -
+			 list->dcb_data[list->current_node].buf[0]) / 10000.0F;*/
+	}
+}
 /* USER CODE END 4 */
 
-/**
+ /**
   * @brief  Period elapsed callback in non blocking mode
   * @note   This function is called  when TIM2 interrupt took place, inside
   * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment
@@ -200,8 +223,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   /*Timer update interrupt (overflow) interrupt processing callback function, 
   in HAL_ TIM_ IRQHandler will be called*/
   /* USER CODE END Callback 0 */
-  if (htim->Instance == TIM2)
-  {
+  if (htim->Instance == TIM2) {
     HAL_IncTick();
   }
   /* USER CODE BEGIN Callback 1 */
@@ -209,34 +231,32 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   else if (htim->Instance == TIM3)
   {
     /*counter Number of overflows*/
-    List_Map[0].overflows_num++;
+    List_Map[0].dcb_data[List_Map[0].current_node].overflows_num++;
+    /*The counter overflows for the first time and calculates the offset time*/
+    if(List_Map[0].dcb_data[List_Map[0].current_node].overflows_num == 1U)
+    {
+      /*Here, you only need a simple cumulative value and do not need to calculate it*/
+      List_Map[0].dcb_data[List_Map[0].current_node].consum_times = \
+      List_Map[0].dcb_data[List_Map[0].current_node].buf[0];
+    }
   }
   else if (htim->Instance == TIM5)
   { /*Avoid the error caused by the first overtime = 0*/
-    if (List_Map[0].overtimes)
-    {
-      if(!(--List_Map[0].overtimes))
+    if (List_Map[0].dcb_data[List_Map[0].current_node].overtimes)
+    {  
+      if(!(--List_Map[0].dcb_data[List_Map[0].current_node].overtimes))
       {
         /*Data collection completed*/
         List_Map[0].dcb_data[List_Map[0].current_node].data_flag = true;
+        /*Calculate the stabilization time on / off*/
+				Get_NodeTimes(&List_Map[0]);
         /*Point to the next node*/
         List_Map[0].current_node++;
-        /*Counter overflow, time greater than 6.5536ms*/
-        if(List_Map[0].overflows_num > OVERFLOW_COUNTS(1U, 16U, 10U))
-        {
-          List_Map[0].dcb_data[List_Map[0].current_node].consum_times = \
-          List_Map[0].overflows_num * 6.5536F + List_Map[0].dcb_data[List_Map[0].current_node].data_buf[List_Map[0].dcb_data[List_Map[0].current_node].data_len] / 10000.0F;
-        }
-        else/*The counter does not overflow and the time is within 6.5536ms*/
-        {
-          /*Calculate the settling time*/
-          List_Map[0].dcb_data[List_Map[0].current_node].consum_times = \
-          List_Map[0].dcb_data[List_Map[0].current_node].data_buf[List_Map[0].dcb_data[List_Map[0].current_node].data_len] / 10000.0F;
-        }
+        List_Map[0].current_node %= LISTNODE_SIZE;
         /*ReSet first detection flag*/
-        List_Map[0].first_flag = false;
+        // List_Map[0].first_flag = false;
         /*Clear counter overflow times*/
-        List_Map[0].overflows_num = 0;
+        // List_Map[0].dcb_data[List_Map[0].current_node].overflows_num = 0;
       }
     }
   }
@@ -258,7 +278,7 @@ void Error_Handler(void)
   /* USER CODE END Error_Handler_Debug */
 }
 
-#ifdef USE_FULL_ASSERT
+#ifdef  USE_FULL_ASSERT
 /**
   * @brief  Reports the name of the source file and the source line number
   *         where the assert_param error has occurred.

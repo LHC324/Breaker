@@ -229,7 +229,7 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
   // Dma_Rx.recv_end_flag = true;
   // /* 再次启动 DMA */
   // HAL_UARTEx_ReceiveToIdle_DMA(&huart1, Dma_Rx.rx_buffer, BUFFER_SIZE);
-  // /*关闭DMA半传输中�??*/
+  // /*关闭DMA半传输中�???*/
   // // __HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT);
 #endif
 }
@@ -240,7 +240,7 @@ void DmaPrintf(const char *format, ...)
   uint16_t len;
   va_list args;
 
-  /*清空DCache中数据：WB将�?�成DMA更新了XSRAM数据，�?�CPU使用了Cache中的旧数�?*/
+  /*清空DCache中数据：WB将�?�成DMA更新了XSRAM数据，�?�CPU使用了Cache中的旧数�??*/
   // SCB_CleanDCache();
   // SCB_InvalidateDCache();
 
@@ -248,7 +248,7 @@ void DmaPrintf(const char *format, ...)
   len = vsnprintf((char *)Dma_Rx.rx_buffer, BUFFER_SIZE + 1, format, args);
   va_end(args);
 
-  // HAL_UART_Transmit(&huart1 , (uint8_t *)&USART_DmaTxBuf, len, 0xFFFF);
+  // HAL_UART_Transmit(&huart1 , (uint8_t *)&Dma_Rx.rx_buffer, len, 0xFFFF);
 
   if (HAL_UART_Transmit_DMA(&huart1, Dma_Rx.rx_buffer, len) != HAL_OK)
   {

@@ -72,7 +72,7 @@ void DWIN_READ(uint16_t slaveaddr,uint8_t words);
 void DWIN_CURVE(uint16_t Channel,uint16_t* dat,uint16_t num);
 void DWIN_CURVE_CLEAR(uint16_t Channel);
 void DWIN_CURVE_MULTICHANNEL(uint16_t Channelnum,DwinCurve* dat);
-void Dwin_Curve_SchMd(Dwin_List *list, uint8_t node);
+void Dwin_Curve_SchMd(Dwin_List *list);
 
 void DWIN_SendWithCRC(uint8_t *_pBuf, uint8_t _ucLen);
 void DWIN_Send(uint8_t *_pBuf, uint8_t _ucLen);
