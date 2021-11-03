@@ -14,7 +14,7 @@
 #define USING_LITTLE 1
 
 #define RX_BUF_SIZE	 128U
-#define TX_BUF_SIZE  512U
+#define TX_BUF_SIZE  5120U
 
 #define WRITE_CMD	 0x82		//写
 #define READ_CMD	 0x83		//读
@@ -35,10 +35,10 @@ typedef enum
 typedef struct
 {
 	uint8_t RxBuf[RX_BUF_SIZE];
-	uint16_t RxCount;
+	uint32_t RxCount;
 
 	uint8_t TxBuf[TX_BUF_SIZE];
-	uint16_t TxCount;
+	uint32_t TxCount;
 }Dwin_T;
 
 typedef struct
@@ -72,7 +72,7 @@ void DWIN_READ(uint16_t slaveaddr,uint8_t words);
 void DWIN_CURVE(uint16_t Channel,uint16_t* dat,uint16_t num);
 void DWIN_CURVE_CLEAR(uint16_t Channel);
 void DWIN_CURVE_MULTICHANNEL(uint16_t Channelnum,DwinCurve* dat);
-void Dwin_Curve_SchMd(Dwin_List *list);
+void Dwin_Curve_SchMd(Dwin_List *list, uint16_t node);
 
 void DWIN_SendWithCRC(uint8_t *_pBuf, uint8_t _ucLen);
 void DWIN_Send(uint8_t *_pBuf, uint8_t _ucLen);

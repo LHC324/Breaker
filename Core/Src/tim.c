@@ -25,7 +25,8 @@
 /* USER CODE END 0 */
 
 TIM_HandleTypeDef htim3;
-TIM_HandleTypeDef htim5;
+TIM_HandleTypeDef htim4;
+TIM_HandleTypeDef htim6;
 
 /* TIM3 init function */
 void MX_TIM3_Init(void)
@@ -61,16 +62,16 @@ void MX_TIM3_Init(void)
   {
     Error_Handler();
   }
-  sMasterConfig.MasterOutputTrigger = TIM_TRGO_UPDATE;
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
   sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
   if (HAL_TIMEx_MasterConfigSynchronization(&htim3, &sMasterConfig) != HAL_OK)
   {
     Error_Handler();
   }
-  sConfigIC.ICPolarity = TIM_INPUTCHANNELPOLARITY_RISING;
+  sConfigIC.ICPolarity = TIM_INPUTCHANNELPOLARITY_BOTHEDGE;
   sConfigIC.ICSelection = TIM_ICSELECTION_DIRECTTI;
   sConfigIC.ICPrescaler = TIM_ICPSC_DIV1;
-  sConfigIC.ICFilter = 10;
+  sConfigIC.ICFilter = 0;
   if (HAL_TIM_IC_ConfigChannel(&htim3, &sConfigIC, TIM_CHANNEL_1) != HAL_OK)
   {
     Error_Handler();
@@ -92,44 +93,94 @@ void MX_TIM3_Init(void)
   /* USER CODE END TIM3_Init 2 */
 
 }
-/* TIM5 init function */
-void MX_TIM5_Init(void)
+/* TIM4 init function */
+void MX_TIM4_Init(void)
 {
 
-  /* USER CODE BEGIN TIM5_Init 0 */
+  /* USER CODE BEGIN TIM4_Init 0 */
 
-  /* USER CODE END TIM5_Init 0 */
+  /* USER CODE END TIM4_Init 0 */
 
   TIM_ClockConfigTypeDef sClockSourceConfig = {0};
   TIM_MasterConfigTypeDef sMasterConfig = {0};
+  TIM_IC_InitTypeDef sConfigIC = {0};
 
-  /* USER CODE BEGIN TIM5_Init 1 */
+  /* USER CODE BEGIN TIM4_Init 1 */
 
-  /* USER CODE END TIM5_Init 1 */
-  htim5.Instance = TIM5;
-  htim5.Init.Prescaler = 240-1;
-  htim5.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim5.Init.Period = 100000;
-  htim5.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-  htim5.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
-  if (HAL_TIM_Base_Init(&htim5) != HAL_OK)
+  /* USER CODE END TIM4_Init 1 */
+  htim4.Instance = TIM4;
+  htim4.Init.Prescaler = 24-1;
+  htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim4.Init.Period = 65535;
+  htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim4.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim4) != HAL_OK)
   {
     Error_Handler();
   }
   sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
-  if (HAL_TIM_ConfigClockSource(&htim5, &sClockSourceConfig) != HAL_OK)
+  if (HAL_TIM_ConfigClockSource(&htim4, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_TIM_IC_Init(&htim4) != HAL_OK)
   {
     Error_Handler();
   }
   sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
   sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
-  if (HAL_TIMEx_MasterConfigSynchronization(&htim5, &sMasterConfig) != HAL_OK)
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim4, &sMasterConfig) != HAL_OK)
   {
     Error_Handler();
   }
-  /* USER CODE BEGIN TIM5_Init 2 */
+  sConfigIC.ICPolarity = TIM_INPUTCHANNELPOLARITY_BOTHEDGE;
+  sConfigIC.ICSelection = TIM_ICSELECTION_DIRECTTI;
+  sConfigIC.ICPrescaler = TIM_ICPSC_DIV1;
+  sConfigIC.ICFilter = 0;
+  if (HAL_TIM_IC_ConfigChannel(&htim4, &sConfigIC, TIM_CHANNEL_1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_TIM_IC_ConfigChannel(&htim4, &sConfigIC, TIM_CHANNEL_2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM4_Init 2 */
 
-  /* USER CODE END TIM5_Init 2 */
+  /* USER CODE END TIM4_Init 2 */
+
+}
+/* TIM6 init function */
+void MX_TIM6_Init(void)
+{
+
+  /* USER CODE BEGIN TIM6_Init 0 */
+
+  /* USER CODE END TIM6_Init 0 */
+
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM6_Init 1 */
+
+  /* USER CODE END TIM6_Init 1 */
+  htim6.Instance = TIM6;
+  htim6.Init.Prescaler = 240-1;
+  htim6.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim6.Init.Period = 10000;
+  htim6.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
+  if (HAL_TIM_Base_Init(&htim6) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim6, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM6_Init 2 */
+
+  /* USER CODE END TIM6_Init 2 */
 
 }
 
@@ -154,26 +205,26 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* tim_baseHandle)
     PB0     ------> TIM3_CH3
     PC9     ------> TIM3_CH4
     */
-    GPIO_InitStruct.Pin = GPIO_PIN_6|GPIO_PIN_7;
+    GPIO_InitStruct.Pin = Capture_Channel_1_Pin|Capture_Channel_2_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_PULLDOWN;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
     GPIO_InitStruct.Alternate = GPIO_AF2_TIM3;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-    GPIO_InitStruct.Pin = GPIO_PIN_0;
+    GPIO_InitStruct.Pin = Capture_Channel_3_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_PULLDOWN;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
     GPIO_InitStruct.Alternate = GPIO_AF2_TIM3;
-    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+    HAL_GPIO_Init(Capture_Channel_3_GPIO_Port, &GPIO_InitStruct);
 
-    GPIO_InitStruct.Pin = GPIO_PIN_9;
+    GPIO_InitStruct.Pin = Capture_Channel_4_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_PULLDOWN;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
     GPIO_InitStruct.Alternate = GPIO_AF2_TIM3;
-    HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+    HAL_GPIO_Init(Capture_Channel_4_GPIO_Port, &GPIO_InitStruct);
 
     /* TIM3 interrupt Init */
     HAL_NVIC_SetPriority(TIM3_IRQn, 1, 0);
@@ -182,20 +233,47 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* tim_baseHandle)
 
   /* USER CODE END TIM3_MspInit 1 */
   }
-  else if(tim_baseHandle->Instance==TIM5)
+  else if(tim_baseHandle->Instance==TIM4)
   {
-  /* USER CODE BEGIN TIM5_MspInit 0 */
+  /* USER CODE BEGIN TIM4_MspInit 0 */
 
-  /* USER CODE END TIM5_MspInit 0 */
-    /* TIM5 clock enable */
-    __HAL_RCC_TIM5_CLK_ENABLE();
+  /* USER CODE END TIM4_MspInit 0 */
+    /* TIM4 clock enable */
+    __HAL_RCC_TIM4_CLK_ENABLE();
 
-    /* TIM5 interrupt Init */
-    HAL_NVIC_SetPriority(TIM5_IRQn, 3, 0);
-    HAL_NVIC_EnableIRQ(TIM5_IRQn);
-  /* USER CODE BEGIN TIM5_MspInit 1 */
+    __HAL_RCC_GPIOD_CLK_ENABLE();
+    /**TIM4 GPIO Configuration
+    PD12     ------> TIM4_CH1
+    PD13     ------> TIM4_CH2
+    */
+    GPIO_InitStruct.Pin = Capture_Channel_5_Pin|Capture_Channel_6_Pin;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+    GPIO_InitStruct.Alternate = GPIO_AF2_TIM4;
+    HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
-  /* USER CODE END TIM5_MspInit 1 */
+    /* TIM4 interrupt Init */
+    HAL_NVIC_SetPriority(TIM4_IRQn, 1, 0);
+    HAL_NVIC_EnableIRQ(TIM4_IRQn);
+  /* USER CODE BEGIN TIM4_MspInit 1 */
+
+  /* USER CODE END TIM4_MspInit 1 */
+  }
+  else if(tim_baseHandle->Instance==TIM6)
+  {
+  /* USER CODE BEGIN TIM6_MspInit 0 */
+
+  /* USER CODE END TIM6_MspInit 0 */
+    /* TIM6 clock enable */
+    __HAL_RCC_TIM6_CLK_ENABLE();
+
+    /* TIM6 interrupt Init */
+    HAL_NVIC_SetPriority(TIM6_DAC_IRQn, 2, 0);
+    HAL_NVIC_EnableIRQ(TIM6_DAC_IRQn);
+  /* USER CODE BEGIN TIM6_MspInit 1 */
+
+  /* USER CODE END TIM6_MspInit 1 */
   }
 }
 
@@ -216,11 +294,11 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* tim_baseHandle)
     PB0     ------> TIM3_CH3
     PC9     ------> TIM3_CH4
     */
-    HAL_GPIO_DeInit(GPIOA, GPIO_PIN_6|GPIO_PIN_7);
+    HAL_GPIO_DeInit(GPIOA, Capture_Channel_1_Pin|Capture_Channel_2_Pin);
 
-    HAL_GPIO_DeInit(GPIOB, GPIO_PIN_0);
+    HAL_GPIO_DeInit(Capture_Channel_3_GPIO_Port, Capture_Channel_3_Pin);
 
-    HAL_GPIO_DeInit(GPIOC, GPIO_PIN_9);
+    HAL_GPIO_DeInit(Capture_Channel_4_GPIO_Port, Capture_Channel_4_Pin);
 
     /* TIM3 interrupt Deinit */
     HAL_NVIC_DisableIRQ(TIM3_IRQn);
@@ -228,19 +306,39 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* tim_baseHandle)
 
   /* USER CODE END TIM3_MspDeInit 1 */
   }
-  else if(tim_baseHandle->Instance==TIM5)
+  else if(tim_baseHandle->Instance==TIM4)
   {
-  /* USER CODE BEGIN TIM5_MspDeInit 0 */
+  /* USER CODE BEGIN TIM4_MspDeInit 0 */
 
-  /* USER CODE END TIM5_MspDeInit 0 */
+  /* USER CODE END TIM4_MspDeInit 0 */
     /* Peripheral clock disable */
-    __HAL_RCC_TIM5_CLK_DISABLE();
+    __HAL_RCC_TIM4_CLK_DISABLE();
 
-    /* TIM5 interrupt Deinit */
-    HAL_NVIC_DisableIRQ(TIM5_IRQn);
-  /* USER CODE BEGIN TIM5_MspDeInit 1 */
+    /**TIM4 GPIO Configuration
+    PD12     ------> TIM4_CH1
+    PD13     ------> TIM4_CH2
+    */
+    HAL_GPIO_DeInit(GPIOD, Capture_Channel_5_Pin|Capture_Channel_6_Pin);
 
-  /* USER CODE END TIM5_MspDeInit 1 */
+    /* TIM4 interrupt Deinit */
+    HAL_NVIC_DisableIRQ(TIM4_IRQn);
+  /* USER CODE BEGIN TIM4_MspDeInit 1 */
+
+  /* USER CODE END TIM4_MspDeInit 1 */
+  }
+  else if(tim_baseHandle->Instance==TIM6)
+  {
+  /* USER CODE BEGIN TIM6_MspDeInit 0 */
+
+  /* USER CODE END TIM6_MspDeInit 0 */
+    /* Peripheral clock disable */
+    __HAL_RCC_TIM6_CLK_DISABLE();
+
+    /* TIM6 interrupt Deinit */
+    HAL_NVIC_DisableIRQ(TIM6_DAC_IRQn);
+  /* USER CODE BEGIN TIM6_MspDeInit 1 */
+
+  /* USER CODE END TIM6_MspDeInit 1 */
   }
 }
 
@@ -248,51 +346,48 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* tim_baseHandle)
 /*Timer input capture interrupt processing callback function, in HAL_TIM_IRQHandler will be called*/
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) /*Execute when capture interrupt occurs*/
 {
-  if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1)
+  /*Shutdown timer interrupt*/
+  // __HAL_TIM_DISABLE_IT(&htim6, TIM_IT_UPDATE);
+  if (htim->Instance == TIM3)
   {
     /*Stores the currently captured counter value*/
-    Save_CounterValue(0U);
-    /*Refresh the capture time of the current channel*/
-    List_Map[0].dcb_data[List_Map[0].current_node].overtimes = OVERTIMES;
-    if (List_Map[0].current_edge == Falling_Edge)
+    switch (htim->Channel)
     {
-      /*High level is currently captured*/
-      List_Map[0].current_edge = Rising_Edge;
-      /*Switching capture polarity*/
-      __HAL_TIM_SET_CAPTUREPOLARITY(&htim3, TIM_CHANNEL_1, TIM_INPUTCHANNELPOLARITY_FALLING);
-      // if(!List_Map[0].first_flag)
-      // {
-      //   /*Set first detection flag*/
-      //   List_Map[0].first_flag = true;
-      //   /*Turn off counter3*/
-      //   __HAL_TIM_DISABLE(&htim3); 
-      //   /*Set counter 3 value to 0*/
-      //   __HAL_TIM_SET_COUNTER(&htim3, 0U);
-      //   /*Turn on counter 3*/
-      //   __HAL_TIM_ENABLE(&htim3); 
-      //   /*Clear counter overflow times*/
-      //   List_Map[0].overflows_num = 0;
-      // }
+    case HAL_TIM_ACTIVE_CHANNEL_1:
+      Save_CounterValue(&List_Map[0]);
+      break;
+    case HAL_TIM_ACTIVE_CHANNEL_2:
+      Save_CounterValue(&List_Map[1]);
+      break;
+    case HAL_TIM_ACTIVE_CHANNEL_3:
+      Save_CounterValue(&List_Map[2]);
+      break;
+    case HAL_TIM_ACTIVE_CHANNEL_4:
+      Save_CounterValue(&List_Map[3]);
+      break;
+    default:
+      break;
     }
-    else
+  }
+  else if (htim->Instance == TIM4)
+  {
+    /*Stores the currently captured counter value*/
+    switch (htim->Channel)
     {
-      /*Low level is currently captured*/
-      List_Map[0].current_edge = Falling_Edge;
-      /*Switching capture polarity*/
-      __HAL_TIM_SET_CAPTUREPOLARITY(&htim3, TIM_CHANNEL_1, TIM_INPUTCHANNELPOLARITY_RISING);
+    case HAL_TIM_ACTIVE_CHANNEL_1:
+      Save_CounterValue(&List_Map[4]);
+      break;
+    case HAL_TIM_ACTIVE_CHANNEL_2:
+      Save_CounterValue(&List_Map[5]);
+      break;
+    default:
+      break;
     }
-    /*open the capture interrupt*/
-    HAL_TIM_IC_Start_IT(&htim3, TIM_CHANNEL_1);
   }
-  else if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2)
-  {
-  }
-  else if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_3)
-  {
-  }
-  else if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_4)
-  {
-  }
+  /*Set initial value of timer*/
+  // __HAL_TIM_SET_COUNTER(&htim6, 0U);
+  // /*Shutdown timer interrupt*/
+  // __HAL_TIM_ENABLE_IT(&htim6, TIM_IT_UPDATE);
 }
 
 /**
@@ -300,21 +395,77 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) /*Execute when capture 
  * @param  list First node pointer
  * @retval None
  */
-void Save_CounterValue(uint8_t channel_id)
+static __inline void Save_CounterValue(Dwin_List *list)
 {
-  // if(List_Map[channel_id].current_node < LISTNODE_SIZE)
-  // {
-
-  // }
-  if (List_Map[channel_id].dcb_data[List_Map[channel_id].current_node].data_flag == false)
+  /*Refresh the capture time of the current channel*/
+  list->dcb_data[list->current_node].overtimes = OVERTIMES;
+  /*Stores the currently captured counter value*/
+  if (list->dcb_data[list->current_node].data_flag == false)
   {
-    /*Buffer circular storage*/
-    List_Map[channel_id].dcb_data[List_Map[channel_id].current_node].data_len %= LIST_BUF_SIZE;
-    /*Get rising edge time point*/
-    List_Map[channel_id].dcb_data[List_Map[channel_id].current_node].buf[List_Map[0].dcb_data[List_Map[channel_id].current_node].data_len++] 
-    = HAL_TIM_ReadCapturedValue(&htim3, TIM_CHANNEL_1);
+    if (list->current_edge == Falling_Edge)
+    {
+      /*High level is currently captured*/
+      list->current_edge = Rising_Edge;
+      /*Get rising edge time point*/
+      list->dcb_data[list->current_node].buf[list->dcb_data[list->current_node].data_len++] = HAL_TIM_ReadCapturedValue(&htim3, TIM_CHANNEL_1);
+      /*Buffer circular storage*/
+      list->dcb_data[list->current_node].data_len %= LIST_BUF_SIZE;
+    }
+    else
+    {
+      /*Low level is currently captured*/
+      list->current_edge = Falling_Edge;
+    }
   }
-  // List_Map[channel_id].current_node++;
+  // list->current_node++;
+
+  if (!list->dcb_data[list->current_node].first_flag)
+  {
+    /*Set timer synchronization flag*/
+    list->dcb_data[list->current_node].timer_synflag = true;
+    // switch (list->id)
+    // {
+    // case 0:
+    //   __HAL_TIM_SET_COUNTER(&htim6, 0U);
+    //   /*open timer6*/
+    //   HAL_TIM_Base_Start_IT(&htim6);
+    //   break;
+    // case 1:
+    //   __HAL_TIM_SET_COUNTER(&htim7, 0U);
+    //   /*open timer6*/
+    //   HAL_TIM_Base_Start_IT(&htim7);
+    //   break;
+    // case 2:
+    //   __HAL_TIM_SET_COUNTER(&htim13, 0U);
+    //   /*open timer6*/
+    //   HAL_TIM_Base_Start_IT(&htim13);
+    //   break;
+    // case 3:
+    //   __HAL_TIM_SET_COUNTER(&htim14, 0U);
+    //   /*open timer6*/
+    //   HAL_TIM_Base_Start_IT(&htim14);
+    //   break;
+    // case 4:
+    //   __HAL_TIM_SET_COUNTER(&htim16, 0U);
+    //   /*open timer6*/
+    //   HAL_TIM_Base_Start_IT(&htim16);
+    //   break;
+    // case 5:
+    //   __HAL_TIM_SET_COUNTER(&htim17, 0U);
+    //   /*open timer6*/
+    //   HAL_TIM_Base_Start_IT(&htim17);
+    //   break;
+    // default:
+    //   break;
+    // }
+    /*Set first detection flag*/
+    list->dcb_data[list->current_node].first_flag = true;
+    /*Clear counter overflow times*/
+    list->dcb_data[list->current_node].overflows_num = 0;
+    /*Save the value obtained for the first time*/
+    list->dcb_data->first_value =
+        list->dcb_data[list->current_node].buf[list->dcb_data[list->current_node].data_len];
+  }
 }
 
 /* USER CODE END 1 */

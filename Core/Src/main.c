@@ -32,7 +32,9 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
+#if(USING_DEBUG)
+  uint32_t g_Value = 0;
+#endif
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -53,6 +55,7 @@
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
+static void MPU_Config(void);
 void MX_FREERTOS_Init(void);
 /* USER CODE BEGIN PFP */
 
@@ -72,6 +75,15 @@ int main(void)
   /* USER CODE BEGIN 1 */
 
   /* USER CODE END 1 */
+
+  /* MPU Configuration--------------------------------------------------------*/
+  MPU_Config();
+
+  /* Enable I-Cache---------------------------------------------------------*/
+  SCB_EnableICache();
+
+  /* Enable D-Cache---------------------------------------------------------*/
+  SCB_EnableDCache();
 
   /* MCU Configuration--------------------------------------------------------*/
 
@@ -94,18 +106,22 @@ int main(void)
   MX_DMA_Init();
   MX_USART1_UART_Init();
   MX_TIM3_Init();
-  MX_TIM5_Init();
+  MX_TIM4_Init();
+  MX_TIM6_Init();
   /* USER CODE BEGIN 2 */
   HAL_TIM_IC_Start_IT(&htim3, TIM_CHANNEL_1);
   HAL_TIM_IC_Start_IT(&htim3, TIM_CHANNEL_2);
   HAL_TIM_IC_Start_IT(&htim3, TIM_CHANNEL_3);
   HAL_TIM_IC_Start_IT(&htim3, TIM_CHANNEL_4);
-  /*使能更新中断*/
-  __HAL_TIM_ENABLE_IT(&htim3,TIM_IT_UPDATE); 
-  /*open timer5*/
-  HAL_TIM_Base_Start_IT(&htim5);
+  HAL_TIM_IC_Start_IT(&htim4, TIM_CHANNEL_1);
+  HAL_TIM_IC_Start_IT(&htim4, TIM_CHANNEL_2);
+  /*Enable update interrupt*/
+  __HAL_TIM_ENABLE_IT(&htim3, TIM_IT_UPDATE);
+  __HAL_TIM_ENABLE_IT(&htim4, TIM_IT_UPDATE);
+  /*open timer6*/
+  HAL_TIM_Base_Start_IT(&htim6);
   /*Initialize linked list*/
-  for(uint8_t i = 0; i < LIST_SIZE; i++)
+  for (uint8_t i = 0; i < LIST_SIZE; i++)
   {
     Init_List(&List_Map[i], i);
   }
@@ -122,8 +138,10 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-    
+
     /* USER CODE BEGIN 3 */
+    // Wave_Handle();
+    // HAL_Delay(500);
   }
   /* USER CODE END 3 */
 }
@@ -186,30 +204,145 @@ void SystemClock_Config(void)
 
 /* USER CODE BEGIN 4 */
 /**
- * @brief  获得每个节点消耗的时间
- * @param  list 当前链表首节点指针
+ * @brief  Get the time consumed by each node
+ * @param  list Pointer to the first node of the current linked list
  * @retval None
  */
 static void Get_NodeTimes(Dwin_List *list)
 {
-	/*Counter overflow, time greater than 6.5536ms*/
-	if (list->dcb_data[list->current_node].overflows_num > OVERFLOW_COUNTS(1U, 16U, 10U))
-	{
-		list->dcb_data[list->current_node].consum_times =
-		(list->dcb_data[list->current_node].overflows_num - 1U) * 6.5536F + 
-    list->dcb_data[list->current_node].buf[list->dcb_data[list->current_node].data_len] / 10000.0F;
-	}
-	else /*The counter does not overflow and the time is within 6.5536ms*/
-	{
-		/*Calculate the settling time*/
-		list->dcb_data[list->current_node].consum_times =
-			(list->dcb_data[list->current_node].buf[list->dcb_data[list->current_node].data_len]) / 10000.0F;/* -
-			 list->dcb_data[list->current_node].buf[0]) / 10000.0F;*/
-	}
+  /*Counter overflow, time greater than 6.5536ms*/
+  if (list->dcb_data[list->current_node].overflows_num > OVERFLOW_COUNTS(TIMES, FREQ))
+  {
+    list->dcb_data[list->current_node].consum_times = (float)((CVALUE - list->dcb_data[list->current_node].first_value) +
+                                                              (list->dcb_data[list->current_node].overflows_num - (OVERFLOW_COUNTS(TIMES, FREQ) + 1U)) * CVALUE +
+                                                              list->dcb_data[list->current_node].buf[list->dcb_data[list->current_node].data_len]) /
+                                                      ACCU();
+  }
+  else /*The counter does not overflow and the time is within 6.5536ms*/
+  {
+    /*Calculate the settling time,last value - first value*/
+    list->dcb_data[list->current_node].consum_times =
+        (float)(list->dcb_data[list->current_node].buf[list->dcb_data[list->current_node].data_len] -
+                list->dcb_data[list->current_node].first_value) /
+        ACCU();
+  }
+}
+
+/**
+ * @brief  Overflow processing
+ * @param  list Pointer to the first node of the current linked list
+ * @retval None
+ */
+static __inline void Overflow_Handle(Dwin_List *list)
+{
+  if (list->dcb_data[list->current_node].timer_synflag)
+  {
+    /*counter Number of overflows*/
+    list->dcb_data[list->current_node].overflows_num++;
+    /*The counter overflows for the first time and calculates the offset time*/
+    // if (list->dcb_data[list->current_node].overflows_num == 1U)
+    // {
+    //   /*Here, you only need a simple cumulative value and do not need to calculate it*/
+    //   list->dcb_data[list->current_node].consum_times =
+    //       (CVALUE - list->dcb_data[list->current_node].first_value);
+    // }
+  }
+}
+
+/**
+ * @brief  timeout handler
+ * @param  list Pointer to the first node of the current linked list
+ * @retval None
+ */
+static __inline void Timeout_Handle(Dwin_List *list)
+{
+  /*Avoid the error caused by the first overtime = 0*/
+  if ((list->dcb_data[list->current_node].overtimes) && (list->dcb_data[list->current_node].timer_synflag))
+  {
+    if (!(--list->dcb_data[list->current_node].overtimes))
+    {
+      /*Data collection completed*/
+      list->dcb_data[list->current_node].data_flag = true;
+      /*Reset first detection flag*/
+      list->dcb_data[list->current_node].first_flag = false;
+      /*Reset timer synchronization flag*/
+      list->dcb_data[list->current_node].timer_synflag = false;
+      /*Calculate the stabilization time on / off*/
+      Get_NodeTimes(&List_Map[list->id]);
+#if(USING_DEBUG)
+      g_Value = list->dcb_data[list->current_node].overflows_num;
+#endif
+      /*Clear counter overflow times*/
+      list->dcb_data[list->current_node].overflows_num = 0;
+      /*Clear first recorded value*/
+      list->dcb_data[list->current_node].first_value = 0;
+      /*Point to the next node*/
+      list->current_node++;
+      list->current_node %= LISTNODE_SIZE;
+      /*close timer*/
+      // switch (list->id)
+      // {
+      // case 0:
+      //   HAL_TIM_Base_Stop_IT(&htim6);
+      //   break;
+      // case 1:
+      //   HAL_TIM_Base_Stop_IT(&htim7);
+      //   break;
+      // case 2:
+      //   HAL_TIM_Base_Stop_IT(&htim13);
+      //   break;
+      // case 3:
+      //   HAL_TIM_Base_Stop_IT(&htim14);
+      //   break;
+      // case 4:
+      //   HAL_TIM_Base_Stop_IT(&htim16);
+      //   break;
+      // case 5:
+      //   HAL_TIM_Base_Stop_IT(&htim17);
+      //   break;
+      // default:
+      //   break;
+      // }
+    }
+  }
 }
 /* USER CODE END 4 */
 
- /**
+/* MPU Configuration */
+
+void MPU_Config(void)
+{
+  MPU_Region_InitTypeDef MPU_InitStruct = {0};
+
+  /* Disables the MPU */
+  HAL_MPU_Disable();
+  /** Initializes and configures the Region and the memory to be protected
+  */
+  MPU_InitStruct.Enable = MPU_REGION_ENABLE;
+  MPU_InitStruct.Number = MPU_REGION_NUMBER0;
+  MPU_InitStruct.BaseAddress = 0x20000000;
+  MPU_InitStruct.Size = MPU_REGION_SIZE_128KB;
+  MPU_InitStruct.SubRegionDisable = 0x0;
+  MPU_InitStruct.TypeExtField = MPU_TEX_LEVEL1;
+  MPU_InitStruct.AccessPermission = MPU_REGION_FULL_ACCESS;
+  MPU_InitStruct.DisableExec = MPU_INSTRUCTION_ACCESS_ENABLE;
+  MPU_InitStruct.IsShareable = MPU_ACCESS_NOT_SHAREABLE;
+  MPU_InitStruct.IsCacheable = MPU_ACCESS_NOT_CACHEABLE;
+  MPU_InitStruct.IsBufferable = MPU_ACCESS_NOT_BUFFERABLE;
+
+  HAL_MPU_ConfigRegion(&MPU_InitStruct);
+  /** Initializes and configures the Region and the memory to be protected
+  */
+  MPU_InitStruct.Number = MPU_REGION_NUMBER1;
+  MPU_InitStruct.BaseAddress = 0x24000000;
+  MPU_InitStruct.Size = MPU_REGION_SIZE_512KB;
+
+  HAL_MPU_ConfigRegion(&MPU_InitStruct);
+  /* Enables the MPU */
+  HAL_MPU_Enable(MPU_PRIVILEGED_DEFAULT);
+
+}
+/**
   * @brief  Period elapsed callback in non blocking mode
   * @note   This function is called  when TIM2 interrupt took place, inside
   * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment
@@ -220,7 +353,7 @@ static void Get_NodeTimes(Dwin_List *list)
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
   /* USER CODE BEGIN Callback 0 */
-  /*Timer update interrupt (overflow) interrupt processing callback function, 
+  /*Timer update interrupt (overflow) interrupt processing callback function,
   in HAL_ TIM_ IRQHandler will be called*/
   /* USER CODE END Callback 0 */
   if (htim->Instance == TIM2) {
@@ -230,36 +363,49 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   /*Overflow interrupt*/
   else if (htim->Instance == TIM3)
   {
-    /*counter Number of overflows*/
-    List_Map[0].dcb_data[List_Map[0].current_node].overflows_num++;
-    /*The counter overflows for the first time and calculates the offset time*/
-    if(List_Map[0].dcb_data[List_Map[0].current_node].overflows_num == 1U)
+    for(uint8_t i = 0; i < LIST_SIZE - 2U; i++)
     {
-      /*Here, you only need a simple cumulative value and do not need to calculate it*/
-      List_Map[0].dcb_data[List_Map[0].current_node].consum_times = \
-      List_Map[0].dcb_data[List_Map[0].current_node].buf[0];
+      Overflow_Handle(&List_Map[i]);
+      // Overflow_Handle(&List_Map[1]);
+      // Overflow_Handle(&List_Map[2]);
+      // Overflow_Handle(&List_Map[3]);
     }
   }
-  else if (htim->Instance == TIM5)
-  { /*Avoid the error caused by the first overtime = 0*/
-    if (List_Map[0].dcb_data[List_Map[0].current_node].overtimes)
-    {  
-      if(!(--List_Map[0].dcb_data[List_Map[0].current_node].overtimes))
-      {
-        /*Data collection completed*/
-        List_Map[0].dcb_data[List_Map[0].current_node].data_flag = true;
-        /*Calculate the stabilization time on / off*/
-				Get_NodeTimes(&List_Map[0]);
-        /*Point to the next node*/
-        List_Map[0].current_node++;
-        List_Map[0].current_node %= LISTNODE_SIZE;
-        /*ReSet first detection flag*/
-        // List_Map[0].first_flag = false;
-        /*Clear counter overflow times*/
-        // List_Map[0].dcb_data[List_Map[0].current_node].overflows_num = 0;
-      }
+  else if (htim->Instance == TIM4)
+  {
+    for(uint8_t i = 4; i < LIST_SIZE; i++)
+    {
+      Overflow_Handle(&List_Map[i]);
+      // Overflow_Handle(&List_Map[5]);
     }
   }
+  else if (htim->Instance == TIM6)
+  {
+    for(uint8_t i = 0; i < LIST_SIZE; i++)
+    {
+      Timeout_Handle(&List_Map[i]);
+    }
+  }
+  // else if (htim->Instance == TIM7)
+  // {
+  //   Timeout_Handle(&List_Map[1]);
+  // }
+  // else if (htim->Instance == TIM13)
+  // {
+  //   Timeout_Handle(&List_Map[2]);
+  // }
+  // else if (htim->Instance == TIM14)
+  // {
+  //   Timeout_Handle(&List_Map[3]);
+  // }
+  // else if (htim->Instance == TIM16)
+  // {
+  //   Timeout_Handle(&List_Map[4]);
+  // }
+  // else if (htim->Instance == TIM17)
+  // {
+  //   Timeout_Handle(&List_Map[5]);
+  // }
   /* USER CODE END Callback 1 */
 }
 

@@ -33,7 +33,7 @@ extern "C" {
 #define USING_PRINTF 1
 
 #if (USING_DMA == 1)
-#define BUFFER_SIZE  1024U
+#define BUFFER_SIZE  512U
 
 typedef struct  
 {

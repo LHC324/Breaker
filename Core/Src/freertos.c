@@ -181,7 +181,7 @@ void Led_Task(void const * argument)
   for (;;)
   {
     led_state ^= 1;
-    HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, led_state);
+    HAL_GPIO_WritePin(Run_Led_GPIO_Port, Run_Led_Pin, led_state);
     osDelay(500);
   }
   /* USER CODE END Led_Task */
