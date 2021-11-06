@@ -104,6 +104,13 @@ typedef enum class
   Falling_Edge = 0U,
   Rising_Edge = !Falling_Edge
 }EDGE;
+
+/*Current parity type*/
+typedef enum
+{
+  Odd = 0U,
+  Even = !Odd
+}CTYPEDEF;
 typedef struct
 {
   /*First detection mark*/
@@ -136,6 +143,8 @@ typedef struct DLink
 	Dwin_Dcb dcb_data[LISTNODE_SIZE];
   /*Record current node*/
   uint8_t current_node;
+  /*Completion node*/
+  uint8_t complete_node;
   /*Edge polarity currently captured*/
   EDGE current_edge;
   /*Node pointer*/
@@ -143,6 +152,15 @@ typedef struct DLink
 }Dwin_List;
 
 extern Dwin_List List_Map[LIST_SIZE];
+
+typedef struct 
+{
+  /*Time consuming data processing buffer*/
+  float handle_buf[LIST_SIZE];
+  /*Is the current number of snaps odd or even*/
+  CTYPEDEF current_type;
+}Report_S;
+
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

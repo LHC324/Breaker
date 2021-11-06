@@ -10,14 +10,17 @@
 #include "string.h"
 #include "cmsis_os.h"
 
-Dwin_T g_Dwin = { 0 };
+Dwin_T g_Dwin = {0};
 DwinMap g_map[100];
 uint8_t mapindex = 0;
+
 /*定义6条链表*/
 // Dwin_List DLink0, DLink1, DLink2, DLink3, DLink4, DLink5;
 
 /*6行10列的二维数组*/
 Dwin_List List_Map[LIST_SIZE] = {0};
+/*定义时耗上报数据结构*/
+Report_S Report = {0};
 /*记录当前波形采集的节点*/
 // uint8_t g_CurNode[LIST_SIZE][LISTNODE_SIZE] = { 0 };
 
@@ -56,19 +59,25 @@ extern uint32_t g_Value;
 // float Get_Capture_Error(Dwin_List *list)
 // {
 // 	float v_error = 0.0F;
-// 	int32_t v_temp = 0;
+// 	float v_temp = 0.0F;
+// 	float v_temp1 = 0.0F;
+// 	float v_temp2 = 0.0F;
 
-// 	for(uint16_t i = 0; i < list->dcb_data[list->current_edge].data_len; i++)
-// 	{
-// 		v_temp = (int32_t)list->dcb_data[list->current_node].buf[i + 1] - (int32_t)list->dcb_data[list->current_node].buf[i];
-// 		if(v_temp > 0)
+// 	for (uint16_t i = 0; i < list->dcb_data[list->complete_node].data_len; i++)
+// 	{	/*16bit counter overflow*/
+// 		if (list->dcb_data[list->complete_node].buf[i + 1] < list->dcb_data[list->complete_node].buf[i])
 // 		{
-// 			v_error += v_temp;
+// 			v_temp1 = list->dcb_data[list->complete_node].buf[i];
+// 			v_temp2 = (CVALUE - list->dcb_data[list->complete_node].buf[i] + list->dcb_data[list->complete_node].buf[i + 1]);
 // 		}
-// 		else if(v_temp < 0)
+// 		else
 // 		{
-// 			v_error -= v_temp;
+// 			v_temp1 = list->dcb_data[list->complete_node].buf[i];
+// 			v_temp2 = list->dcb_data[list->complete_node].buf[i + 1];
 // 		}
+// 		v_temp = v_temp2 - v_temp1;
+
+// 		v_error += v_temp;
 // 	}
 // 	return (v_error / ACCU());
 // }
@@ -78,39 +87,59 @@ extern uint32_t g_Value;
  * @param  None
  * @retval None
  */
-void Wave_Handle(void)
+bool Wave_Handle(void)
 {
-	uint8_t i = 0, j = 0;
+	uint8_t i = 0;
+	bool Success_flag = false;
+#if (USING_DEBUG)
+	float error = 0;
+#endif
+
 	// DmaPrintf("current value is %d, time consuming is , buf size is  .\r\n", 10);
 	for (; i < LIST_SIZE; i++)
 	{
-		for (j = 0; j < LISTNODE_SIZE; j++)
-		{
-			// List_Map[i].dcb_data[j].consum_times += Get_Capture_Error(&List_Map[i]);
-			if (List_Map[i].dcb_data[j].data_flag)
-			{
-#if (USING_DEBUG)
-				// DmaPrintf("channel %d, node %d, overcounts %d, times is %02fms\r\n", List_Map[i].id, List_Map[i].current_node, g_Value, List_Map[i].dcb_data[j].consum_times);
 
-				for (uint16_t k = 0; k < List_Map[i].dcb_data[j].data_len; k++)
-					DmaPrintf("channel %d, node %d, counts %d, buf[%d] value %d, times %fms.\r\n",
-							  List_Map[i].id, List_Map[i].current_node,  g_Value, k, List_Map[i].dcb_data[j].buf[k], List_Map[i].dcb_data[j].consum_times);
-
-				g_Value = 0;
-#else
-				DmaPrintf("length %d\r\n", List_Map[i].dcb_data[j].data_len);
-				/*Draw waveform*/
-				Dwin_Curve_SchMd(&List_Map[i], j);
-#endif
-				/*Reset data processing completion flag*/
-				List_Map[i].dcb_data[j].data_flag = false;
-				/*Clear data length*/
-				List_Map[i].dcb_data[j].data_len = 0;
-				/*Clearing time consumption*/
-				List_Map[i].dcb_data[j].consum_times = 0;
+		if (List_Map[i].dcb_data[List_Map[i].complete_node].data_flag)
+		{ /*Capture success flag*/
+			Success_flag = true;
+			/*Get the parity of the current capture times*/
+			if (!(List_Map[i].complete_node % 2U))
+			{ /*Even number of captures*/
+				Report.current_type = Even;
 			}
+			else
+			{ /*odd number of captures*/
+				Report.current_type = Odd;
+			}
+#if (USING_DEBUG)
+			/*error compensation*/
+			// error = Get_Capture_Error(&List_Map[i]);
+			// List_Map[i].dcb_data[List_Map[i].complete_node].consum_times += error;
+			DmaPrintf("channel %d, node %d, overcounts %d, times is %02fms, error %f.\r\n",
+					  List_Map[i].id, List_Map[i].current_node, g_Value, List_Map[i].dcb_data[List_Map[i].complete_node].consum_times, error);
+
+			// for (uint16_t k = 0; k < List_Map[i].dcb_data[List_Map[i].complete_node].data_len; k++)
+			// 	DmaPrintf("channel %d, node %d, counts %d, buf[%d] value %d, times %fms.\r\n",
+			// 			  List_Map[i].id, List_Map[i].current_node, g_Value, k, List_Map[i].dcb_data[List_Map[i].complete_node].buf[k], List_Map[i].dcb_data[List_Map[i].complete_node].consum_times);
+
+			g_Value = 0;
+#else
+			/*Store time data in temporary buffer*/
+			Report.handle_buf[i] = List_Map[i].dcb_data[List_Map[i].complete_node].consum_times;
+			// DmaPrintf("length %d\r\n", List_Map[i].dcb_data[j].data_len);
+			/*Draw waveform*/
+			Dwin_Curve_SchMd(&List_Map[i]);
+			// osDelay(2);
+#endif
+			/*Reset data processing completion flag*/
+			List_Map[i].dcb_data[List_Map[i].complete_node].data_flag = false;
+			/*Clear data length*/
+			List_Map[i].dcb_data[List_Map[i].complete_node].data_len = 0;
+			/*Clearing time consumption*/
+			List_Map[i].dcb_data[List_Map[i].complete_node].consum_times = 0;
 		}
 	}
+	return Success_flag;
 }
 
 /**
@@ -159,6 +188,37 @@ void Init_List(Dwin_List *list, uint8_t channel_id)
 	}
 }
 
+/**
+ * @brief  轮询上报各通道测量得到的时间
+ * @param  r 上报对象指针
+ * @retval None
+ */
+void Report_TimeConsum(void)
+{
+	uint16_t addr = 0;
+
+	/*当前采集次数为偶数次，上报屏幕左边*/
+	if (Report.current_type == Even)
+	{
+		addr = TIMECOUNSUM_ADDR;
+	}
+	else
+	{
+		addr = TIMECOUNSUM_ADDR + sizeof(float);
+	}
+	/*End storage mode conversion for float type variables*/
+	for (uint8_t i = 0; i < sizeof(Report.handle_buf) / sizeof(float); i++)
+	{
+		/*Report one after the exchange is completed*/
+		Endian_Swap((uint8_t *)&Report.handle_buf[i], 0U, sizeof(float));
+		Dwin_Write(addr + i * 8U, (uint8_t *)&Report.handle_buf[i], sizeof(float));
+		/*The serial port screen is too slow and requires a certain delay*/
+		osDelay(1);
+	}
+	/*When there is no data, empty the buffer*/
+	memset((uint8_t *)Report.handle_buf, 0, sizeof(Report.handle_buf));
+}
+
 /*
 *********************************************************************************************************
 *	函 数 名:  DWIN_SendWithCRC
@@ -197,13 +257,13 @@ void DWIN_SendWithCRC(uint8_t *_pBuf, uint8_t _ucLen)
 void DWIN_Send(uint8_t *_pBuf, uint8_t _ucLen)
 {
 	/*Clear data in DCache*/
-  	SCB_CleanDCache();
+	SCB_CleanDCache();
 	// HAL_UART_Transmit(&huart1, _pBuf, _ucLen, 0x1000);
 	HAL_UART_Transmit_DMA(&huart1, _pBuf, _ucLen);
 	/*等待串口接收完成期间，进行系统调度*/
 	while (__HAL_UART_GET_FLAG(&huart1, UART_FLAG_TC) == RESET)
 	{
-		osDelay(1);
+		osDelay(15);
 	}
 }
 
@@ -293,18 +353,25 @@ err_ret:
 *	返 回 值: 无
 *********************************************************************************************************
 */
-void DWIN_WRITE(uint16_t slaveaddr, uint8_t *dat, uint8_t length)
+/**
+ * @brief  写数据变量到指定地址并显示
+ * @param  start_addr 开始地址
+ * @param  dat 指向数据的指针
+ * @param  length 数据长度
+ * @retval None
+ */
+void Dwin_Write(uint16_t start_addr, uint8_t *dat, uint8_t length)
 {
-	uint8_t i;
+	uint8_t i = 0;
 	g_Dwin.TxCount = 0;
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x5A;
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0xA5;
-	g_Dwin.TxBuf[g_Dwin.TxCount++] = length + 3;
+	g_Dwin.TxBuf[g_Dwin.TxCount++] = length + 3U;
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = WRITE_CMD;
-	g_Dwin.TxBuf[g_Dwin.TxCount++] = slaveaddr >> 8;
-	g_Dwin.TxBuf[g_Dwin.TxCount++] = slaveaddr;
+	g_Dwin.TxBuf[g_Dwin.TxCount++] = start_addr >> 8U;
+	g_Dwin.TxBuf[g_Dwin.TxCount++] = start_addr;
 
-	for (i = 0; i < length; i++)
+	for (; i < length; i++)
 	{
 		g_Dwin.TxBuf[g_Dwin.TxCount++] = dat[i];
 	}
@@ -510,12 +577,22 @@ void DWIN_CURVE_MULTICHANNEL(uint16_t Channelnum, DwinCurve *dat)
  * @param  list 当前链表首节点指针
  * @retval None
  */
-void Dwin_Curve_SchMd(Dwin_List *list, uint16_t node)
+void Dwin_Curve_SchMd(Dwin_List *list)
 {
+	uint32_t real_size = list->dcb_data[list->complete_node].data_len;
+	uint16_t temp_size = 0;
+	uint32_t v_temp = 0;
+	uint32_t iter = 0;
+
+	/*采集到的数据点超过了半个通道长度*/
+	if (real_size > SINGLE_SIZE)
+	{
+		real_size = SINGLE_SIZE;
+	}
 	g_Dwin.TxCount = 0;
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x5A;
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0xA5;
-	g_Dwin.TxBuf[g_Dwin.TxCount++] = 9U + list->dcb_data[node].data_len * 2U;
+	g_Dwin.TxBuf[g_Dwin.TxCount++] = 9U + real_size * 2U;
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x82;
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x03; /*通道起始地址*/
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x10;
@@ -524,29 +601,113 @@ void Dwin_Curve_SchMd(Dwin_List *list, uint16_t node)
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x01; /*通道块数*/
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x00; /*低字节无效*/
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = list->id;
-	g_Dwin.TxBuf[g_Dwin.TxCount++] = list->dcb_data[node].data_len;
+	g_Dwin.TxBuf[g_Dwin.TxCount++] = real_size;
 
-	for (uint16_t j = 0; j < list->dcb_data[node].data_len; j++)
+	// 	for (uint16_t j = 0; j < list->dcb_data[node].data_len; j++)
+	// 	{
+	// #if (USING_LITTLE == 1)
+	// 		/*先对数据进行转换*/
+	// 		// Endian_Swap((uint8_t *)&list->dcb_data[node].buf[j], 0, sizeof(uint16_t));
+	// 		g_Dwin.TxBuf[g_Dwin.TxCount++] = list->dcb_data[node].buf[j];
+	// 		g_Dwin.TxBuf[g_Dwin.TxCount++] = list->dcb_data[node].buf[j] >> 8U;
+	// #else
+	// 		g_Dwin.TxBuf[g_Dwin.TxCount++] = list->dcb_data[node].buf[j] >> 8U;
+	// 		g_Dwin.TxBuf[g_Dwin.TxCount++] = list->dcb_data[node].buf[j];
+	// #endif
+	// 	}
+
+	/*Double the actual data length*/
+	// real_size *= 2U;
+	// while (1)
+	// {
+	// 	/*16bit counter overflow*/
+	// 	if (list->dcb_data[list->complete_node].buf[iter + 1] < list->dcb_data[list->complete_node].buf[iter])
+	// 	{
+	// 		v_temp = (CVALUE - list->dcb_data[list->complete_node].buf[iter] + list->dcb_data[list->complete_node].buf[iter + 1]) -
+	// 				 list->dcb_data[list->complete_node].buf[iter];
+	// 	}
+	// 	else
+	// 	{
+	// 		v_temp = list->dcb_data[list->complete_node].buf[iter + 1] - list->dcb_data[list->complete_node].buf[iter];
+	// 	}
+	// 	/*Quantify proportionally*/
+	// 	(v_temp <= 200U) ? (temp_size = 4U) : ((v_temp <= 2000U) ? (temp_size = 6U) : 
+	// 	((v_temp <= 20000U) ? (temp_size = 8U) : ((v_temp <= 40000U) ? (temp_size = 10U) : 
+	// 	(temp_size = 12U))));
+
+	// 	if (temp_size * 2U > real_size)
+	// 	{
+	// 		for (uint16_t i = 0; i < real_size; i++)
+	// 		{
+	// 			g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x50;
+	// 		}
+	// 		break;
+	// 	}
+	// 	else
+	// 	{
+	// 		for (uint16_t k = 0; k < temp_size; k++)
+	// 		{
+	// 			g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x00;
+	// 			if (!(iter % 2))
+	// 			{
+	// 				g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x5A;
+	// 			}
+	// 			else
+	// 			{
+	// 				g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x0A;
+	// 			}
+	// 		}
+	// 		real_size -= (2U * temp_size);
+	// 	}
+	// 		iter++;
+	// }
+
+	real_size *= 2U;
+	while (1)
 	{
-#if (USING_LITTLE == 1)
-		/*先对数据进行转换*/
-		// Endian_Swap((uint8_t *)&list->dcb_data[node].buf[j], 0, sizeof(uint16_t));
-		g_Dwin.TxBuf[g_Dwin.TxCount++] = list->dcb_data[node].buf[j];
-		g_Dwin.TxBuf[g_Dwin.TxCount++] = list->dcb_data[node].buf[j] >> 8U;
-#else
-		g_Dwin.TxBuf[g_Dwin.TxCount++] = list->dcb_data[node].buf[j] >> 8U;
-		g_Dwin.TxBuf[g_Dwin.TxCount++] = list->dcb_data[node].buf[j];
-#endif
+		/*16bit counter overflow*/
+		// if (list->dcb_data[list->complete_node].buf[iter + 1] < list->dcb_data[list->complete_node].buf[iter])
+		// {
+		// 	v_temp = (CVALUE - list->dcb_data[list->complete_node].buf[iter] + list->dcb_data[list->complete_node].buf[iter + 1]) -
+		// 			 list->dcb_data[list->complete_node].buf[iter];
+		// }
+		// else
+		// {
+		// 	v_temp = list->dcb_data[list->complete_node].buf[iter + 1] - list->dcb_data[list->complete_node].buf[iter];
+		// }
+		v_temp = list->dcb_data[list->complete_node].buf[iter];
+		/*Quantify proportionally*/
+		(v_temp <= 3200U) ? (temp_size = 1U) : ((v_temp <= 6400U) ? (temp_size = 2U) : 
+		((v_temp <= 9600U) ? (temp_size = 3U) : ((v_temp <= 12800U) ? (temp_size = 4U) : 
+		((v_temp <= 16000U) ? (temp_size = 5U) : ((v_temp <= 19200U) ? (temp_size = 6U) :
+		((v_temp <= 22400U) ? (temp_size = 7U) : ((v_temp <= 25600U) ? (temp_size = 8U) :
+		((v_temp <= 28800U) ? (temp_size = 9U) : ((v_temp <= 32000U) ? (temp_size = 10U) : 
+		((v_temp <= 35200U) ? (temp_size = 11U) : ((v_temp <= 38400U) ? (temp_size = 12U) :
+		((v_temp <= 41600U) ? (temp_size = 13U) : ((v_temp <= 44800U) ? (temp_size = 14U) :
+		((v_temp <= 48000U) ? (temp_size = 15U) : ((v_temp <= 51200U) ? (temp_size = 16U) :
+		((v_temp <= 54400U) ? (temp_size = 17U) : ((v_temp <= 57600U) ? (temp_size = 18U) :
+		((v_temp <= 60800U) ? (temp_size = 19U) : ((v_temp <= 64000U) ? (temp_size = 20U) :
+		0U)))))))))))))))))));
+
+		if (temp_size * 2U > real_size)
+		{
+			for (uint16_t i = 0; i < real_size; i++)
+			{
+				g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x00;
+			}
+			break;
+		}
+		else
+		{
+			g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x00;
+			g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x0A + 0x04 * temp_size;
+			real_size -= 2U;
+		}
+		iter++;
 	}
-	// DmaPrintf("%s\r\n", g_Dwin.TxBuf);
-	// DWIN_Send(g_Dwin.TxBuf, g_Dwin.TxCount);
-	// DmaPrintf("length %d\r\n", g_Dwin.TxCount);
-	SCB_CleanDCache();
-	// HAL_UART_Transmit_DMA(&huart1, g_Dwin.TxBuf, g_Dwin.TxCount);
-	HAL_UART_Transmit(&huart1 , g_Dwin.TxBuf, g_Dwin.TxCount, 0xFFFF);
-	// for(uint16_t i = 0; i < g_Dwin.TxCount; i++)
-	// 	DmaPrintf("%d\t", g_Dwin.TxBuf[i]);
-	
+
+	// DmaPrintf("count %d\r\n", g_Dwin.TxCount);
+	DWIN_Send(g_Dwin.TxBuf, g_Dwin.TxCount);
 }
 
 /**

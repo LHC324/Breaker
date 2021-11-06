@@ -14,13 +14,24 @@
 #define USING_LITTLE 1
 
 #define RX_BUF_SIZE	 128U
-#define TX_BUF_SIZE  5120U
+#define TX_BUF_SIZE  1024U
 
 #define WRITE_CMD	 0x82		//写
 #define READ_CMD	 0x83		//读
 
 #define PAGE_CHANGE_CMD  0x84	//页面切换
 #define TOUCH_CMD	     0xD4   //触摸动作
+/*时耗变量显示地址*/
+#define TIMECOUNSUM_ADDR  0x4000
+
+/*半波形通道的长度*/
+#define WAVE_CH_WIDTH  295U
+/*波形通道的高度*/
+#define WAVE_CH_HEIGHT  100U
+/*量化比例*/
+#define RATIO()  (65535U / (WAVE_CH_WIDTH * 40U))
+/*单个数据块尺寸*/
+#define SINGLE_SIZE  100U
 
 typedef void (*pfunc)(uint8_t*,uint8_t);
 
@@ -60,19 +71,17 @@ typedef enum
 }Listx;
 
 
-
-
 extern Dwin_T g_Dwin;
 extern DwinMap g_map[100];
 
 extern Dwin_List List_Map[LIST_SIZE];
 
-void DWIN_WRITE(uint16_t slaveaddr,uint8_t* dat,uint8_t length);
+void Dwin_Write(uint16_t start_addr, uint8_t *dat, uint8_t length);
 void DWIN_READ(uint16_t slaveaddr,uint8_t words);
 void DWIN_CURVE(uint16_t Channel,uint16_t* dat,uint16_t num);
 void DWIN_CURVE_CLEAR(uint16_t Channel);
 void DWIN_CURVE_MULTICHANNEL(uint16_t Channelnum,DwinCurve* dat);
-void Dwin_Curve_SchMd(Dwin_List *list, uint16_t node);
+void Dwin_Curve_SchMd(Dwin_List *list);
 
 void DWIN_SendWithCRC(uint8_t *_pBuf, uint8_t _ucLen);
 void DWIN_Send(uint8_t *_pBuf, uint8_t _ucLen);
@@ -89,7 +98,8 @@ void DWIN_83H(void);
 void DWIN_PageChange(uint16_t Page);
 void DWIN_TouchAction(TouchType type,uint16_t Pos_x,uint16_t Pos_y);
 
-void Wave_Handle(void);
+bool Wave_Handle(void);
 void Init_List(Dwin_List *list, uint8_t channel_id);
+void Report_TimeConsum(void);
 
 #endif /* INC_DWIN_H_ */

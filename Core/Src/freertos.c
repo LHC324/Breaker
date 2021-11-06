@@ -51,22 +51,24 @@ GPIO_PinState led_state = GPIO_PIN_RESET;
 /* USER CODE END Variables */
 osThreadId Uart_TaskHandle;
 osThreadId Run_TaskHandle;
+osThreadId Data_HandleTaskHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
 
 /* USER CODE END FunctionPrototypes */
 
-void Uart_TxTask(void const * argument);
-void Led_Task(void const * argument);
+void Report_Task(void const *argument);
+void Led_Task(void const *argument);
+void Wave_HandleTask(void const *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
 /* GetIdleTaskMemory prototype (linked to static allocation support) */
-void vApplicationGetIdleTaskMemory( StaticTask_t **ppxIdleTaskTCBBuffer, StackType_t **ppxIdleTaskStackBuffer, uint32_t *pulIdleTaskStackSize );
+void vApplicationGetIdleTaskMemory(StaticTask_t **ppxIdleTaskTCBBuffer, StackType_t **ppxIdleTaskStackBuffer, uint32_t *pulIdleTaskStackSize);
 
 /* GetTimerTaskMemory prototype (linked to static allocation support) */
-void vApplicationGetTimerTaskMemory( StaticTask_t **ppxTimerTaskTCBBuffer, StackType_t **ppxTimerTaskStackBuffer, uint32_t *pulTimerTaskStackSize );
+void vApplicationGetTimerTaskMemory(StaticTask_t **ppxTimerTaskTCBBuffer, StackType_t **ppxTimerTaskStackBuffer, uint32_t *pulTimerTaskStackSize);
 
 /* USER CODE BEGIN GET_IDLE_TASK_MEMORY */
 static StaticTask_t xIdleTaskTCBBuffer;
@@ -95,11 +97,12 @@ void vApplicationGetTimerTaskMemory(StaticTask_t **ppxTimerTaskTCBBuffer, StackT
 /* USER CODE END GET_TIMER_TASK_MEMORY */
 
 /**
-  * @brief  FreeRTOS initialization
-  * @param  None
-  * @retval None
-  */
-void MX_FREERTOS_Init(void) {
+ * @brief  FreeRTOS initialization
+ * @param  None
+ * @retval None
+ */
+void MX_FREERTOS_Init(void)
+{
   /* USER CODE BEGIN Init */
 
   /* USER CODE END Init */
@@ -122,49 +125,43 @@ void MX_FREERTOS_Init(void) {
 
   /* Create the thread(s) */
   /* definition and creation of Uart_Task */
-  osThreadDef(Uart_Task, Uart_TxTask, osPriorityNormal, 0, 256);
+  osThreadDef(Uart_Task, Report_Task, osPriorityNormal, 0, 256);
   Uart_TaskHandle = osThreadCreate(osThread(Uart_Task), NULL);
 
   /* definition and creation of Run_Task */
   osThreadDef(Run_Task, Led_Task, osPriorityLow, 0, 128);
   Run_TaskHandle = osThreadCreate(osThread(Run_Task), NULL);
 
+  /* definition and creation of Data_HandleTask */
+  osThreadDef(Data_HandleTask, Wave_HandleTask, osPriorityAboveNormal, 0, 1024);
+  Data_HandleTaskHandle = osThreadCreate(osThread(Data_HandleTask), NULL);
+
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
-
 }
 
-/* USER CODE BEGIN Header_Uart_TxTask */
+/* USER CODE BEGIN Header_Report_Task */
 /**
  * @brief  Function implementing the Uart_Task thread.
  * @param  argument: Not used
  * @retval None
  */
-/* USER CODE END Header_Uart_TxTask */
-void Uart_TxTask(void const * argument)
+/* USER CODE END Header_Report_Task */
+void Report_Task(void const *argument)
 {
-  /* USER CODE BEGIN Uart_TxTask */
+  /* USER CODE BEGIN Report_Task */
   /* Infinite loop */
   for (;;)
   {
-    /*接收完成标志*/
-    // if (Dma_Rx.recv_end_flag)
-    // {
-    //   HAL_UART_Transmit_DMA(&huart1, Dma_Rx.rx_buffer, Dma_Rx.rx_len);
-    //   /*清除计数*/
-    //   Dma_Rx.rx_len = 0;
-    //   /*清除接收结束标志 */
-    //   Dma_Rx.recv_end_flag = false;
-
-    //   memset(Dma_Rx.rx_buffer, 0, Dma_Rx.rx_len);
-    //   /*重新打开DMA接收*/
-    //   HAL_UART_Receive_DMA(&huart1, Dma_Rx.rx_buffer, BUFFER_SIZE);
-    // }
-    Wave_Handle();
-    osDelay(1);
+    /*Wait for the notification of Wave_HandleTask to enter blocking*/
+    ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+#if(!USING_DEBUG)
+    Report_TimeConsum();
+#endif
+    // osDelay(1);
   }
-  /* USER CODE END Uart_TxTask */
+  /* USER CODE END Report_Task */
 }
 
 /* USER CODE BEGIN Header_Led_Task */
@@ -174,7 +171,7 @@ void Uart_TxTask(void const * argument)
  * @retval None
  */
 /* USER CODE END Header_Led_Task */
-void Led_Task(void const * argument)
+void Led_Task(void const *argument)
 {
   /* USER CODE BEGIN Led_Task */
   /* Infinite loop */
@@ -185,6 +182,32 @@ void Led_Task(void const * argument)
     osDelay(500);
   }
   /* USER CODE END Led_Task */
+}
+
+/* USER CODE BEGIN Header_Wave_HandleTask */
+/**
+ * @brief Function implementing the Data_HandleTask thread.
+ * @param argument: Not used
+ * @retval None
+ */
+/* USER CODE END Header_Wave_HandleTask */
+void Wave_HandleTask(void const *argument)
+{
+  /* USER CODE BEGIN Wave_HandleTask */
+  /* Infinite loop */
+  for (;;)
+  {
+    if (Wave_Handle())
+    {
+      /*If you send a notification without a notification value
+      and do not retain the original notification value of the
+      received task, the notification value of the received task
+      will be increased by one.*/
+      xTaskNotifyGive(Uart_TaskHandle);
+    }
+    osDelay(1);
+  }
+  /* USER CODE END Wave_HandleTask */
 }
 
 /* Private application code --------------------------------------------------*/

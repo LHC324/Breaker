@@ -3,6 +3,7 @@
         "tim.h": "c",
         "main.h": "c",
         "dwin.h": "c",
-        "string": "c"
+        "string": "c",
+        "usart.h": "c"
     }
 }

@@ -136,7 +136,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
     hdma_usart1_rx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
     hdma_usart1_rx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
     hdma_usart1_rx.Init.Mode = DMA_NORMAL;
-    hdma_usart1_rx.Init.Priority = DMA_PRIORITY_VERY_HIGH;
+    hdma_usart1_rx.Init.Priority = DMA_PRIORITY_MEDIUM;
     hdma_usart1_rx.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
     if (HAL_DMA_Init(&hdma_usart1_rx) != HAL_OK)
     {
@@ -154,11 +154,8 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
     hdma_usart1_tx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
     hdma_usart1_tx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
     hdma_usart1_tx.Init.Mode = DMA_NORMAL;
-    hdma_usart1_tx.Init.Priority = DMA_PRIORITY_VERY_HIGH;
-    hdma_usart1_tx.Init.FIFOMode = DMA_FIFOMODE_ENABLE;
-    hdma_usart1_tx.Init.FIFOThreshold = DMA_FIFO_THRESHOLD_FULL;
-    hdma_usart1_tx.Init.MemBurst = DMA_MBURST_INC16;
-    hdma_usart1_tx.Init.PeriphBurst = DMA_PBURST_INC16;
+    hdma_usart1_tx.Init.Priority = DMA_PRIORITY_MEDIUM;
+    hdma_usart1_tx.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
     if (HAL_DMA_Init(&hdma_usart1_tx) != HAL_OK)
     {
       Error_Handler();
@@ -167,7 +164,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
     __HAL_LINKDMA(uartHandle,hdmatx,hdma_usart1_tx);
 
     /* USART1 interrupt Init */
-    HAL_NVIC_SetPriority(USART1_IRQn, 14, 0);
+    HAL_NVIC_SetPriority(USART1_IRQn, 5, 0);
     HAL_NVIC_EnableIRQ(USART1_IRQn);
   /* USER CODE BEGIN USART1_MspInit 1 */
 
@@ -232,7 +229,7 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
   // Dma_Rx.recv_end_flag = true;
   // /* 再次启动 DMA */
   // HAL_UARTEx_ReceiveToIdle_DMA(&huart1, Dma_Rx.rx_buffer, BUFFER_SIZE);
-  // /*关闭DMA半传输中�??????*/
+  // /*关闭DMA半传输中�???????*/
   // // __HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT);
 #endif
 }
@@ -250,20 +247,19 @@ void DmaPrintf(const char *format, ...)
   va_start(args, format);
   len = vsnprintf((char *)Dma_Rx.rx_buffer, BUFFER_SIZE + 1, format, args);
   va_end(args);
-
-  // HAL_UART_Transmit(&huart1 , (uint8_t *)&Dma_Rx.rx_buffer, len, 0xFFFF);
-
-  if (HAL_UART_Transmit_DMA(&huart1, Dma_Rx.rx_buffer, len) != HAL_OK)
+  /*For printf, the amount of single data transfer is small, so DMA is not necessary*/
+  if (HAL_UART_Transmit(&huart1 , (uint8_t *)&Dma_Rx.rx_buffer, len, 0xFFFF))
+  // if (HAL_UART_Transmit_DMA(&huart1, Dma_Rx.rx_buffer, len) != HAL_OK)
   {
     Error_Handler();
   }
   /*Wait for the last data transmission of DMA*/
-  while (__HAL_UART_GET_FLAG(&huart1, UART_FLAG_TC) == RESET)
-  {
-#if (USING_RTOS == 1)
-    osDelay(1);
-#endif
-  } /*Solve DMA data loss*/
+//   while (__HAL_UART_GET_FLAG(&huart1, UART_FLAG_TC) == RESET)
+//   {
+// #if (USING_RTOS == 1)
+//     osDelay(1);
+// #endif
+//   } /*Solve DMA data loss*/
 }
 #endif
 /* USER CODE END 1 */

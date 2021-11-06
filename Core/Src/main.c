@@ -32,8 +32,8 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-#if(USING_DEBUG)
-  uint32_t g_Value = 0;
+#if (USING_DEBUG)
+uint32_t g_Value = 0;
 #endif
 /* USER CODE END PTD */
 
@@ -67,9 +67,9 @@ void MX_FREERTOS_Init(void);
 /* USER CODE END 0 */
 
 /**
-  * @brief  The application entry point.
-  * @retval int
-  */
+ * @brief  The application entry point.
+ * @retval int
+ */
 int main(void)
 {
   /* USER CODE BEGIN 1 */
@@ -147,25 +147,27 @@ int main(void)
 }
 
 /**
-  * @brief System Clock Configuration
-  * @retval None
-  */
+ * @brief System Clock Configuration
+ * @retval None
+ */
 void SystemClock_Config(void)
 {
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
 
   /** Supply configuration update enable
-  */
+   */
   HAL_PWREx_ConfigSupply(PWR_LDO_SUPPLY);
   /** Configure the main internal regulator output voltage
-  */
+   */
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE0);
 
-  while(!__HAL_PWR_GET_FLAG(PWR_FLAG_VOSRDY)) {}
+  while (!__HAL_PWR_GET_FLAG(PWR_FLAG_VOSRDY))
+  {
+  }
   /** Initializes the RCC Oscillators according to the specified parameters
-  * in the RCC_OscInitTypeDef structure.
-  */
+   * in the RCC_OscInitTypeDef structure.
+   */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
   RCC_OscInitStruct.HSIState = RCC_HSI_DIV1;
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
@@ -184,10 +186,8 @@ void SystemClock_Config(void)
     Error_Handler();
   }
   /** Initializes the CPU, AHB and APB buses clocks
-  */
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
-                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2
-                              |RCC_CLOCKTYPE_D3PCLK1|RCC_CLOCKTYPE_D1PCLK1;
+   */
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2 | RCC_CLOCKTYPE_D3PCLK1 | RCC_CLOCKTYPE_D1PCLK1;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.SYSCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_HCLK_DIV2;
@@ -208,25 +208,43 @@ void SystemClock_Config(void)
  * @param  list Pointer to the first node of the current linked list
  * @retval None
  */
-static void Get_NodeTimes(Dwin_List *list)
-{
-  /*Counter overflow, time greater than 6.5536ms*/
-  if (list->dcb_data[list->current_node].overflows_num > OVERFLOW_COUNTS(TIMES, FREQ))
-  {
-    list->dcb_data[list->current_node].consum_times = (float)((CVALUE - list->dcb_data[list->current_node].first_value) +
-                                                              (list->dcb_data[list->current_node].overflows_num - (OVERFLOW_COUNTS(TIMES, FREQ) + 1U)) * CVALUE +
-                                                              list->dcb_data[list->current_node].buf[list->dcb_data[list->current_node].data_len]) /
-                                                      ACCU();
+// static void Get_NodeTimes(Dwin_List *list)
+// {
+//   /*Counter overflow, time greater than 6.5536ms*/
+//   if (list->dcb_data[list->current_node].overflows_num > OVERFLOW_COUNTS(TIMES, FREQ))
+//   {
+//     list->dcb_data[list->current_node].consum_times = (float)((CVALUE - list->dcb_data[list->current_node].first_value) +
+//                                                               (list->dcb_data[list->current_node].overflows_num - (OVERFLOW_COUNTS(TIMES, FREQ) + 1U)) * CVALUE +
+//                                                               list->dcb_data[list->current_node].buf[list->dcb_data[list->current_node].data_len]) /
+//                                                       ACCU();
+//   }
+//   else /*The counter does not overflow and the time is within 6.5536ms*/
+//   {
+//     /*Calculate the settling time,last value - first value*/
+//     list->dcb_data[list->current_node].consum_times =
+//         (float)(list->dcb_data[list->current_node].buf[list->dcb_data[list->current_node].data_len] -
+//                 list->dcb_data[list->current_node].first_value) /
+//         ACCU();
+//   }
+// }
+
+#define GET_NODETIMES(list)                                                                                                                                         \
+  {                                                                                                                                                                 \
+    if (list->dcb_data[list->current_node].overflows_num > OVERFLOW_COUNTS(TIMES, FREQ))                                                                            \
+    {                                                                                                                                                               \
+      list->dcb_data[list->current_node].consum_times = (float)((CVALUE - list->dcb_data[list->current_node].first_value) +                                         \
+                                                                (list->dcb_data[list->current_node].overflows_num - (OVERFLOW_COUNTS(TIMES, FREQ) + 1U)) * CVALUE + \
+                                                                list->dcb_data[list->current_node].buf[list->dcb_data[list->current_node].data_len]) /              \
+                                                        ACCU();                                                                                                     \
+    }                                                                                                                                                               \
+    else                                                                                                                                                            \
+    {                                                                                                                                                               \
+      list->dcb_data[list->current_node].consum_times =                                                                                                             \
+          (float)(list->dcb_data[list->current_node].buf[list->dcb_data[list->current_node].data_len] -                                                             \
+                  list->dcb_data[list->current_node].first_value) /                                                                                                 \
+          ACCU();                                                                                                                                                   \
+    }                                                                                                                                                               \
   }
-  else /*The counter does not overflow and the time is within 6.5536ms*/
-  {
-    /*Calculate the settling time,last value - first value*/
-    list->dcb_data[list->current_node].consum_times =
-        (float)(list->dcb_data[list->current_node].buf[list->dcb_data[list->current_node].data_len] -
-                list->dcb_data[list->current_node].first_value) /
-        ACCU();
-  }
-}
 
 /**
  * @brief  Overflow processing
@@ -239,15 +257,16 @@ static __inline void Overflow_Handle(Dwin_List *list)
   {
     /*counter Number of overflows*/
     list->dcb_data[list->current_node].overflows_num++;
-    /*The counter overflows for the first time and calculates the offset time*/
-    // if (list->dcb_data[list->current_node].overflows_num == 1U)
-    // {
-    //   /*Here, you only need a simple cumulative value and do not need to calculate it*/
-    //   list->dcb_data[list->current_node].consum_times =
-    //       (CVALUE - list->dcb_data[list->current_node].first_value);
-    // }
   }
 }
+
+#define OVERFLOW_HANDLE(list)                           \
+  {                                                     \
+    if (list.dcb_data[list.current_node].timer_synflag) \
+    {                                                   \
+      list.dcb_data[list.current_node].overflows_num++; \
+    }                                                   \
+  }
 
 /**
  * @brief  timeout handler
@@ -268,41 +287,20 @@ static __inline void Timeout_Handle(Dwin_List *list)
       /*Reset timer synchronization flag*/
       list->dcb_data[list->current_node].timer_synflag = false;
       /*Calculate the stabilization time on / off*/
-      Get_NodeTimes(&List_Map[list->id]);
-#if(USING_DEBUG)
+      // Get_NodeTimes(list);
+      GET_NODETIMES(list);
+#if (USING_DEBUG)
       g_Value = list->dcb_data[list->current_node].overflows_num;
 #endif
       /*Clear counter overflow times*/
       list->dcb_data[list->current_node].overflows_num = 0;
       /*Clear first recorded value*/
       list->dcb_data[list->current_node].first_value = 0;
+      /*Record currently captured nodes*/
+      list->complete_node = list->current_node;
       /*Point to the next node*/
       list->current_node++;
       list->current_node %= LISTNODE_SIZE;
-      /*close timer*/
-      // switch (list->id)
-      // {
-      // case 0:
-      //   HAL_TIM_Base_Stop_IT(&htim6);
-      //   break;
-      // case 1:
-      //   HAL_TIM_Base_Stop_IT(&htim7);
-      //   break;
-      // case 2:
-      //   HAL_TIM_Base_Stop_IT(&htim13);
-      //   break;
-      // case 3:
-      //   HAL_TIM_Base_Stop_IT(&htim14);
-      //   break;
-      // case 4:
-      //   HAL_TIM_Base_Stop_IT(&htim16);
-      //   break;
-      // case 5:
-      //   HAL_TIM_Base_Stop_IT(&htim17);
-      //   break;
-      // default:
-      //   break;
-      // }
     }
   }
 }
@@ -317,7 +315,7 @@ void MPU_Config(void)
   /* Disables the MPU */
   HAL_MPU_Disable();
   /** Initializes and configures the Region and the memory to be protected
-  */
+   */
   MPU_InitStruct.Enable = MPU_REGION_ENABLE;
   MPU_InitStruct.Number = MPU_REGION_NUMBER0;
   MPU_InitStruct.BaseAddress = 0x20000000;
@@ -332,7 +330,7 @@ void MPU_Config(void)
 
   HAL_MPU_ConfigRegion(&MPU_InitStruct);
   /** Initializes and configures the Region and the memory to be protected
-  */
+   */
   MPU_InitStruct.Number = MPU_REGION_NUMBER1;
   MPU_InitStruct.BaseAddress = 0x24000000;
   MPU_InitStruct.Size = MPU_REGION_SIZE_512KB;
@@ -340,79 +338,57 @@ void MPU_Config(void)
   HAL_MPU_ConfigRegion(&MPU_InitStruct);
   /* Enables the MPU */
   HAL_MPU_Enable(MPU_PRIVILEGED_DEFAULT);
-
 }
 /**
-  * @brief  Period elapsed callback in non blocking mode
-  * @note   This function is called  when TIM2 interrupt took place, inside
-  * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment
-  * a global variable "uwTick" used as application time base.
-  * @param  htim : TIM handle
-  * @retval None
-  */
+ * @brief  Period elapsed callback in non blocking mode
+ * @note   This function is called  when TIM2 interrupt took place, inside
+ * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment
+ * a global variable "uwTick" used as application time base.
+ * @param  htim : TIM handle
+ * @retval None
+ */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
   /* USER CODE BEGIN Callback 0 */
   /*Timer update interrupt (overflow) interrupt processing callback function,
   in HAL_ TIM_ IRQHandler will be called*/
   /* USER CODE END Callback 0 */
-  if (htim->Instance == TIM2) {
+  if (htim->Instance == TIM2)
+  {
     HAL_IncTick();
   }
   /* USER CODE BEGIN Callback 1 */
   /*Overflow interrupt*/
   else if (htim->Instance == TIM3)
   {
-    for(uint8_t i = 0; i < LIST_SIZE - 2U; i++)
+    for (uint8_t i = 0; i < LIST_SIZE - 2U; i++)
     {
       Overflow_Handle(&List_Map[i]);
-      // Overflow_Handle(&List_Map[1]);
-      // Overflow_Handle(&List_Map[2]);
-      // Overflow_Handle(&List_Map[3]);
+      // OVERFLOW_HANDLE(List_Map[i]);
     }
   }
   else if (htim->Instance == TIM4)
   {
-    for(uint8_t i = 4; i < LIST_SIZE; i++)
+    for (uint8_t i = 4; i < LIST_SIZE; i++)
     {
       Overflow_Handle(&List_Map[i]);
-      // Overflow_Handle(&List_Map[5]);
+      // OVERFLOW_HANDLE(List_Map[i]);
     }
   }
   else if (htim->Instance == TIM6)
   {
-    for(uint8_t i = 0; i < LIST_SIZE; i++)
+    for (uint8_t i = 0; i < LIST_SIZE; i++)
     {
       Timeout_Handle(&List_Map[i]);
     }
   }
-  // else if (htim->Instance == TIM7)
-  // {
-  //   Timeout_Handle(&List_Map[1]);
-  // }
-  // else if (htim->Instance == TIM13)
-  // {
-  //   Timeout_Handle(&List_Map[2]);
-  // }
-  // else if (htim->Instance == TIM14)
-  // {
-  //   Timeout_Handle(&List_Map[3]);
-  // }
-  // else if (htim->Instance == TIM16)
-  // {
-  //   Timeout_Handle(&List_Map[4]);
-  // }
-  // else if (htim->Instance == TIM17)
-  // {
-  //   Timeout_Handle(&List_Map[5]);
-  // }
   /* USER CODE END Callback 1 */
 }
 
 /**
-  * @brief  This function is executed in case of error occurrence.
-  * @retval None
-  */
+ * @brief  This function is executed in case of error occurrence.
+ * @retval None
+ */
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
@@ -424,14 +400,14 @@ void Error_Handler(void)
   /* USER CODE END Error_Handler_Debug */
 }
 
-#ifdef  USE_FULL_ASSERT
+#ifdef USE_FULL_ASSERT
 /**
-  * @brief  Reports the name of the source file and the source line number
-  *         where the assert_param error has occurred.
-  * @param  file: pointer to the source file name
-  * @param  line: assert_param error line source number
-  * @retval None
-  */
+ * @brief  Reports the name of the source file and the source line number
+ *         where the assert_param error has occurred.
+ * @param  file: pointer to the source file name
+ * @param  line: assert_param error line source number
+ * @retval None
+ */
 void assert_failed(uint8_t *file, uint32_t line)
 {
   /* USER CODE BEGIN 6 */

@@ -384,10 +384,6 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) /*Execute when capture 
       break;
     }
   }
-  /*Set initial value of timer*/
-  // __HAL_TIM_SET_COUNTER(&htim6, 0U);
-  // /*Shutdown timer interrupt*/
-  // __HAL_TIM_ENABLE_IT(&htim6, TIM_IT_UPDATE);
 }
 
 /**
@@ -417,47 +413,11 @@ static __inline void Save_CounterValue(Dwin_List *list)
       list->current_edge = Falling_Edge;
     }
   }
-  // list->current_node++;
 
   if (!list->dcb_data[list->current_node].first_flag)
   {
-    /*Set timer synchronization flag*/
+    // /*Set timer synchronization flag*/
     list->dcb_data[list->current_node].timer_synflag = true;
-    // switch (list->id)
-    // {
-    // case 0:
-    //   __HAL_TIM_SET_COUNTER(&htim6, 0U);
-    //   /*open timer6*/
-    //   HAL_TIM_Base_Start_IT(&htim6);
-    //   break;
-    // case 1:
-    //   __HAL_TIM_SET_COUNTER(&htim7, 0U);
-    //   /*open timer6*/
-    //   HAL_TIM_Base_Start_IT(&htim7);
-    //   break;
-    // case 2:
-    //   __HAL_TIM_SET_COUNTER(&htim13, 0U);
-    //   /*open timer6*/
-    //   HAL_TIM_Base_Start_IT(&htim13);
-    //   break;
-    // case 3:
-    //   __HAL_TIM_SET_COUNTER(&htim14, 0U);
-    //   /*open timer6*/
-    //   HAL_TIM_Base_Start_IT(&htim14);
-    //   break;
-    // case 4:
-    //   __HAL_TIM_SET_COUNTER(&htim16, 0U);
-    //   /*open timer6*/
-    //   HAL_TIM_Base_Start_IT(&htim16);
-    //   break;
-    // case 5:
-    //   __HAL_TIM_SET_COUNTER(&htim17, 0U);
-    //   /*open timer6*/
-    //   HAL_TIM_Base_Start_IT(&htim17);
-    //   break;
-    // default:
-    //   break;
-    // }
     /*Set first detection flag*/
     list->dcb_data[list->current_node].first_flag = true;
     /*Clear counter overflow times*/
