@@ -398,14 +398,18 @@ static __inline void Save_CounterValue(Dwin_List *list)
   /*Stores the currently captured counter value*/
   if (list->dcb_data[list->current_node].data_flag == false)
   {
+    /*Get rising edge time point*/
+    list->dcb_data[list->current_node].buf[list->dcb_data[list->current_node].data_len++] = HAL_TIM_ReadCapturedValue(&htim3, TIM_CHANNEL_1);
+    /*Buffer circular storage*/
+    list->dcb_data[list->current_node].data_len %= LIST_BUF_SIZE;
     if (list->current_edge == Falling_Edge)
     {
       /*High level is currently captured*/
       list->current_edge = Rising_Edge;
-      /*Get rising edge time point*/
-      list->dcb_data[list->current_node].buf[list->dcb_data[list->current_node].data_len++] = HAL_TIM_ReadCapturedValue(&htim3, TIM_CHANNEL_1);
-      /*Buffer circular storage*/
-      list->dcb_data[list->current_node].data_len %= LIST_BUF_SIZE;
+      // /*Get rising edge time point*/
+      // list->dcb_data[list->current_node].buf[list->dcb_data[list->current_node].data_len++] = HAL_TIM_ReadCapturedValue(&htim3, TIM_CHANNEL_1);
+      // /*Buffer circular storage*/
+      // list->dcb_data[list->current_node].data_len %= LIST_BUF_SIZE;
     }
     else
     {

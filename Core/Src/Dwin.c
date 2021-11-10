@@ -14,6 +14,65 @@ Dwin_T g_Dwin = {0};
 DwinMap g_map[100];
 uint8_t mapindex = 0;
 
+#if (USING_CRC_TABLE)
+/*Devin screen CRC checklist*/
+uint8_t CRCTABH[256] = {
+	0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x01, 0xC0,
+	0x80, 0x41, 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41,
+	0x00, 0xC1, 0x81, 0x40, 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0,
+	0x80, 0x41, 0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1, 0x81, 0x40,
+	0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1,
+	0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x01, 0xC0, 0x80, 0x41,
+	0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1,
+	0x81, 0x40, 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41,
+	0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x01, 0xC0,
+	0x80, 0x41, 0x00, 0xC1, 0x81, 0x40, 0x00, 0xC1, 0x81, 0x40,
+	0x01, 0xC0, 0x80, 0x41, 0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1,
+	0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1, 0x81, 0x40,
+	0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x01, 0xC0,
+	0x80, 0x41, 0x00, 0xC1, 0x81, 0x40, 0x00, 0xC1, 0x81, 0x40,
+	0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0,
+	0x80, 0x41, 0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1, 0x81, 0x40,
+	0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x01, 0xC0,
+	0x80, 0x41, 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41,
+	0x00, 0xC1, 0x81, 0x40, 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0,
+	0x80, 0x41, 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41,
+	0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0,
+	0x80, 0x41, 0x00, 0xC1, 0x81, 0x40, 0x00, 0xC1, 0x81, 0x40,
+	0x01, 0xC0, 0x80, 0x41, 0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1,
+	0x81, 0x40, 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41,
+	0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x01, 0xC0,
+	0x80, 0x41, 0x00, 0xC1, 0x81, 0x40};
+
+uint8_t CRCTABL[256] = {
+	0x00, 0xC0, 0xC1, 0x01, 0xC3, 0x03, 0x02, 0xC2, 0xC6, 0x06,
+	0x07, 0xC7, 0x05, 0xC5, 0xC4, 0x04, 0xCC, 0x0C, 0x0D, 0xCD,
+	0x0F, 0xCF, 0xCE, 0x0E, 0x0A, 0xCA, 0xCB, 0x0B, 0xC9, 0x09,
+	0x08, 0xC8, 0xD8, 0x18, 0x19, 0xD9, 0x1B, 0xDB, 0xDA, 0x1A,
+	0x1E, 0xDE, 0xDF, 0x1F, 0xDD, 0x1D, 0x1C, 0xDC, 0x14, 0xD4,
+	0xD5, 0x15, 0xD7, 0x17, 0x16, 0xD6, 0xD2, 0x12, 0x13, 0xD3,
+	0x11, 0xD1, 0xD0, 0x10, 0xF0, 0x30, 0x31, 0xF1, 0x33, 0xF3,
+	0xF2, 0x32, 0x36, 0xF6, 0xF7, 0x37, 0xF5, 0x35, 0x34, 0xF4,
+	0x3C, 0xFC, 0xFD, 0x3D, 0xFF, 0x3F, 0x3E, 0xFE, 0xFA, 0x3A,
+	0x3B, 0xFB, 0x39, 0xF9, 0xF8, 0x38, 0x28, 0xE8, 0xE9, 0x29,
+	0xEB, 0x2B, 0x2A, 0xEA, 0xEE, 0x2E, 0x2F, 0xEF, 0x2D, 0xED,
+	0xEC, 0x2C, 0xE4, 0x24, 0x25, 0xE5, 0x27, 0xE7, 0xE6, 0x26,
+	0x22, 0xE2, 0xE3, 0x23, 0xE1, 0x21, 0x20, 0xE0, 0xA0, 0x60,
+	0x61, 0xA1, 0x63, 0xA3, 0xA2, 0x62, 0x66, 0xA6, 0xA7, 0x67,
+	0xA5, 0x65, 0x64, 0xA4, 0x6C, 0xAC, 0xAD, 0x6D, 0xAF, 0x6F,
+	0x6E, 0xAE, 0xAA, 0x6A, 0x6B, 0xAB, 0x69, 0xA9, 0xA8, 0x68,
+	0x78, 0xB8, 0xB9, 0x79, 0xBB, 0x7B, 0x7A, 0xBA, 0xBE, 0x7E,
+	0x7F, 0xBF, 0x7D, 0xBD, 0xBC, 0x7C, 0xB4, 0x74, 0x75, 0xB5,
+	0x77, 0xB7, 0xB6, 0x76, 0x72, 0xB2, 0xB3, 0x73, 0xB1, 0x71,
+	0x70, 0xB0, 0x50, 0x90, 0x91, 0x51, 0x93, 0x53, 0x52, 0x92,
+	0x96, 0x56, 0x57, 0x97, 0x55, 0x95, 0x94, 0x54, 0x9C, 0x5C,
+	0x5D, 0x9D, 0x5F, 0x9F, 0x9E, 0x5E, 0x5A, 0x9A, 0x9B, 0x5B,
+	0x99, 0x59, 0x58, 0x98, 0x88, 0x48, 0x49, 0x89, 0x4B, 0x8B,
+	0x8A, 0x4A, 0x4E, 0x8E, 0x8F, 0x4F, 0x8D, 0x4D, 0x4C, 0x8C,
+	0x44, 0x84, 0x85, 0x45, 0x87, 0x47, 0x46, 0x86, 0x82, 0x42,
+	0x43, 0x83, 0x41, 0x81, 0x80, 0x40};
+#endif
+
 /*定义6条链表*/
 // Dwin_List DLink0, DLink1, DLink2, DLink3, DLink4, DLink5;
 
@@ -106,6 +165,8 @@ bool Wave_Handle(void)
 			if (!(List_Map[i].complete_node % 2U))
 			{ /*Even number of captures*/
 				Report.current_type = Even;
+				/*Clear the waveform of full screen even number of times*/
+				Dwin_Curve_Clear(List_Map[i].id);
 			}
 			else
 			{ /*odd number of captures*/
@@ -196,8 +257,10 @@ void Init_List(Dwin_List *list, uint8_t channel_id)
 void Report_TimeConsum(void)
 {
 	uint16_t addr = 0;
+	/*Current times*/
+	static uint8_t current_counts;
 
-	/*当前采集次数为偶数次，上报屏幕左边*/
+	/*The current collection times are even, which is on the left side of the report screen*/
 	if (Report.current_type == Even)
 	{
 		addr = TIMECOUNSUM_ADDR;
@@ -214,50 +277,62 @@ void Report_TimeConsum(void)
 		Dwin_Write(addr + i * 8U, (uint8_t *)&Report.handle_buf[i], sizeof(float));
 		/*The serial port screen is too slow and requires a certain delay*/
 		osDelay(1);
+		/*Fill the history area with data*/
+		Dwin_Write(RECORDS_ADDR + i * sizeof(float) * 10U + current_counts * 4U, (uint8_t *)&Report.handle_buf[i], sizeof(float));
+	}
+	/*Historical data record plus one*/
+	if (current_counts++ == LISTNODE_SIZE)
+	{
+		/*The serial port screen is too slow and requires a certain delay*/
+		osDelay(1);
+		current_counts = 0;
+		/*Switch to prompt page*/
+		Dwin_PageChange(0x0B);
 	}
 	/*When there is no data, empty the buffer*/
 	memset((uint8_t *)Report.handle_buf, 0, sizeof(Report.handle_buf));
 }
 
-/*
-*********************************************************************************************************
-*	函 数 名:  DWIN_SendWithCRC
-*	功能说明: 带CRC的发送从站数据
-*	形    参: 无
-*	返 回 值: 无
-*********************************************************************************************************
-*/
-void DWIN_SendWithCRC(uint8_t *_pBuf, uint8_t _ucLen)
+/**
+ * @brief  带CRC的发送数据帧
+ * @param  _pBuf 数据缓冲区指针
+ * @param  _ucLen 数据长度
+ * @retval None
+ */
+void Dwin_SendWithCRC(uint8_t *_pBuf, uint16_t _ucLen)
 {
-	uint16_t crc;
-	uint8_t buf[200];
+	uint16_t crc = 0;
+	uint8_t buf[256] = {0};
 
 	memcpy(buf, _pBuf, _ucLen);
-	crc = Get_Crc16(_pBuf, _ucLen, 0xffff);
+	/*The first three bytes do not participate in verification*/
+	crc = Get_Crc16(&_pBuf[3U], _ucLen - 3U, 0xffff);
 	buf[_ucLen++] = crc;
 	buf[_ucLen++] = crc >> 8;
 
-	// HAL_UART_Transmit(&huart1, buf, _ucLen, 0xffff);
+	/* Clean Data Cache to update the content of the SRAM to be used by the DMA */
+	SCB_CleanDCache_by_Addr((uint32_t *)buf, _ucLen);
+	// HAL_UART_Transmit(&huart1, _pBuf, _ucLen, 0x1000);
 	HAL_UART_Transmit_DMA(&huart1, buf, _ucLen);
 	/*等待串口接收完成期间，进行系统调度*/
 	while (__HAL_UART_GET_FLAG(&huart1, UART_FLAG_TC) == RESET)
 	{
-		osDelay(1);
+		osDelay(15);
 	}
 }
 
-/*
-*********************************************************************************************************
-*	函 数 名:  DWIN_Send
-*	功能说明: 发送数据帧
-*	形    参: 无
-*	返 回 值: 无
-*********************************************************************************************************
-*/
-void DWIN_Send(uint8_t *_pBuf, uint8_t _ucLen)
+/**
+ * @brief  发送数据帧(不带CRC)
+ * @param  _pBuf 数据缓冲区指针
+ * @param  _ucLen 数据长度
+ * @retval None
+ */
+void Dwin_Send(uint8_t *_pBuf, uint16_t _ucLen)
 {
 	/*Clear data in DCache*/
-	SCB_CleanDCache();
+	// SCB_CleanDCache();
+	/* Clean Data Cache to update the content of the SRAM to be used by the DMA */
+	SCB_CleanDCache_by_Addr((uint32_t *)_pBuf, _ucLen);
 	// HAL_UART_Transmit(&huart1, _pBuf, _ucLen, 0x1000);
 	HAL_UART_Transmit_DMA(&huart1, _pBuf, _ucLen);
 	/*等待串口接收完成期间，进行系统调度*/
@@ -282,7 +357,7 @@ void DWIN_AnalyzeApp(void)
 	{
 	case READ_CMD:
 	{
-		DWIN_83H();
+		Dwin_83H();
 		break;
 	}
 	default:
@@ -290,22 +365,20 @@ void DWIN_AnalyzeApp(void)
 	}
 }
 
-/*
-*********************************************************************************************************
-*	函 数 名:  DWIN_ReciveNew
-*	功能说明: 接收新数据
-*	形    参: 无
-*	返 回 值: 无
-*********************************************************************************************************
-*/
-void DWIN_ReciveNew(uint8_t *rxBuf, uint16_t Len)
+/**
+ * @brief  接收新数据
+ * @param  rxBuf 数据接收缓冲区
+ * @param  len 数据长度
+ * @retval None
+ */
+void DWIN_ReciveNew(uint8_t *rxBuf, uint16_t len)
 {
 	uint16_t i;
-	for (i = 0; i < Len; i++)
+	for (i = 0; i < len; i++)
 	{
 		g_Dwin.RxBuf[i] = rxBuf[i];
 	}
-	g_Dwin.RxCount = Len;
+	g_Dwin.RxCount = len;
 }
 
 /*
@@ -345,14 +418,6 @@ err_ret:
 	g_Dwin.RxCount = 0;
 }
 
-/*
-*********************************************************************************************************
-*	函 数 名:  DWIN_WRITE
-*	功能说明: 发送写数据
-*	形    参: 无
-*	返 回 值: 无
-*********************************************************************************************************
-*/
 /**
  * @brief  写数据变量到指定地址并显示
  * @param  start_addr 开始地址
@@ -360,13 +425,18 @@ err_ret:
  * @param  length 数据长度
  * @retval None
  */
-void Dwin_Write(uint16_t start_addr, uint8_t *dat, uint8_t length)
+void Dwin_Write(uint16_t start_addr, uint8_t *dat, uint16_t length)
 {
 	uint8_t i = 0;
 	g_Dwin.TxCount = 0;
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x5A;
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0xA5;
+#if (USING_CRC)
+	/*Add two bytes CRC*/
+	g_Dwin.TxBuf[g_Dwin.TxCount++] = length + 3U + 2U;
+#else
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = length + 3U;
+#endif
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = WRITE_CMD;
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = start_addr >> 8U;
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = start_addr;
@@ -375,7 +445,11 @@ void Dwin_Write(uint16_t start_addr, uint8_t *dat, uint8_t length)
 	{
 		g_Dwin.TxBuf[g_Dwin.TxCount++] = dat[i];
 	}
-	DWIN_Send(g_Dwin.TxBuf, g_Dwin.TxCount);
+#if (USING_CRC)
+	Dwin_SendWithCRC(g_Dwin.TxBuf, g_Dwin.TxCount);
+#else
+	Dwin_Send(g_Dwin.TxBuf, g_Dwin.TxCount);
+#endif
 }
 
 /*
@@ -386,18 +460,34 @@ void Dwin_Write(uint16_t start_addr, uint8_t *dat, uint8_t length)
 *	返 回 值: 无
 *********************************************************************************************************
 */
-void DWIN_READ(uint16_t slaveaddr, uint8_t words)
+/**
+ * @brief  读出指定地址指定长度数据
+ * @param  start_addr 开始地址
+ * @param  dat 指向数据的指针
+ * @param  length 数据长度
+ * @retval None
+ */
+void Dwin_Read(uint16_t start_addr, uint16_t words)
 {
 	g_Dwin.TxCount = 0;
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x5A;
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0xA5;
+#if (USING_CRC)
+	/*Add two bytes CRC*/
+	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x04 + 2U;
+#else
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x04;
+#endif
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = READ_CMD;
-	g_Dwin.TxBuf[g_Dwin.TxCount++] = slaveaddr >> 8;
-	g_Dwin.TxBuf[g_Dwin.TxCount++] = slaveaddr;
+	g_Dwin.TxBuf[g_Dwin.TxCount++] = start_addr >> 8;
+	g_Dwin.TxBuf[g_Dwin.TxCount++] = start_addr;
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = words;
 
-	DWIN_Send(g_Dwin.TxBuf, g_Dwin.TxCount);
+#if (USING_CRC)
+	Dwin_SendWithCRC(g_Dwin.TxBuf, g_Dwin.TxCount);
+#else
+	Dwin_Send(g_Dwin.TxBuf, g_Dwin.TxCount);
+#endif
 }
 
 /*
@@ -408,7 +498,7 @@ void DWIN_READ(uint16_t slaveaddr, uint8_t words)
 *	返 回 值: 无
 *********************************************************************************************************
 */
-void DWIN_83H(void)
+void Dwin_83H(void)
 {
 	uint16_t Addr = ((uint16_t)g_Dwin.RxBuf[4] << 8) | g_Dwin.RxBuf[5];
 
@@ -438,12 +528,17 @@ void DWIN_83H(void)
  * @example 5A A5 07 82 00 84 5A 01 00 01   切到第一页
  * @retval None
  */
-void DWIN_PageChange(uint16_t Page)
+void Dwin_PageChange(uint16_t Page)
 {
 	g_Dwin.TxCount = 0;
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x5A;
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0xA5;
+#if (USING_CRC)
+	/*Add two bytes CRC*/
+	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x07 + 2U;
+#else
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x07;
+#endif
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x82;
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x00;
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x84;
@@ -452,7 +547,11 @@ void DWIN_PageChange(uint16_t Page)
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = Page >> 8;
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = Page;
 
-	DWIN_Send(g_Dwin.TxBuf, g_Dwin.TxCount);
+#if (USING_CRC)
+	Dwin_SendWithCRC(g_Dwin.TxBuf, g_Dwin.TxCount);
+#else
+	Dwin_Send(g_Dwin.TxBuf, g_Dwin.TxCount);
+#endif
 }
 
 /*
@@ -464,7 +563,7 @@ void DWIN_PageChange(uint16_t Page)
 *	示例：5A A5 0B 82 00 D4 5A A5 00 04 00EE 008F
 *********************************************************************************************************
 */
-void DWIN_TouchAction(TouchType type, uint16_t Pos_x, uint16_t Pos_y)
+void Dwin_TouchAction(TouchType type, uint16_t Pos_x, uint16_t Pos_y)
 {
 	uint16_t typeval;
 	switch (type)
@@ -485,7 +584,12 @@ void DWIN_TouchAction(TouchType type, uint16_t Pos_x, uint16_t Pos_y)
 	g_Dwin.TxCount = 0;
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x5A;
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0xA5;
+#if (USING_CRC)
+	/*Add two bytes CRC*/
+	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x0B + 2U;
+#else
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x0B;
+#endif
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x82;
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x00;
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = TOUCH_CMD;
@@ -498,7 +602,11 @@ void DWIN_TouchAction(TouchType type, uint16_t Pos_x, uint16_t Pos_y)
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = Pos_y >> 8;
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = Pos_y;
 
-	DWIN_Send(g_Dwin.TxBuf, g_Dwin.TxCount);
+#if (USING_CRC)
+	Dwin_SendWithCRC(g_Dwin.TxBuf, g_Dwin.TxCount);
+#else
+	Dwin_Send(g_Dwin.TxBuf, g_Dwin.TxCount);
+#endif
 }
 
 /**
@@ -508,14 +616,19 @@ void DWIN_TouchAction(TouchType type, uint16_t Pos_x, uint16_t Pos_y)
  * @param  length  数据长度
  * @retval None
  */
-void DWIN_CURVE(uint16_t Channel, uint16_t *dat, uint16_t length)
+void Dwin_Curve(uint16_t Channel, uint16_t *dat, uint16_t length)
 {
 	uint8_t i = 0;
 
 	g_Dwin.TxCount = 0;
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x5A;
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0xA5;
+#if (USING_CRC)
+	/*Add two bytes CRC*/
+	g_Dwin.TxBuf[g_Dwin.TxCount++] = length * 2U + 9U + 2U;
+#else
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = length * 2U + 9U;
+#endif
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x82;
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x03;
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x10;
@@ -535,25 +648,33 @@ void DWIN_CURVE(uint16_t Channel, uint16_t *dat, uint16_t length)
 		g_Dwin.TxBuf[g_Dwin.TxCount++] = dat[i] >> 8;
 		g_Dwin.TxBuf[g_Dwin.TxCount++] = dat[i];
 	}
-	DWIN_Send(g_Dwin.TxBuf, g_Dwin.TxCount);
+#if (USING_CRC)
+	Dwin_SendWithCRC(g_Dwin.TxBuf, g_Dwin.TxCount);
+#else
+	Dwin_Send(g_Dwin.TxBuf, g_Dwin.TxCount);
+#endif
 }
 
-/*
-*********************************************************************************************************
-*	函 数 名:  DWIN_CURVE_MULTICHANNEL
-*	功能说明: 曲线显示多通道，但是只能是多通道一个数据
-*	形    参: 5A A5 13 82 03 10 5A A5 03 00 02 01 F9 07 01 01 F7 07 00 01 00 00
-*	返 回 值: 无
-*********************************************************************************************************
-*/
-void DWIN_CURVE_MULTICHANNEL(uint16_t Channelnum, DwinCurve *dat)
+/**
+ * @brief  曲线显示多通道，但是只能是多通道一个数据
+ * @param  Channelnum 通道数量
+ * @param  *dat    数据源头指针
+ * @example 5A A5 13 82 03 10 5A A5 03 00 02 01 F9 07 01 01 F7 07 00 01 00 00
+ * @retval None
+ */
+void Dwin_Curve_MuitiChannel(uint16_t Channelnum, DwinCurve *dat)
 {
 	uint8_t i = 0;
 
 	g_Dwin.TxCount = 0;
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x5A;
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0xA5;
-	g_Dwin.TxBuf[g_Dwin.TxCount++] = Channelnum * 4 + 7U; //要计算一下
+#if (USING_CRC)
+	/*Add two bytes CRC*/
+	g_Dwin.TxBuf[g_Dwin.TxCount++] = Channelnum * 4 + 7U + 2U;
+#else
+	g_Dwin.TxBuf[g_Dwin.TxCount++] = Channelnum * 4 + 7U;
+#endif
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x82;
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x03;
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x10;
@@ -569,7 +690,11 @@ void DWIN_CURVE_MULTICHANNEL(uint16_t Channelnum, DwinCurve *dat)
 		g_Dwin.TxBuf[g_Dwin.TxCount++] = dat[i].val >> 8;
 		g_Dwin.TxBuf[g_Dwin.TxCount++] = dat[i].val;
 	}
-	DWIN_Send(g_Dwin.TxBuf, g_Dwin.TxCount);
+#if (USING_CRC)
+	Dwin_SendWithCRC(g_Dwin.TxBuf, g_Dwin.TxCount);
+#else
+	Dwin_Send(g_Dwin.TxBuf, g_Dwin.TxCount);
+#endif
 }
 
 /**
@@ -580,19 +705,24 @@ void DWIN_CURVE_MULTICHANNEL(uint16_t Channelnum, DwinCurve *dat)
 void Dwin_Curve_SchMd(Dwin_List *list)
 {
 	uint32_t real_size = list->dcb_data[list->complete_node].data_len;
-	uint16_t temp_size = 0;
+	// uint16_t temp_size = 0;
 	uint32_t v_temp = 0;
 	uint32_t iter = 0;
 
 	/*采集到的数据点超过了半个通道长度*/
-	if (real_size > SINGLE_SIZE)
+	if ((real_size > SINGLE_SIZE) || (real_size < SINGLE_SIZE))
 	{
 		real_size = SINGLE_SIZE;
 	}
 	g_Dwin.TxCount = 0;
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x5A;
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0xA5;
+#if (USING_CRC)
+	/*Add two bytes CRC*/
+	g_Dwin.TxBuf[g_Dwin.TxCount++] = 9U + real_size * 2U + 2U;
+#else
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = 9U + real_size * 2U;
+#endif
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x82;
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x03; /*通道起始地址*/
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x10;
@@ -631,8 +761,8 @@ void Dwin_Curve_SchMd(Dwin_List *list)
 	// 		v_temp = list->dcb_data[list->complete_node].buf[iter + 1] - list->dcb_data[list->complete_node].buf[iter];
 	// 	}
 	// 	/*Quantify proportionally*/
-	// 	(v_temp <= 200U) ? (temp_size = 4U) : ((v_temp <= 2000U) ? (temp_size = 6U) : 
-	// 	((v_temp <= 20000U) ? (temp_size = 8U) : ((v_temp <= 40000U) ? (temp_size = 10U) : 
+	// 	(v_temp <= 200U) ? (temp_size = 4U) : ((v_temp <= 2000U) ? (temp_size = 6U) :
+	// 	((v_temp <= 20000U) ? (temp_size = 8U) : ((v_temp <= 40000U) ? (temp_size = 10U) :
 	// 	(temp_size = 12U))));
 
 	// 	if (temp_size * 2U > real_size)
@@ -662,52 +792,60 @@ void Dwin_Curve_SchMd(Dwin_List *list)
 	// 		iter++;
 	// }
 
-	real_size *= 2U;
+	/*Get the effective data length after removing the frame header and end in the data frame*/
+	real_size = real_size * 2U - FIXED_SIZE;
+	if (list->current_edge == Falling_Edge)
+	{
+		GARTHER_FRAME(0x0A);
+	}
+	else
+	{
+		GARTHER_FRAME(0x5A);
+	}
+
 	while (1)
 	{
 		/*16bit counter overflow*/
-		// if (list->dcb_data[list->complete_node].buf[iter + 1] < list->dcb_data[list->complete_node].buf[iter])
-		// {
-		// 	v_temp = (CVALUE - list->dcb_data[list->complete_node].buf[iter] + list->dcb_data[list->complete_node].buf[iter + 1]) -
-		// 			 list->dcb_data[list->complete_node].buf[iter];
-		// }
-		// else
-		// {
-		// 	v_temp = list->dcb_data[list->complete_node].buf[iter + 1] - list->dcb_data[list->complete_node].buf[iter];
-		// }
-		v_temp = list->dcb_data[list->complete_node].buf[iter];
-		/*Quantify proportionally*/
-		(v_temp <= 3200U) ? (temp_size = 1U) : ((v_temp <= 6400U) ? (temp_size = 2U) : 
-		((v_temp <= 9600U) ? (temp_size = 3U) : ((v_temp <= 12800U) ? (temp_size = 4U) : 
-		((v_temp <= 16000U) ? (temp_size = 5U) : ((v_temp <= 19200U) ? (temp_size = 6U) :
-		((v_temp <= 22400U) ? (temp_size = 7U) : ((v_temp <= 25600U) ? (temp_size = 8U) :
-		((v_temp <= 28800U) ? (temp_size = 9U) : ((v_temp <= 32000U) ? (temp_size = 10U) : 
-		((v_temp <= 35200U) ? (temp_size = 11U) : ((v_temp <= 38400U) ? (temp_size = 12U) :
-		((v_temp <= 41600U) ? (temp_size = 13U) : ((v_temp <= 44800U) ? (temp_size = 14U) :
-		((v_temp <= 48000U) ? (temp_size = 15U) : ((v_temp <= 51200U) ? (temp_size = 16U) :
-		((v_temp <= 54400U) ? (temp_size = 17U) : ((v_temp <= 57600U) ? (temp_size = 18U) :
-		((v_temp <= 60800U) ? (temp_size = 19U) : ((v_temp <= 64000U) ? (temp_size = 20U) :
-		0U)))))))))))))))))));
-
-		if (temp_size * 2U > real_size)
+		if (list->dcb_data[list->complete_node].buf[iter + 1] < list->dcb_data[list->complete_node].buf[iter])
 		{
-			for (uint16_t i = 0; i < real_size; i++)
+			v_temp = (CVALUE - list->dcb_data[list->complete_node].buf[iter] + list->dcb_data[list->complete_node].buf[iter + 1]) -
+					 list->dcb_data[list->complete_node].buf[iter];
+		}
+		else
+		{
+			v_temp = list->dcb_data[list->complete_node].buf[iter + 1] - list->dcb_data[list->complete_node].buf[iter];
+		}
+		/*Quantify proportionally*/
+		v_temp /= RATIO();
+
+		if (real_size <= FIXED_SIZE)
+		{
+			if (list->current_edge == Falling_Edge)
 			{
-				g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x00;
+				GARTHER_FRAME(0x5A);
+			}
+			else
+			{
+				GARTHER_FRAME(0x0A);
 			}
 			break;
 		}
 		else
 		{
 			g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x00;
-			g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x0A + 0x04 * temp_size;
+			g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x0F + v_temp % 75U;
 			real_size -= 2U;
 		}
 		iter++;
+		iter %= list->dcb_data[list->complete_node].data_len;
 	}
 
 	// DmaPrintf("count %d\r\n", g_Dwin.TxCount);
-	DWIN_Send(g_Dwin.TxBuf, g_Dwin.TxCount);
+#if (USING_CRC)
+	Dwin_SendWithCRC(g_Dwin.TxBuf, g_Dwin.TxCount);
+#else
+	Dwin_Send(g_Dwin.TxBuf, g_Dwin.TxCount);
+#endif
 }
 
 /**
@@ -715,19 +853,28 @@ void Dwin_Curve_SchMd(Dwin_List *list)
  * @param  Channel 通道号
  * @retval None
  */
-void DWIN_CURVE_CLEAR(uint16_t Channel)
+void Dwin_Curve_Clear(uint16_t Channel)
 {
 	g_Dwin.TxCount = 0;
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x5A;
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0xA5;
+#if (USING_CRC)
+	/*Add two bytes CRC*/
+	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x05 + 2U;
+#else
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x05;
+#endif
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x82;
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x03;
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x01 + Channel * 2U;
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x00;
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x00;
 
-	DWIN_Send(g_Dwin.TxBuf, g_Dwin.TxCount);
+#if (USING_CRC)
+	Dwin_SendWithCRC(g_Dwin.TxBuf, g_Dwin.TxCount);
+#else
+	Dwin_Send(g_Dwin.TxBuf, g_Dwin.TxCount);
+#endif
 }
 
 /*
@@ -752,9 +899,36 @@ void DWIN_InportMap(uint32_t addr, pfunc event)
  * @param  init_dat 校验所用的初始数据
  * @retval 16bit校验码
  */
-uint16_t Get_Crc16(uint8_t *ptr, uint8_t length, uint16_t init_dat)
+#if (USING_CRC_TABLE)
+uint16_t Get_Crc16(uint8_t *ptr, uint16_t length, uint16_t init_dat)
 {
-	uint8_t i = 0;
+	uint8_t index = 0;
+#if (USING_LITTLE)
+	uint8_t crch = (uint8_t)init_dat;
+	uint8_t crcl = init_dat >> 8U;
+#else
+	uint8_t crch = init_dat >> 8U;
+	uint8_t crcl = (uint8_t)init_dat;
+#endif
+
+	for (uint16_t i = 0; i < length; i++)
+	{
+#if (USING_LITTLE)
+		index = crcl ^ *ptr++;
+		crcl = crch ^ CRCTABH[index];
+		crch = CRCTABL[index];
+#else
+		index = crch ^ *ptr++;
+		crch = crcl ^ CRCTABH[index];
+		crcl = CRCTABL[index];
+#endif
+	}
+	return ((crch << 8U)| crcl);
+}
+#else
+uint16_t Get_Crc16(uint8_t *ptr, uint16_t length, uint16_t init_dat)
+{
+	uint16_t i = 0;
 	uint16_t j = 0;
 	uint16_t crc16 = init_dat;
 
@@ -776,6 +950,7 @@ uint16_t Get_Crc16(uint8_t *ptr, uint8_t length, uint16_t init_dat)
 	}
 	return (crc16);
 }
+#endif
 
 /**
  * @brief  大小端数据类型交换

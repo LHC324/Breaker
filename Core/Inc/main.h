@@ -155,6 +155,8 @@ extern Dwin_List List_Map[LIST_SIZE];
 
 typedef struct 
 {
+  /*Historical records*/
+  // float records_buf[LIST_SIZE][5U];
   /*Time consuming data processing buffer*/
   float handle_buf[LIST_SIZE];
   /*Is the current number of snaps odd or even*/

@@ -229,7 +229,7 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
   // Dma_Rx.recv_end_flag = true;
   // /* 再次启动 DMA */
   // HAL_UARTEx_ReceiveToIdle_DMA(&huart1, Dma_Rx.rx_buffer, BUFFER_SIZE);
-  // /*关闭DMA半传输中�???????*/
+  // /*关闭DMA半传输中�???????*/
   // // __HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT);
 #endif
 }
@@ -241,12 +241,14 @@ void DmaPrintf(const char *format, ...)
   va_list args;
 
   /*Clear data in DCache*/
-  SCB_CleanDCache();
+  // SCB_CleanDCache();
 //  SCB_InvalidateDCache();
 
   va_start(args, format);
   len = vsnprintf((char *)Dma_Rx.rx_buffer, BUFFER_SIZE + 1, format, args);
   va_end(args);
+  /* Clean Data Cache to update the content of the SRAM to be used by the DMA */ 
+  SCB_CleanDCache_by_Addr((uint32_t *) Dma_Rx.rx_buffer, len);
   /*For printf, the amount of single data transfer is small, so DMA is not necessary*/
   if (HAL_UART_Transmit(&huart1 , (uint8_t *)&Dma_Rx.rx_buffer, len, 0xFFFF))
   // if (HAL_UART_Transmit_DMA(&huart1, Dma_Rx.rx_buffer, len) != HAL_OK)
