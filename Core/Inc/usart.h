@@ -33,19 +33,24 @@ extern "C" {
 #define USING_PRINTF 1
 
 #if (USING_DMA == 1)
-#define BUFFER_SIZE  128U
+#define TX_BUF_SIZE 1024U
+#define RX_BUF_SIZE 128U
 
-typedef struct  
-{
- /*RX complete flag*/
- __IO bool recv_end_flag;
- /*Frame length*/
- __IO uint32_t rx_len;
- /*receive buffer*/
- uint8_t rx_buffer[BUFFER_SIZE];
-}UART_DMAForRx;
+  typedef struct
+  {
+    /*RX complete flag*/
+    __IO bool recv_end_flag;
+    /*TX Frame length*/
+    __IO uint32_t tx_len;
+    /*TX receive buffer*/
+    uint8_t tx_buffer[TX_BUF_SIZE];
+    /*RX Frame length*/
+    __IO uint32_t rx_len;
+    /*RX receive buffer*/
+    uint8_t rx_buffer[RX_BUF_SIZE];
+  } UART_DMA_BLOCK;
 
-extern UART_DMAForRx Dma_Rx;
+  extern UART_DMA_BLOCK Uart_Dma;
 #endif
 /* USER CODE END Includes */
 
@@ -58,7 +63,7 @@ extern UART_HandleTypeDef huart1;
 void MX_USART1_UART_Init(void);
 
 /* USER CODE BEGIN Prototypes */
-extern void DmaPrintf(const char *format,...);
+  extern void DmaPrintf(const char *format, ...);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

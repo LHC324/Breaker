@@ -26,7 +26,7 @@
 #endif
 
 #if (USING_DMA == 1)
-UART_DMAForRx Dma_Rx;
+UART_DMA_BLOCK Uart_Dma;
 #endif
 /* USER CODE END 0 */
 
@@ -82,7 +82,7 @@ void MX_USART1_UART_Init(void)
   * the real data transmitted for the first time cannot be received. 
   * It is empty, and the data length received at this time is the data length of the buffer
   * */
-  HAL_UART_Receive_DMA(&huart1, Dma_Rx.rx_buffer, BUFFER_SIZE);
+  HAL_UART_Receive_DMA(&huart1, Uart_Dma.rx_buffer, RX_BUF_SIZE);
 
   // HAL_UARTEx_ReceiveToIdle_DMA(&huart1, Dma_Rx.rx_buffer, BUFFER_SIZE);
   // /*Closed DMA half transfer interrupt*/
@@ -229,7 +229,7 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
   // Dma_Rx.recv_end_flag = true;
   // /* 再次启动 DMA */
   // HAL_UARTEx_ReceiveToIdle_DMA(&huart1, Dma_Rx.rx_buffer, BUFFER_SIZE);
-  // /*关闭DMA半传输中�???????*/
+  // /*关闭DMA半传输中�????????*/
   // // __HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT);
 #endif
 }
@@ -245,12 +245,12 @@ void DmaPrintf(const char *format, ...)
 //  SCB_InvalidateDCache();
 
   va_start(args, format);
-  len = vsnprintf((char *)Dma_Rx.rx_buffer, BUFFER_SIZE + 1, format, args);
+  len = vsnprintf((char *)Uart_Dma.rx_buffer, TX_BUF_SIZE + 1, format, args);
   va_end(args);
   /* Clean Data Cache to update the content of the SRAM to be used by the DMA */ 
-  SCB_CleanDCache_by_Addr((uint32_t *) Dma_Rx.rx_buffer, len);
+  SCB_CleanDCache_by_Addr((uint32_t *) Uart_Dma.tx_buffer, len);
   /*For printf, the amount of single data transfer is small, so DMA is not necessary*/
-  if (HAL_UART_Transmit(&huart1 , (uint8_t *)&Dma_Rx.rx_buffer, len, 0xFFFF))
+  if (HAL_UART_Transmit(&huart1 , (uint8_t *)&Uart_Dma.tx_buffer, len, 0xFFFF))
   // if (HAL_UART_Transmit_DMA(&huart1, Dma_Rx.rx_buffer, len) != HAL_OK)
   {
     Error_Handler();

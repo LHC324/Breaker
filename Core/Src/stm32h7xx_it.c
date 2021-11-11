@@ -24,6 +24,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "usart.h"
+#include "Dwin.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -251,9 +252,11 @@ void USART1_IRQHandler(void)
     /*Stop DMA transmission to prevent interference caused by receiving data when processing data*/
     HAL_UART_DMAStop(&huart1);
     /*Get data not transferred in DMA. The total count subtracts the number of untransmitted data to obtain the number of received data*/
-    Dma_Rx.rx_len = BUFFER_SIZE - __HAL_DMA_GET_COUNTER(&hdma_usart1_rx);
+    Uart_Dma.rx_len = RX_BUF_SIZE - __HAL_DMA_GET_COUNTER(&hdma_usart1_rx);
+    /*Data is stored in the Devon buffer*/
+    Dwin_ReciveNew(Uart_Dma.rx_len);
     /*Receive completion flag set*/
-    Dma_Rx.recv_end_flag = true;
+    Uart_Dma.recv_end_flag = true;
   }
 #endif
   /* USER CODE END USART1_IRQn 0 */

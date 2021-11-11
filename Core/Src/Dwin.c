@@ -11,8 +11,7 @@
 #include "cmsis_os.h"
 
 Dwin_T g_Dwin = {0};
-DwinMap g_map[100];
-uint8_t mapindex = 0;
+DwinMap g_map[32U] = {0};
 
 #if (USING_CRC_TABLE)
 /*Devin screen CRC checklist*/
@@ -84,8 +83,90 @@ Report_S Report = {0};
 // uint8_t g_CurNode[LIST_SIZE][LISTNODE_SIZE] = { 0 };
 
 //#define LIST_SIZE (sizeof(List_Map) / sizeof(Dwin_List))
-
+#if (USING_DEBUG)
 extern uint32_t g_Value;
+#endif
+
+static void Reset_Option(uint8_t *dat, uint8_t len);
+static void Sure_Option(uint8_t *dat, uint8_t len);
+/*Devon screen task event group*/
+DwinMap RecvHandle[] =
+{
+	{RESET_ADDR, Reset_Option},
+	{SURE_ADDR, Sure_Option}
+};
+
+#define EVENT_HANDLE_SIZE sizeof(RecvHandle) / sizeof(DwinMap)
+
+/**
+ * @brief  Dwin screen reset
+ * @param  dat Data pointer
+ * @param  len Dtat length
+ * @retval None
+ */
+void Reset_Option(uint8_t *dat, uint8_t len)
+{
+	/*Check whether the variable data is legal*/
+	uint16_t data = ((uint16_t)dat[0]) << 8 | dat[1];
+	if(data != RESET_CODE)
+	{
+		return;
+	}
+	/*Reset current report type*/
+	Report.current_type = Even;
+	/*Clear the current reported times record*/
+	Report.current_counts = 0;
+	/*Clear the current report buffer*/
+	memset((uint8_t *)Report.handle_buf, 0, sizeof(Report.handle_buf));
+	/*Clear foreground data*/
+	for (uint8_t i = 0; i < LIST_SIZE * 2U; i++)
+	{
+		Dwin_Write(TIMECOUNSUM_ADDR + i * 4U, "\x00\x00\x00\x00", sizeof(float));
+		/*The serial port screen is too slow and requires a certain delay*/
+		osDelay(1);
+	}
+	/*Clear background data*/
+	for (uint8_t i = 0; i < LIST_SIZE * 2U * 5U; i++)
+	{
+		Dwin_Write(RECORDS_ADDR + i * 4U, "\x00\x00\x00\x00", sizeof(float));
+		/*The serial port screen is too slow and requires a certain delay*/
+		osDelay(1);
+	}
+	/*Clear all channel waveforms*/
+	for (uint8_t i = 0; i < LIST_SIZE; i++)
+	{
+		/*Clear the waveform of full screen even number of times*/
+		Dwin_Curve_Clear(List_Map[i].id);
+		/*Reset the node currently being captured*/
+		List_Map[i].current_node = 0U;
+		/*The serial port screen is too slow and requires a certain delay*/
+		osDelay(1);
+	}
+}
+
+/**
+ * @brief  Dwin screen confirmation
+ * @param  dat Data pointer
+ * @param  len Dtat length
+ * @retval None
+ */
+void Sure_Option(uint8_t *dat, uint8_t len)
+{
+	/*Check whether the variable data is legal*/
+	uint16_t data = ((uint16_t)dat[0]) << 8 | dat[1];
+	if(data != SURE_CODE)
+	{
+		return;
+	}
+	/*Clear background data*/
+	for (uint8_t i = 0; i < LIST_SIZE * 2U * 5U; i++)
+	{
+		Dwin_Write(RECORDS_ADDR + i * 4U, "\x00\x00\x00\x00", sizeof(float));
+		/*The serial port screen is too slow and requires a certain delay*/
+		osDelay(1);
+	}
+}
+
 
 /**
  * @brief  Get the time consumed by each node
@@ -257,8 +338,6 @@ void Init_List(Dwin_List *list, uint8_t channel_id)
 void Report_TimeConsum(void)
 {
 	uint16_t addr = 0;
-	/*Current times*/
-	static uint8_t current_counts;
 
 	/*The current collection times are even, which is on the left side of the report screen*/
 	if (Report.current_type == Even)
@@ -278,14 +357,14 @@ void Report_TimeConsum(void)
 		/*The serial port screen is too slow and requires a certain delay*/
 		osDelay(1);
 		/*Fill the history area with data*/
-		Dwin_Write(RECORDS_ADDR + i * sizeof(float) * 10U + current_counts * 4U, (uint8_t *)&Report.handle_buf[i], sizeof(float));
+		Dwin_Write(RECORDS_ADDR + i * sizeof(float) * 10U + Report.current_counts * 4U, (uint8_t *)&Report.handle_buf[i], sizeof(float));
 	}
 	/*Historical data record plus one*/
-	if (current_counts++ == LISTNODE_SIZE)
+	if (Report.current_counts++ == LISTNODE_SIZE)
 	{
 		/*The serial port screen is too slow and requires a certain delay*/
 		osDelay(1);
-		current_counts = 0;
+		Report.current_counts = 0;
 		/*Switch to prompt page*/
 		Dwin_PageChange(0x0B);
 	}
@@ -302,13 +381,13 @@ void Report_TimeConsum(void)
 void Dwin_SendWithCRC(uint8_t *_pBuf, uint16_t _ucLen)
 {
 	uint16_t crc = 0;
-	uint8_t buf[256] = {0};
+	uint8_t buf[256U] = {0};
 
 	memcpy(buf, _pBuf, _ucLen);
 	/*The first three bytes do not participate in verification*/
 	crc = Get_Crc16(&_pBuf[3U], _ucLen - 3U, 0xffff);
 	buf[_ucLen++] = crc;
-	buf[_ucLen++] = crc >> 8;
+	buf[_ucLen++] = crc >> 8U;
 
 	/* Clean Data Cache to update the content of the SRAM to be used by the DMA */
 	SCB_CleanDCache_by_Addr((uint32_t *)buf, _ucLen);
@@ -342,26 +421,48 @@ void Dwin_Send(uint8_t *_pBuf, uint16_t _ucLen)
 	}
 }
 
-/*
-*********************************************************************************************************
-*	函 数 名:  DWIN_AnalyzeApp
-*	功能说明: 接收处理
-*	形    参: 无
-*	返 回 值: 无
-*********************************************************************************************************
-*/
-void DWIN_AnalyzeApp(void)
+/**
+ * @brief  接收数据帧处理
+ * @param  None
+ * @retval None
+ */
+void Dwin_AnalyzeApp(void)
 {
-	uint8_t cmd = g_Dwin.RxBuf[3];
-	switch (cmd)
+	switch (g_Dwin.RxBuf[3])
 	{
 	case READ_CMD:
 	{
 		Dwin_83H();
-		break;
-	}
+	}break;
 	default:
 		break;
+	}
+}
+
+/**
+ * @brief  读数据处理
+ * @param  None
+ * @retval None
+ */
+void Dwin_83H(void)
+{
+	uint16_t Addr = ((uint16_t)g_Dwin.RxBuf[4] << 8) | g_Dwin.RxBuf[5];
+	uint8_t i = 0;
+	/*有效数据缓冲区*/
+	uint8_t valid_buf[16U] =  {0}; 
+	/*有效数据长度*/
+	uint8_t valid_length = g_Dwin.RxBuf[6] * 2U;
+
+	memcpy(valid_buf, &g_Dwin.RxBuf[7], valid_length);
+
+	for (i = 0; i < EVENT_HANDLE_SIZE; i++)
+	{
+		if (Addr == g_map[i].addr)
+		{
+			g_map[i].event(valid_buf, valid_length);
+			/*Only one event is processed at a time*/
+			break;
+		}
 	}
 }
 
@@ -371,51 +472,58 @@ void DWIN_AnalyzeApp(void)
  * @param  len 数据长度
  * @retval None
  */
-void DWIN_ReciveNew(uint8_t *rxBuf, uint16_t len)
+__inline void Dwin_ReciveNew(uint16_t len)
 {
-	uint16_t i;
-	for (i = 0; i < len; i++)
-	{
-		g_Dwin.RxBuf[i] = rxBuf[i];
-	}
+	// memcpy(g_Dwin.RxBuf, rxBuf, len);
 	g_Dwin.RxCount = len;
 }
 
-/*
-*********************************************************************************************************
-*	函 数 名:  DWIN_Init
-*	功能说明: 初始化
-*	形    参: 无
-*	返 回 值: 无
-*********************************************************************************************************
-*/
-void DWIN_Init(void)
+/**
+ * @brief  初始化
+ * @param  None
+ * @retval None
+ */
+void Dwin_Init(void)
 {
+	/*Initialize receive and send buffers*/
+	g_Dwin.TxBuf = Uart_Dma.tx_buffer;
+	g_Dwin.TxCount = 0;
+	g_Dwin.RxBuf = Uart_Dma.rx_buffer;
+	g_Dwin.RxCount = 0;
+	/*Callback mapping relationship of address variables corresponding to imported Diwen*/
+	for(uint8_t i = 0; i < EVENT_HANDLE_SIZE; i++)
+    {
+		g_map[i].addr = RecvHandle[i].addr;
+		g_map[i].event = RecvHandle[i].event;
+    }
 }
 
-/*
-*********************************************************************************************************
-*	函 数 名:  DWIN_Poll
-*	功能说明: 判断数据帧是否正确
-*	形    参: 无
-*	返 回 值: 无
-*********************************************************************************************************
-*/
-void DWIN_Poll(void)
+/**
+ * @brief  导入事件映射
+ * @param  addr 变量地址
+ * @param  event 事件回调函数指针
+ * @retval None
+ */
+// void Dwin_InportMap(uint32_t addr, pfunc event)
+// {
+// 	g_map[mapindex].addr = addr;
+// 	g_map[mapindex].event = event;
+// 	mapindex++;
+// }
+
+/**
+ * @brief  判断数据帧是否正确
+ * @param  None
+ * @retval None
+ */
+void Dwin_Poll(void)
 {
-	if (g_Dwin.RxBuf[0] != 0x5A)
+	if ((g_Dwin.RxBuf[0] != 0x5A) || (g_Dwin.RxBuf[1] != 0xA5))
 	{
-		goto err_ret;
+		g_Dwin.RxCount = 0;
+		return;
 	}
-	if (g_Dwin.RxBuf[1] != 0xA5)
-	{
-		goto err_ret;
-	}
-
-	DWIN_AnalyzeApp();
-
-err_ret:
-	g_Dwin.RxCount = 0;
+	Dwin_AnalyzeApp();
 }
 
 /**
@@ -452,14 +560,6 @@ void Dwin_Write(uint16_t start_addr, uint8_t *dat, uint16_t length)
 #endif
 }
 
-/*
-*********************************************************************************************************
-*	函 数 名:  DWIN_READ
-*	功能说明: 发送读数据
-*	形    参: 无
-*	返 回 值: 无
-*********************************************************************************************************
-*/
 /**
  * @brief  读出指定地址指定长度数据
  * @param  start_addr 开始地址
@@ -488,38 +588,6 @@ void Dwin_Read(uint16_t start_addr, uint16_t words)
 #else
 	Dwin_Send(g_Dwin.TxBuf, g_Dwin.TxCount);
 #endif
-}
-
-/*
-*********************************************************************************************************
-*	函 数 名:  DWIN_83H
-*	功能说明: 读数据处理
-*	形    参: 无
-*	返 回 值: 无
-*********************************************************************************************************
-*/
-void Dwin_83H(void)
-{
-	uint16_t Addr = ((uint16_t)g_Dwin.RxBuf[4] << 8) | g_Dwin.RxBuf[5];
-
-	uint8_t i;
-	uint8_t Payloadbuff[100]; //有效数据缓冲区
-	uint8_t PayloadLength;	  //有效数据长度
-
-	PayloadLength = g_Dwin.RxBuf[6] * 2;
-
-	memcpy(Payloadbuff, &g_Dwin.RxBuf[7], PayloadLength);
-
-	for (i = 0; i < mapindex + 1; i++)
-	{
-		if (Addr == g_map[i].addr)
-		{
-			// HAL_UART_Transmit(&huart1,Payloadbuff,PayloadLength,0xffff);
-
-			g_map[i].event(Payloadbuff, PayloadLength);
-			break;
-		}
-	}
 }
 
 /**
@@ -554,15 +622,14 @@ void Dwin_PageChange(uint16_t Page)
 #endif
 }
 
-/*
-*********************************************************************************************************
-*	函 数 名:  DWIN_TouchAction
-*	功能说明: 进行一次触摸动作
-*	形    参:	 TouchType:触摸类型     Pos_x  x坐标    Pos_y  y坐标
-*	返 回 值: 无
-*	示例：5A A5 0B 82 00 D4 5A A5 00 04 00EE 008F
-*********************************************************************************************************
-*/
+/**
+ * @brief  进行一次触摸动作
+ * @param  type 触摸类型
+ * @param  Pos_x  x坐标
+ * @param  Pos_y  y坐标
+ * @example A A5 0B 82 00 D4 5A A5 00 04 00 EE 00 8F
+ * @retval None
+ */
 void Dwin_TouchAction(TouchType type, uint16_t Pos_x, uint16_t Pos_y)
 {
 	uint16_t typeval;
@@ -732,66 +799,6 @@ void Dwin_Curve_SchMd(Dwin_List *list)
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x00; /*低字节无效*/
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = list->id;
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = real_size;
-
-	// 	for (uint16_t j = 0; j < list->dcb_data[node].data_len; j++)
-	// 	{
-	// #if (USING_LITTLE == 1)
-	// 		/*先对数据进行转换*/
-	// 		// Endian_Swap((uint8_t *)&list->dcb_data[node].buf[j], 0, sizeof(uint16_t));
-	// 		g_Dwin.TxBuf[g_Dwin.TxCount++] = list->dcb_data[node].buf[j];
-	// 		g_Dwin.TxBuf[g_Dwin.TxCount++] = list->dcb_data[node].buf[j] >> 8U;
-	// #else
-	// 		g_Dwin.TxBuf[g_Dwin.TxCount++] = list->dcb_data[node].buf[j] >> 8U;
-	// 		g_Dwin.TxBuf[g_Dwin.TxCount++] = list->dcb_data[node].buf[j];
-	// #endif
-	// 	}
-
-	/*Double the actual data length*/
-	// real_size *= 2U;
-	// while (1)
-	// {
-	// 	/*16bit counter overflow*/
-	// 	if (list->dcb_data[list->complete_node].buf[iter + 1] < list->dcb_data[list->complete_node].buf[iter])
-	// 	{
-	// 		v_temp = (CVALUE - list->dcb_data[list->complete_node].buf[iter] + list->dcb_data[list->complete_node].buf[iter + 1]) -
-	// 				 list->dcb_data[list->complete_node].buf[iter];
-	// 	}
-	// 	else
-	// 	{
-	// 		v_temp = list->dcb_data[list->complete_node].buf[iter + 1] - list->dcb_data[list->complete_node].buf[iter];
-	// 	}
-	// 	/*Quantify proportionally*/
-	// 	(v_temp <= 200U) ? (temp_size = 4U) : ((v_temp <= 2000U) ? (temp_size = 6U) :
-	// 	((v_temp <= 20000U) ? (temp_size = 8U) : ((v_temp <= 40000U) ? (temp_size = 10U) :
-	// 	(temp_size = 12U))));
-
-	// 	if (temp_size * 2U > real_size)
-	// 	{
-	// 		for (uint16_t i = 0; i < real_size; i++)
-	// 		{
-	// 			g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x50;
-	// 		}
-	// 		break;
-	// 	}
-	// 	else
-	// 	{
-	// 		for (uint16_t k = 0; k < temp_size; k++)
-	// 		{
-	// 			g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x00;
-	// 			if (!(iter % 2))
-	// 			{
-	// 				g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x5A;
-	// 			}
-	// 			else
-	// 			{
-	// 				g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x0A;
-	// 			}
-	// 		}
-	// 		real_size -= (2U * temp_size);
-	// 	}
-	// 		iter++;
-	// }
-
 	/*Get the effective data length after removing the frame header and end in the data frame*/
 	real_size = real_size * 2U - FIXED_SIZE;
 	if (list->current_edge == Falling_Edge)
@@ -875,21 +882,6 @@ void Dwin_Curve_Clear(uint16_t Channel)
 #else
 	Dwin_Send(g_Dwin.TxBuf, g_Dwin.TxCount);
 #endif
-}
-
-/*
-*********************************************************************************************************
-*	函 数 名:  DWIN_InportMap
-*	功能说明: 导入事件映射
-*	形    参: 无
-*	返 回 值: 无
-*********************************************************************************************************
-*/
-void DWIN_InportMap(uint32_t addr, pfunc event)
-{
-	g_map[mapindex].addr = addr;
-	g_map[mapindex].event = event;
-	mapindex++;
 }
 
 /**

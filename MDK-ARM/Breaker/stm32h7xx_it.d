@@ -42,3 +42,4 @@ breaker\stm32h7xx_it.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
 breaker\stm32h7xx_it.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
 breaker\stm32h7xx_it.o: ../Core/Inc/stm32h7xx_it.h
 breaker\stm32h7xx_it.o: ../Core/Inc/usart.h
+breaker\stm32h7xx_it.o: ../Core/Inc/Dwin.h

@@ -15,10 +15,7 @@
 /*数据是否启用CRC检验*/
 #define USING_CRC 1
 /*CRC校验使用查表方式*/
-#define USING_CRC_TABLE 1
-
-#define RX_BUF_SIZE 128U
-#define TX_BUF_SIZE 1024U
+#define USING_CRC_TABLE 0
 /*写*/
 #define WRITE_CMD 0x82
 /*读*/
@@ -31,6 +28,14 @@
 #define TIMECOUNSUM_ADDR 0x4000
 /*历史记录变量显示地址*/
 #define RECORDS_ADDR 0x4030
+/*复位变量地址*/
+#define RESET_ADDR 0x4120
+/*确认按钮地址*/
+#define SURE_ADDR 0x4122
+/*复位变量值*/
+#define RESET_CODE 0x0D0D
+/*确认变量值*/
+#define SURE_CODE 0x5373
 
 /*半波形通道的长度*/
 #define WAVE_CH_WIDTH 295U
@@ -59,8 +64,6 @@
 		}                                               \
 	} while (0)
 
-typedef void (*pfunc)(uint8_t *, uint8_t);
-
 typedef enum
 {
 	press,		  //按下
@@ -71,13 +74,14 @@ typedef enum
 
 typedef struct
 {
-	uint8_t RxBuf[RX_BUF_SIZE];
+	uint8_t *RxBuf;
 	uint32_t RxCount;
 
-	uint8_t TxBuf[TX_BUF_SIZE];
+	uint8_t *TxBuf;
 	uint32_t TxCount;
 } Dwin_T;
 
+typedef void (*pfunc)(uint8_t *, uint8_t);
 typedef struct
 {
 	uint32_t addr;
@@ -91,7 +95,7 @@ typedef struct
 } DwinCurve;
 
 extern Dwin_T g_Dwin;
-extern DwinMap g_map[100];
+extern DwinMap g_map[32U];
 
 extern Dwin_List List_Map[LIST_SIZE];
 
@@ -107,11 +111,11 @@ void Dwin_Send(uint8_t *_pBuf, uint16_t _ucLen);
 uint16_t Get_Crc16(uint8_t *ptr, uint16_t length, uint16_t IniDat);
 void Endian_Swap(uint8_t *pData, uint8_t start, uint8_t length);
 
-void DWIN_AnalyzeApp(void);
-void DWIN_ReciveNew(uint8_t *rxBuf, uint16_t Len);
-void DWIN_InportMap(uint32_t addr, pfunc event);
-void DWIN_Init(void);
-void DWIN_Poll(void);
+void Dwin_AnalyzeApp(void);
+void Dwin_ReciveNew(uint16_t len);
+void Dwin_InportMap(uint32_t addr, pfunc event);
+void Dwin_Init(void);
+void Dwin_Poll(void);
 
 void Dwin_83H(void);
 void Dwin_PageChange(uint16_t Page);

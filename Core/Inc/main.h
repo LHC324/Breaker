@@ -161,6 +161,8 @@ typedef struct
   float handle_buf[LIST_SIZE];
   /*Is the current number of snaps odd or even*/
   CTYPEDEF current_type;
+  /*Current times*/
+	uint8_t current_counts;
 }Report_S;
 
 /* USER CODE END Private defines */

@@ -52,6 +52,7 @@ GPIO_PinState led_state = GPIO_PIN_RESET;
 osThreadId Uart_TaskHandle;
 osThreadId Run_TaskHandle;
 osThreadId Data_HandleTaskHandle;
+osThreadId Dwin_TaskHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -61,6 +62,7 @@ osThreadId Data_HandleTaskHandle;
 void Report_Task(void const *argument);
 void Led_Task(void const *argument);
 void Wave_HandleTask(void const *argument);
+void Dwin_HandleTask(void const *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -136,6 +138,10 @@ void MX_FREERTOS_Init(void)
   osThreadDef(Data_HandleTask, Wave_HandleTask, osPriorityAboveNormal, 0, 1024);
   Data_HandleTaskHandle = osThreadCreate(osThread(Data_HandleTask), NULL);
 
+  /* definition and creation of Dwin_Task */
+  osThreadDef(Dwin_Task, Dwin_HandleTask, osPriorityHigh, 0, 512);
+  Dwin_TaskHandle = osThreadCreate(osThread(Dwin_Task), NULL);
+
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
@@ -156,7 +162,7 @@ void Report_Task(void const *argument)
   {
     /*Wait for the notification of Wave_HandleTask to enter blocking*/
     ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
-#if(!USING_DEBUG)
+#if (!USING_DEBUG)
     Report_TimeConsum();
 #endif
     // osDelay(1);
@@ -208,6 +214,35 @@ void Wave_HandleTask(void const *argument)
     osDelay(1);
   }
   /* USER CODE END Wave_HandleTask */
+}
+
+/* USER CODE BEGIN Header_Dwin_HandleTask */
+/**
+ * @brief Function implementing the Dwin_Task thread.
+ * @param argument: Not used
+ * @retval None
+ */
+/* USER CODE END Header_Dwin_HandleTask */
+void Dwin_HandleTask(void const *argument)
+{
+  /* USER CODE BEGIN Dwin_HandleTask */
+  /* Infinite loop */
+  for (;;)
+  {
+    if (Uart_Dma.recv_end_flag)
+    { /*Clear receive completion flag*/
+      Uart_Dma.recv_end_flag = false;
+      /*Devon screen response event polling*/
+      Dwin_Poll();
+      /*Clear data buffer and data length*/
+      memset(Uart_Dma.rx_buffer, 0,  Uart_Dma.rx_len);
+      Uart_Dma.rx_len = 0;
+      /*Reopen DMA reception*/
+      HAL_UART_Receive_DMA(&huart1, Uart_Dma.rx_buffer, RX_BUF_SIZE); 
+    }
+    osDelay(1);
+  }
+  /* USER CODE END Dwin_HandleTask */
 }
 
 /* Private application code --------------------------------------------------*/
