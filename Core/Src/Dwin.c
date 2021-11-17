@@ -91,10 +91,9 @@ static void Reset_Option(uint8_t *dat, uint8_t len);
 static void Sure_Option(uint8_t *dat, uint8_t len);
 /*Devon screen task event group*/
 DwinMap RecvHandle[] =
-{
-	{RESET_ADDR, Reset_Option},
-	{SURE_ADDR, Sure_Option}
-};
+	{
+		{RESET_ADDR, Reset_Option},
+		{SURE_ADDR, Sure_Option}};
 
 #define EVENT_HANDLE_SIZE sizeof(RecvHandle) / sizeof(DwinMap)
 
@@ -108,7 +107,7 @@ void Reset_Option(uint8_t *dat, uint8_t len)
 {
 	/*Check whether the variable data is legal*/
 	uint16_t data = ((uint16_t)dat[0]) << 8 | dat[1];
-	if(data != RESET_CODE)
+	if (data != RESET_CODE)
 	{
 		return;
 	}
@@ -118,20 +117,6 @@ void Reset_Option(uint8_t *dat, uint8_t len)
 	Report.current_counts = 0;
 	/*Clear the current report buffer*/
 	memset((uint8_t *)Report.handle_buf, 0, sizeof(Report.handle_buf));
-	/*Clear foreground data*/
-	for (uint8_t i = 0; i < LIST_SIZE * 2U; i++)
-	{
-		Dwin_Write(TIMECOUNSUM_ADDR + i * 4U, "\x00\x00\x00\x00", sizeof(float));
-		/*The serial port screen is too slow and requires a certain delay*/
-		osDelay(1);
-	}
-	/*Clear background data*/
-	for (uint8_t i = 0; i < LIST_SIZE * 2U * 5U; i++)
-	{
-		Dwin_Write(RECORDS_ADDR + i * 4U, "\x00\x00\x00\x00", sizeof(float));
-		/*The serial port screen is too slow and requires a certain delay*/
-		osDelay(1);
-	}
 	/*Clear all channel waveforms*/
 	for (uint8_t i = 0; i < LIST_SIZE; i++)
 	{
@@ -140,7 +125,21 @@ void Reset_Option(uint8_t *dat, uint8_t len)
 		/*Reset the node currently being captured*/
 		List_Map[i].current_node = 0U;
 		/*The serial port screen is too slow and requires a certain delay*/
-		osDelay(1);
+		// osDelay(1);
+	}
+	/*Clear foreground data*/
+	for (uint8_t i = 0; i < LIST_SIZE * 2U; i++)
+	{
+		Dwin_Write(TIMECOUNSUM_ADDR + i * 4U, "\x00\x00\x00\x00", sizeof(float));
+		/*The serial port screen is too slow and requires a certain delay*/
+		// osDelay(1);
+	}
+	/*Clear background data*/
+	for (uint8_t i = 0; i < LIST_SIZE * 2U * 5U; i++)
+	{
+		Dwin_Write(RECORDS_ADDR, "\x00\x00\x00\x00", sizeof(float));
+		/*The serial port screen is too slow and requires a certain delay*/
+		// osDelay(1);
 	}
 }
 
@@ -154,7 +153,7 @@ void Sure_Option(uint8_t *dat, uint8_t len)
 {
 	/*Check whether the variable data is legal*/
 	uint16_t data = ((uint16_t)dat[0]) << 8 | dat[1];
-	if(data != SURE_CODE)
+	if (data != SURE_CODE)
 	{
 		return;
 	}
@@ -163,10 +162,9 @@ void Sure_Option(uint8_t *dat, uint8_t len)
 	{
 		Dwin_Write(RECORDS_ADDR + i * 4U, "\x00\x00\x00\x00", sizeof(float));
 		/*The serial port screen is too slow and requires a certain delay*/
-		osDelay(1);
+		// osDelay(1);
 	}
 }
-
 
 /**
  * @brief  Get the time consumed by each node
@@ -238,7 +236,7 @@ bool Wave_Handle(void)
 	// DmaPrintf("current value is %d, time consuming is , buf size is  .\r\n", 10);
 	for (; i < LIST_SIZE; i++)
 	{
-
+		/*One of the channels captured data*/
 		if (List_Map[i].dcb_data[List_Map[i].complete_node].data_flag)
 		{ /*Capture success flag*/
 			Success_flag = true;
@@ -266,8 +264,14 @@ bool Wave_Handle(void)
 
 			g_Value = 0;
 #else
-			/*Store time data in temporary buffer*/
-			Report.handle_buf[i] = List_Map[i].dcb_data[List_Map[i].complete_node].consum_times;
+			/*The existence of electromagnetic interference leads to the most ideal
+			situation. Only one pulse has been captured, and the equipment has been
+			close to stability*/
+			if (List_Map[i].dcb_data[List_Map[i].complete_node].consum_times >= 0U)
+			{
+				/*Store time data in temporary buffer*/
+				Report.handle_buf[i] = List_Map[i].dcb_data[List_Map[i].complete_node].consum_times;
+			}
 			// DmaPrintf("length %d\r\n", List_Map[i].dcb_data[j].data_len);
 			/*Draw waveform*/
 			Dwin_Curve_SchMd(&List_Map[i]);
@@ -280,6 +284,7 @@ bool Wave_Handle(void)
 			/*Clearing time consumption*/
 			List_Map[i].dcb_data[List_Map[i].complete_node].consum_times = 0;
 		}
+		/*If osdelay is used, it is possible that if and else conditions occur at the same time*/
 	}
 	return Success_flag;
 }
@@ -355,15 +360,21 @@ void Report_TimeConsum(void)
 		Endian_Swap((uint8_t *)&Report.handle_buf[i], 0U, sizeof(float));
 		Dwin_Write(addr + i * 8U, (uint8_t *)&Report.handle_buf[i], sizeof(float));
 		/*The serial port screen is too slow and requires a certain delay*/
-		osDelay(1);
+		// osDelay(1);
 		/*Fill the history area with data*/
 		Dwin_Write(RECORDS_ADDR + i * sizeof(float) * 10U + Report.current_counts * 4U, (uint8_t *)&Report.handle_buf[i], sizeof(float));
+		/*Channel data no data generation*/
+		if (Report.handle_buf[i] == 0U)
+		{
+			/*Clear the waveform of full screen even number of times*/
+			Dwin_Curve_Clear(List_Map[i].id);
+		}
 	}
 	/*Historical data record plus one*/
 	if (Report.current_counts++ == LISTNODE_SIZE)
 	{
 		/*The serial port screen is too slow and requires a certain delay*/
-		osDelay(1);
+		// osDelay(1);
 		Report.current_counts = 0;
 		/*Switch to prompt page*/
 		Dwin_PageChange(0x0B);
@@ -396,7 +407,7 @@ void Dwin_SendWithCRC(uint8_t *_pBuf, uint16_t _ucLen)
 	/*等待串口接收完成期间，进行系统调度*/
 	while (__HAL_UART_GET_FLAG(&huart1, UART_FLAG_TC) == RESET)
 	{
-		osDelay(15);
+		osDelay(30);
 	}
 }
 
@@ -417,7 +428,7 @@ void Dwin_Send(uint8_t *_pBuf, uint16_t _ucLen)
 	/*等待串口接收完成期间，进行系统调度*/
 	while (__HAL_UART_GET_FLAG(&huart1, UART_FLAG_TC) == RESET)
 	{
-		osDelay(15);
+		osDelay(30);
 	}
 }
 
@@ -433,7 +444,8 @@ void Dwin_AnalyzeApp(void)
 	case READ_CMD:
 	{
 		Dwin_83H();
-	}break;
+	}
+	break;
 	default:
 		break;
 	}
@@ -449,7 +461,7 @@ void Dwin_83H(void)
 	uint16_t Addr = ((uint16_t)g_Dwin.RxBuf[4] << 8) | g_Dwin.RxBuf[5];
 	uint8_t i = 0;
 	/*有效数据缓冲区*/
-	uint8_t valid_buf[16U] =  {0}; 
+	uint8_t valid_buf[16U] = {0};
 	/*有效数据长度*/
 	uint8_t valid_length = g_Dwin.RxBuf[6] * 2U;
 
@@ -491,11 +503,11 @@ void Dwin_Init(void)
 	g_Dwin.RxBuf = Uart_Dma.rx_buffer;
 	g_Dwin.RxCount = 0;
 	/*Callback mapping relationship of address variables corresponding to imported Diwen*/
-	for(uint8_t i = 0; i < EVENT_HANDLE_SIZE; i++)
-    {
+	for (uint8_t i = 0; i < EVENT_HANDLE_SIZE; i++)
+	{
 		g_map[i].addr = RecvHandle[i].addr;
 		g_map[i].event = RecvHandle[i].event;
-    }
+	}
 }
 
 /**
@@ -772,7 +784,6 @@ void Dwin_Curve_MuitiChannel(uint16_t Channelnum, DwinCurve *dat)
 void Dwin_Curve_SchMd(Dwin_List *list)
 {
 	uint32_t real_size = list->dcb_data[list->complete_node].data_len;
-	// uint16_t temp_size = 0;
 	uint32_t v_temp = 0;
 	uint32_t iter = 0;
 
@@ -801,7 +812,7 @@ void Dwin_Curve_SchMd(Dwin_List *list)
 	g_Dwin.TxBuf[g_Dwin.TxCount++] = real_size;
 	/*Get the effective data length after removing the frame header and end in the data frame*/
 	real_size = real_size * 2U - FIXED_SIZE;
-	if (list->current_edge == Falling_Edge)
+	if (list->start_sate == GPIO_PIN_SET)
 	{
 		GARTHER_FRAME(0x0A);
 	}
@@ -827,7 +838,7 @@ void Dwin_Curve_SchMd(Dwin_List *list)
 
 		if (real_size <= FIXED_SIZE)
 		{
-			if (list->current_edge == Falling_Edge)
+			if (list->start_sate == GPIO_PIN_SET)
 			{
 				GARTHER_FRAME(0x5A);
 			}
@@ -885,6 +896,43 @@ void Dwin_Curve_Clear(uint16_t Channel)
 }
 
 /**
+ * @brief  设置变量显示颜色
+ * @param  addr 变量地址
+ * @param  color 16bit颜色值
+ * @retval None
+ */
+void Dwin_Set_Color(uint16_t addr, uint16_t color)
+{
+	g_Dwin.TxCount = 0;
+	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x5A;
+	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0xA5;
+#if (USING_CRC)
+	/*Add two bytes CRC*/
+	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x05 + 2U;
+#else
+	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x05;
+#endif
+	g_Dwin.TxBuf[g_Dwin.TxCount++] = 0x82;
+	addr += 0x03;
+#if (USING_LITTLE)
+	g_Dwin.TxBuf[g_Dwin.TxCount++] = addr;
+	g_Dwin.TxBuf[g_Dwin.TxCount++] = addr >> 8;
+	g_Dwin.TxBuf[g_Dwin.TxCount++] = color;
+	g_Dwin.TxBuf[g_Dwin.TxCount++] = color >> 8;
+#else
+	g_Dwin.TxBuf[g_Dwin.TxCount++] = addr >> 8;
+	g_Dwin.TxBuf[g_Dwin.TxCount++] = addr;
+	g_Dwin.TxBuf[g_Dwin.TxCount++] = color >> 8;
+	g_Dwin.TxBuf[g_Dwin.TxCount++] = color;
+#endif
+#if (USING_CRC)
+	Dwin_SendWithCRC(g_Dwin.TxBuf, g_Dwin.TxCount);
+#else
+	Dwin_Send(g_Dwin.TxBuf, g_Dwin.TxCount);
+#endif
+}
+
+/**
  * @brief  取得16bitCRC校验码
  * @param  ptr   当前数据串指针
  * @param  length  数据长度
@@ -915,7 +963,7 @@ uint16_t Get_Crc16(uint8_t *ptr, uint16_t length, uint16_t init_dat)
 		crcl = CRCTABL[index];
 #endif
 	}
-	return ((crch << 8U)| crcl);
+	return ((crch << 8U) | crcl);
 }
 #else
 uint16_t Get_Crc16(uint8_t *ptr, uint16_t length, uint16_t init_dat)

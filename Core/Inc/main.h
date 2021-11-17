@@ -79,6 +79,7 @@ void Error_Handler(void);
 /* USER CODE BEGIN Private defines */
 /*Debug options*/
 #define USING_DEBUG   0U
+#define SWITCH_METHOD 0U
 #define LIST_SIZE     6U
 #define LISTNODE_SIZE 10U
 #define DLINKX(x) (DLink##x)
@@ -98,6 +99,10 @@ void Error_Handler(void);
 #define ACCU() (FREQ * ((float)pow(10U, 3U)))
 /*Overflow times,Time unit: US*/
 #define OVERFLOW_COUNTS(times, fosc) ((times * (1000000.0F)) / ((uint32_t)(CVALUE / (fosc))))
+/*Get the state of the pin*/
+#define GET_CHANNEL_PIN_STATE(list) \
+  (                                 \
+      list->id == 0U ? HAL_GPIO_ReadPin(Capture_Channel_1_GPIO_Port, Capture_Channel_1_Pin) : (list->id == 1U ? HAL_GPIO_ReadPin(Capture_Channel_2_GPIO_Port, Capture_Channel_2_Pin) : (list->id == 2U ? HAL_GPIO_ReadPin(Capture_Channel_3_GPIO_Port, Capture_Channel_3_Pin) : (list->id == 3U ? HAL_GPIO_ReadPin(Capture_Channel_4_GPIO_Port, Capture_Channel_4_Pin) : (list->id == 4U ? HAL_GPIO_ReadPin(Capture_Channel_5_GPIO_Port, Capture_Channel_5_Pin) : (list->id == 5U ? HAL_GPIO_ReadPin(Capture_Channel_6_GPIO_Port, Capture_Channel_6_Pin) : (GPIO_PIN_RESET)))))))
 
 typedef enum class
 { 
@@ -143,6 +148,10 @@ typedef struct DLink
 	Dwin_Dcb dcb_data[LISTNODE_SIZE];
   /*Record current node*/
   uint8_t current_node;
+  /*Start level state*/
+  GPIO_PinState start_sate;
+  /*End level state*/
+  GPIO_PinState end_sate;
   /*Completion node*/
   uint8_t complete_node;
   /*Edge polarity currently captured*/

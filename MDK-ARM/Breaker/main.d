@@ -30,6 +30,7 @@ breaker\main.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_flash_ex.h
 breaker\main.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_hsem.h
 breaker\main.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_i2c.h
 breaker\main.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_i2c_ex.h
+breaker\main.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_iwdg.h
 breaker\main.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_pwr.h
 breaker\main.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_pwr_ex.h
 breaker\main.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_tim.h
@@ -55,6 +56,7 @@ breaker\main.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h
 breaker\main.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h
 breaker\main.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h
 breaker\main.o: ../Core/Inc/dma.h
+breaker\main.o: ../Core/Inc/iwdg.h
 breaker\main.o: ../Core/Inc/tim.h
 breaker\main.o: ../Core/Inc/usart.h
 breaker\main.o: ../Core/Inc/gpio.h

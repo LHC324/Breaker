@@ -29,6 +29,7 @@ breaker\stm32h7xx_hal_hsem.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_
 breaker\stm32h7xx_hal_hsem.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_hsem.h
 breaker\stm32h7xx_hal_hsem.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_i2c.h
 breaker\stm32h7xx_hal_hsem.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_i2c_ex.h
+breaker\stm32h7xx_hal_hsem.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_iwdg.h
 breaker\stm32h7xx_hal_hsem.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_pwr.h
 breaker\stm32h7xx_hal_hsem.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_pwr_ex.h
 breaker\stm32h7xx_hal_hsem.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_tim.h

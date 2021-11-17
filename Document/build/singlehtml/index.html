@@ -1,0 +1,482 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>高压断路器动特性测试仪 V1.0.0 文档</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/translations.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="#" class="icon icon-home"> 高压断路器动特性测试仪
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="index.html#document-summary">1. 概述</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html#document-te_characteristics">2. 技术特性</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html#document-work_principle">3. 设计原理</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="index.html#id2">3.1. 低压断路器测试工具设计原理</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#id3">3.2. 高压断路器测试工具设计原理</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="index.html#document-structural_characteristics">4. 结构特性</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html#document-operation_guide">5. 操作指南</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="index.html#id2">5.1. 开机/屏保界面</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#id3">5.2. 前台界面</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#id4">5.3. 后台界面</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="index.html#document-note">6. 注意事项</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html#document-fault">7. 故障分析与排除</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html#document-rapair">8. 维修与保养</a></li>
+</ul>
+</div>
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">高压断路器动特性测试仪</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="#" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>高压断路器动特性测试仪 V1.0.0 文档</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="id1">
+<h1>高压断路器动特性测试仪使用说明书<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/样机.bmp"><img alt="NULL" src="_images/样机.bmp" /></a>
+</div>
+<ul class="simple">
+<li><p><strong>公司主页（homepage）</strong>：<a class="reference external" href="http://www.ynpax.com/cn/home/index.asp">http://www.ynpax.com/cn/home/index.asp</a></p></li>
+<li><p><strong>合作方主页</strong>：<a class="reference external" href="http://www.yn.csg.cn/">http://www.yn.csg.cn/</a></p></li>
+<li><p><strong>公司地址</strong>:云南省昆明市经开区云大西路39号创业大厦C栋202室</p></li>
+<li><p><strong>联系电话</strong>:0871-6732300/67322190</p></li>
+</ul>
+</div>
+<div class="section" id="id2">
+<h1>目录<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h1>
+<div class="toctree-wrapper compound">
+<span id="document-summary"></span><div class="section" id="id1">
+<h2><span class="section-number">1. </span>概述<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h2>
+<p>本产品为高压断路器动特性测试仪，公司遵循国家行业执行标准：<code class="docutils literal notranslate"><span class="pre">GB10963.1-2005</span></code>,确属本公司产品质量问题，自购置之日起保修期为3个月(非正常使用而致使产品损坏，烧坏的，不属保修之列)。</p>
+<ul class="simple">
+<li><p>高压断路器是高低压电器回路中执行线路通断的执行机构，承担着线路合闸、分闸工作。断路器性能的好坏直接影响着输变电环节的安全生产过程，因此在各换流站大量使用的高压断路器需要保持持续有效的性能检测。
+然而，由于高压断路器安装位置高、使用数量多，在传统的生产检测环节，需要动用大型辅助升降设备协助操作人员进行断路器检测信号线的接驳和断开，不仅生产效率低下，而且存在高危、高风险、工作量巨大、协同人员多的诸多缺点。为了降低换流站检修人员工作风险，实现在限定时间站内所有高压断路器的检测工作，本项目拟设计一款高压断路器快速分合闸检测装置，将操作人员从多人员协同、重复线路接驳、操作繁琐的检测工作中解放出来，实现线路一次接驳重复测试，单人操作快速检测断路器特性的复杂测试过程。
+低压断路器是现代控制中广泛使用的线路分断执行机构，在生产现场的控制柜内大量使用了不同线圈电压、不同触点耐压和电流容量的低压接触器，此类接触器虽然功率较小，但是承担着监测、控制线路中信号传递的作用，如果各关键控制信号在控制系统和现场检测仪表之间传输时，由于接触器性能下降导致的误触发或抖动，都会导致控制系统判断失误，引起错误的执行结果，甚至引起控制失败。在实际应用中，由于控制回路或信号传输回路异常导致的系统误动作频繁发生，不仅造成生产成本增加，甚至可能由于错误的动作导致巨大损失。</p></li>
+<li><p>因此，无论高压断路器还是低压断路器，其 <code class="docutils literal notranslate"><span class="pre">机械、电气</span></code> 特性的优良直接影响着生产安全和控制安全。由于所有接触器一旦接入现场使用就无法全部拆下检测，其工作特性和参数检测均需在现场进行。在传统的检测过程中，由于缺乏专用的检测手段和检测工具，工作人员往往需要付出巨大的劳动时间、人员数量和时间成本才能完成所有甚至部分现场断路器的特性检测。然而由于检测手段和检测设备导致的测试结果异常也屡屡发生，反复的测试验证工作更是加重了测试工作的劳动强度并延长了测试时间。对于需要在限定时间内按时完成检修任务的现场检测工作，对所有现场测试人员都是一个巨大的考验。</p></li>
+</ul>
+<div class="figure align-center" id="id2">
+<a class="reference internal image-reference" href="_images/低压断路器.bmp"><img alt="NULL" src="_images/低压断路器.bmp" /></a>
+<p class="caption"><span class="caption-text">图 1.1 低压断路器控制回路</span><a class="headerlink" href="#id2" title="永久链接至图片">¶</a></p>
+</div>
+<div class="figure align-center" id="id3">
+<a class="reference internal image-reference" href="_images/高压断路器.bmp"><img alt="NULL" src="_images/高压断路器.bmp" /></a>
+<p class="caption"><span class="caption-text">图 1.2 高压断路器控制回路</span><a class="headerlink" href="#id3" title="永久链接至图片">¶</a></p>
+</div>
+</div>
+<span id="document-te_characteristics"></span><div class="section" id="id1">
+<h2><span class="section-number">2. </span>技术特性<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h2>
+<ul class="simple">
+<li><p><strong>本产品高速脉冲采样速率高达10MHz</strong></p></li>
+<li><p><strong>本产品最多同时支持六通道同步/异步进行测量，测量精度可达0.01ms</strong></p></li>
+<li><p><strong>本产品内置12V/5Ah超长寿命电池，可持续至少一周连续使用，并且具有高达500次以上的循环使用周期</strong></p></li>
+<li><p><strong>本产品具有低功耗特性，待机状态电流可低至2.43uA</strong></p></li>
+<li><p><strong>本产品自带充电保护功能，可避免大部分使用过程中由于电源造成的安全问题</strong></p></li>
+</ul>
+</div>
+<span id="document-work_principle"></span><div class="section" id="id1">
+<h2><span class="section-number">3. </span>设计原理<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h2>
+<div class="section" id="id2">
+<h3><span class="section-number">3.1. </span>低压断路器测试工具设计原理<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h3>
+<ul class="simple">
+<li><p>如 <code class="docutils literal notranslate"><span class="pre">图1.1</span></code> 所示，在控制柜内大量安装的低压断路器，其控制信号（根据线圈驱动电压类型不同可分为：直流、交流，
+根据驱动线圈的电压幅值又可分为不同电压类型的断路器）和触头干接点是整个控制的核心和灵魂，二者具有随动的特点，
+当断路器线圈电压出现在线圈上时其控制线圈由于得电而产生磁性，实现断路器触头的吸合和分断，从而满足信号电压或驱动电压的传输
+和断开。</p></li>
+</ul>
+<div class="admonition attention">
+<p class="admonition-title">注意</p>
+<p>由于大量断路器安装在现场控制柜内，为了实现断路器特性的现场检测，必须由操作人员将测试设备在现场接入断路器的控制回路和
+触点位置，实现自动或手动控制断路器的吸合或分断，并由测试仪器分析其断路器相对应驱动电压信号和触点信号断开和接通的机械和
+电气特性，实现断路器在线特性检测，从而识别存在安全隐患的断路器，确保检修工作的顺利完成，为换流变安全生产提供间接或直接的
+技术保障。</p>
+</div>
+<ul class="simple">
+<li><p>根据图1.1所示的控制柜，由于现场位置拥挤，操作不方便等特点，传统采用多人协作对断路器进行特性检测的过程，具有需要协同人员数量多、
+检测效率低下、操作不便的大量局限性急需解决。</p></li>
+<li><p>因此，本案将设计一款专用柜用断路器特性现场检测工具，实现单人检测和数据自动录入的工作，其工作原理如下:</p></li>
+</ul>
+<div class="figure align-center" id="id4">
+<a class="reference internal image-reference" href="_images/控制柜接线图.bmp"><img alt="NULL" src="_images/控制柜接线图.bmp" /></a>
+<p class="caption"><span class="caption-text">图 3.1.1 柜内接线图</span><a class="headerlink" href="#id4" title="永久链接至图片">¶</a></p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">注解</p>
+<p>上图中，接线端子上连接的就是柜子内断路器的线圈控制信号线、触点信号线的连接线，要实现断路器性能的现场检测，可通过在此接线端子上的间接检测而实现。
+同时，由于在此处检测同时兼具断路器本身和线路接触性能的检测，正所谓一举两得。</p>
+</div>
+<div class="figure align-center" id="id5">
+<a class="reference internal image-reference" href="_images/示意图1.bmp"><img alt="NULL" src="_images/示意图1.bmp" /></a>
+<p class="caption"><span class="caption-text">图 3.1.2 低压断路器特性检测装置设计结构图</span><a class="headerlink" href="#id5" title="永久链接至图片">¶</a></p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">注解</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><strong>线槽固定夹具：是设计为线槽专用的固定夹具，器左固定钩和右固定钩共同固定线槽固定夹具在现场上，具有紧固和持续保持的特点。</strong></dt><dd><ul>
+<li><p><strong>左固定钩、由固定钩：是用来钩定在线槽上，为固定探针提供稳固的平台支撑。</strong></p></li>
+<li><p><strong>滑块A、滑块B：当线槽固定夹具固定后，滑动滑块A和滑块B到相对应的引出线螺栓处，为探针提供水平方向的矫正调节。</strong></p></li>
+<li><p><strong>探针A、探针B：当滑块移动到对应的出线位置后，下压探针分别接触到线槽固定夹具下端的出线端子螺栓上，实现信号线的固定连接。</strong></p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+<ul class="simple">
+<li><p>通过以上操作，可实现一人操作，固定不同断路器引出线的目的，线路和探针连接好以后即可实现测试过程。在整个测试过程中，
+操作人员无需全程手持探针保持接触，实现测量过程无人化。</p></li>
+<li><p>测得的断路器特性和信号，被存储在测试仪内部，可通过WIFI或USB连接线传送到PC保存和使用。</p></li>
+</ul>
+</div>
+<div class="section" id="id3">
+<h3><span class="section-number">3.2. </span>高压断路器测试工具设计原理<a class="headerlink" href="#id3" title="永久链接至标题">¶</a></h3>
+<ul class="simple">
+<li><p>如 <code class="docutils literal notranslate"><span class="pre">图1.2</span></code> 所示，高压断路器是换流站线路控制的通断控制器件，承担着输电线路的接通和断开。由于高压断路器工作在高电压、大电流状态，
+其机械和电气特性都直接决定着输电过程的安全。对于换流站内大量使用的高压断路器，为了确保其性能的可靠和工作安全，必须在年度或不定期检修中
+完成对其所有电气和机械性能的测试工作。然而，由于高压断路器在换流站内数量多，体积庞大，拆装困难，因此无法将断路器在限定时间内全部拆下在进行检测。</p></li>
+</ul>
+<div class="admonition attention">
+<p class="admonition-title">注意</p>
+<p>因此，在传统的检修过程中，一般采用绝缘杆配合挂钩的方式进行，但是由于断路器在测试通过和动过过程中会产生强烈的震动，从而导致测量
+结果错误，此方法在实际测量中无法完成正确测量。</p>
+</div>
+<ul class="simple">
+<li><p>为了解决上述测量方法导致的错误，实际测量时必须采用鳄鱼夹等具有防松、防震动的夹具连接十米线，从而确保测量结果的准确性。
+由于高压断路器安装位置的特点，此方法必须动用自动升降设备才能将操作人员抬升到高压断路器最高处，实现人工连接10米线的过程。此种方法具有动用设备多，人员风险大，工作强度大的严重缺席，无法实现高效的测量过程。</p></li>
+<li><p>在此，此项目提出研发一款专用高压断路器10米线连接夹具。此夹具具有简单连接，低空作业，手动锁紧和解锁功能，夹具锁紧后具有接触良好，防抖动和松脱的特点，此夹具安装在绝缘杆顶端，操作人员需要锁紧线缆时只
+需将锁紧头对准要锁紧的线缆并上推，夹具下口受力后推动带有弹簧锁紧装置的鸭舌下压，完成锁紧动作，夹具锁紧后在弹簧的作用下具有防松特性。当测量完毕需要将夹具松开时，操作人员在地面用力下拉绝缘杆，
+此时鸭舌上抬并拉动弹簧实现弹簧拉力偏心，完成鸭舌张开动作，实现线缆松开动作。</p></li>
+</ul>
+<div class="figure align-center" id="id6">
+<a class="reference internal image-reference" href="_images/示意图2.bmp"><img alt="NULL" src="_images/示意图2.bmp" /></a>
+<p class="caption"><span class="caption-text">图 3.2.1 高压断路器特性检测装置设计结构图</span><a class="headerlink" href="#id6" title="永久链接至图片">¶</a></p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">注解</p>
+<p>基本工作原理：如上图，当需要加紧线缆时，将线缆穿过上下鸭舌之间，此时从下往上推动下鸭舌，由于咬合顶针的作用推动上鸭舌执行逆时针转动，由于弹簧的中心位置在绝缘杆的中心位置，当弹簧拉力出现向左或向右偏移时，
+在弹簧的拉力下即可实现鸭舌的张开或闭合，利用弹簧的拉力即可实现防震动加紧。</p>
+</div>
+<ul class="simple">
+<li><p>同时以上夹具安装在绝缘杆顶端，操作人员可以在地面利用延长的绝缘杆实现上推咬合鸭舌，或下拉松开鸭舌的动作，满足在高压断路器测试时高效夹紧或松开断路器测试端子的目的。</p></li>
+</ul>
+</div>
+</div>
+<span id="document-structural_characteristics"></span><div class="section" id="id1">
+<h2><span class="section-number">4. </span>结构特性<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h2>
+</div>
+<span id="document-operation_guide"></span><div class="section" id="id1">
+<h2><span class="section-number">5. </span>操作指南<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h2>
+<div class="section" id="id2">
+<h3><span class="section-number">5.1. </span>开机/屏保界面<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h3>
+<div class="figure align-center" id="id5">
+<a class="reference internal image-reference" href="_images/00_屏保.jpg"><img alt="NULL" src="_images/00_屏保.jpg" style="width: 448.0px; height: 336.0px;" /></a>
+<p class="caption"><span class="caption-text">图 5.1.1 开机/屏保界面</span><a class="headerlink" href="#id5" title="永久链接至图片">¶</a></p>
+</div>
+<ul class="simple">
+<li><p>打开电源开关或者接入外部电源后，您将会看到此界面。这个界面将会作为开机时首次显示的主界面和屏保模式下界面。
+<strong>注意，主机屏幕再无任何操作大约5min钟后进行熄屏以节省电量</strong> ，此时您仅需要触模屏幕即可点亮。</p></li>
+</ul>
+</div>
+<div class="section" id="id3">
+<h3><span class="section-number">5.2. </span>前台界面<a class="headerlink" href="#id3" title="永久链接至标题">¶</a></h3>
+<div class="figure align-center" id="id6">
+<a class="reference internal image-reference" href="_images/01_界面1.jpg"><img alt="NULL" src="_images/01_界面1.jpg" style="width: 448.0px; height: 336.0px;" /></a>
+<p class="caption"><span class="caption-text">图 5.2.1 主界面1</span><a class="headerlink" href="#id6" title="永久链接至图片">¶</a></p>
+</div>
+<ul class="simple">
+<li><p>此界面主要由类型操作按钮、两次测量时间以及两次测量波形三部分构成。</p></li>
+<li><p>左边第一个按钮为 <strong>返回上一页（开机/屏保界面）</strong> ，您触摸它将会触发相应功能。</p></li>
+<li><p>中间按钮为 <strong>复位</strong>，您触摸它将会触发相应功能。</p></li>
+<li><p>最右边按钮为 <strong>跳转到下一页（主界面二）</strong> ，您触摸它将会触发相应功能。</p></li>
+</ul>
+<div class="figure align-left" id="id7">
+<a class="reference internal image-reference" href="_images/按钮1.bmp"><img alt="后退按钮" src="_images/按钮1.bmp" /></a>
+<p class="caption"><span class="caption-text">后退按钮</span><a class="headerlink" href="#id7" title="永久链接至图片">¶</a></p>
+</div>
+<div class="figure align-right" id="id8">
+<a class="reference internal image-reference" href="_images/按钮3.bmp"><img alt="前进按钮" src="_images/按钮3.bmp" /></a>
+<p class="caption"><span class="caption-text">前进按钮</span><a class="headerlink" href="#id8" title="永久链接至图片">¶</a></p>
+</div>
+<div class="figure align-center" id="id9">
+<a class="reference internal image-reference" href="_images/按钮2.bmp"><img alt="复位按钮" src="_images/按钮2.bmp" /></a>
+<p class="caption"><span class="caption-text">复位按钮</span><a class="headerlink" href="#id9" title="永久链接至图片">¶</a></p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">小技巧</p>
+<ul class="simple">
+<li><p><strong>复位按钮使用介绍</strong> :</p></li>
+<li><p>1、如果您当前的测试需求是需要多通道/全六通道同时测量，但是当前通道0-5中 <code class="docutils literal notranslate"><span class="pre">某一个/多个通道</span></code> ,已经存在数据和波形，为了方便获得全新的界面，
+您可以使用 <code class="docutils literal notranslate"><span class="pre">复位</span></code> 按钮。</p></li>
+<li><p>2、另一种情况是：当前有各别通道已经产生了 <code class="docutils literal notranslate"><span class="pre">异常、干扰、非同步通道使用</span></code> 所造成的极少数通道彼此间数据波形出现不同步情况 ，也可以使用 <code class="docutils literal notranslate"><span class="pre">复位</span></code> 按钮来解决您的问题。</p></li>
+</ul>
+</div>
+<div class="figure align-center" id="id10">
+<a class="reference internal image-reference" href="_images/12_界面12.jpg"><img alt="NULL" src="_images/12_界面12.jpg" style="width: 448.0px; height: 336.0px;" /></a>
+<p class="caption"><span class="caption-text">图 5.2.2 复位弹窗</span><a class="headerlink" href="#id10" title="永久链接至图片">¶</a></p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">小技巧</p>
+<ul class="simple">
+<li><p>当您按下 <code class="docutils literal notranslate"><span class="pre">sure</span></code> 按钮后，所有通道的 <code class="docutils literal notranslate"><span class="pre">前后台数据</span></code> 将会被立即清除。</p></li>
+</ul>
+</div>
+<div class="figure align-center" id="id11">
+<a class="reference internal image-reference" href="_images/02_界面2.jpg"><img alt="NULL" src="_images/02_界面2.jpg" style="width: 448.0px; height: 336.0px;" /></a>
+<p class="caption"><span class="caption-text">图 5.2.3 主界面2</span><a class="headerlink" href="#id11" title="永久链接至图片">¶</a></p>
+</div>
+<ul class="simple">
+<li><p>图 <strong>5.2.1</strong> 和图 <strong>5.2.2</strong> 共同构成高压断路器动特性检测仪的前台界面，通道按0-5顺序排列，唯一区别的的是，主界面上有 <code class="docutils literal notranslate"><span class="pre">复位</span></code> 按钮，而主界面2没有。</p></li>
+</ul>
+<div class="figure align-center" id="id12">
+<a class="reference internal image-reference" href="_images/结果显示栏.bmp"><img alt="NULL" src="_images/结果显示栏.bmp" /></a>
+<p class="caption"><span class="caption-text">图 5.2.4 测量结果显示栏</span><a class="headerlink" href="#id12" title="永久链接至图片">¶</a></p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">注解</p>
+<ul class="simple">
+<li><p><strong>测量结果显示栏说明</strong> :</p></li>
+<li><p>最左边的 <code class="docutils literal notranslate"><span class="pre">t0</span></code> 表示的是当前栏目为通道0的测量结果，上图中①区域通常表示为断路器 <code class="docutils literal notranslate"><span class="pre">闭合</span></code> 时机械抖动时间,②区域通常表示为断路器 <code class="docutils literal notranslate"><span class="pre">断开</span></code> 时机械抖动时间。
+当然您也可以自由组合你所需要的测量方式的组合。</p></li>
+<li><p>①区域和②区域中测量所得到的时间单位固定为 <code class="docutils literal notranslate"><span class="pre">ms</span></code>，数据整数为可表示为 <code class="docutils literal notranslate"><span class="pre">9999.999ms</span></code>。</p></li>
+</ul>
+</div>
+<div class="figure align-center" id="id13">
+<a class="reference internal image-reference" href="_images/波形显示栏.bmp"><img alt="NULL" src="_images/波形显示栏.bmp" /></a>
+<p class="caption"><span class="caption-text">图 5.2.5 波形显示栏</span><a class="headerlink" href="#id13" title="永久链接至图片">¶</a></p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">注解</p>
+<ul class="simple">
+<li><p><strong>波形显示栏说明</strong> :</p></li>
+<li><p>最左边 <code class="docutils literal notranslate"><span class="pre">0</span></code> 表示的是当前栏目为通道0的波形，中间的虚线将把每次测量所得到的波形分屏为区域①和区域②显示。</p></li>
+<li><p>您需要注意的是，每个半屏开始和结束的状态因该是一个 <code class="docutils literal notranslate"><span class="pre">相反</span></code> 的状态（比如开始状态是上升沿，则结束状态因该稳定为高电平）。</p></li>
+<li><p>波形的显示顺序总是从左到右，当区域①和区域②都存在波形显示时，下一次测量将会清除全部波形，回到区域①进行显示，依次循环。</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="id4">
+<h3><span class="section-number">5.3. </span>后台界面<a class="headerlink" href="#id4" title="永久链接至标题">¶</a></h3>
+<div class="figure align-center" id="id14">
+<a class="reference internal image-reference" href="_images/03_界面3.jpg"><img alt="NULL" src="_images/03_界面3.jpg" style="width: 448.0px; height: 336.0px;" /></a>
+<p class="caption"><span class="caption-text">图 5.3.1 所有通道历史记录选择页面</span><a class="headerlink" href="#id14" title="永久链接至图片">¶</a></p>
+</div>
+<ul class="simple">
+<li><p><strong>您通过触摸上图中相应通道标号，即可进入对应通道的历史记录界面</strong></p></li>
+</ul>
+<div class="figure align-center" id="id15">
+<a class="reference internal image-reference" href="_images/04_界面4.jpg"><img alt="NULL" src="_images/04_界面4.jpg" style="width: 448.0px; height: 336.0px;" /></a>
+<p class="caption"><span class="caption-text">图 5.3.2 通道0历史历史数据记录</span><a class="headerlink" href="#id15" title="永久链接至图片">¶</a></p>
+</div>
+<ul class="simple">
+<li><p>上图显示的是通道 <code class="docutils literal notranslate"><span class="pre">0</span></code> 的后台历史数据，总共分为 <code class="docutils literal notranslate"><span class="pre">5</span></code> 组，每组包含 <code class="docutils literal notranslate"><span class="pre">2</span></code> 次测量的历史数据。</p></li>
+</ul>
+<div class="figure align-center" id="id16">
+<a class="reference internal image-reference" href="_images/11_界面11.jpg"><img alt="NULL" src="_images/11_界面11.jpg" style="width: 448.0px; height: 336.0px;" /></a>
+<p class="caption"><span class="caption-text">图 5.3.3 历史数据清除弹窗</span><a class="headerlink" href="#id16" title="永久链接至图片">¶</a></p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">注解</p>
+<ul class="simple">
+<li><p><strong>历史数据清除弹窗说明</strong> :</p></li>
+<li><p>当您连续测量次数超过 <code class="docutils literal notranslate"><span class="pre">5</span></code> 次时，此弹窗便会弹出，此时说面你的本次测量数据写入历史记录时，发现例如图 5.3.2中数据已经存满的情况。</p></li>
+<li><p>您按下 <code class="docutils literal notranslate"><span class="pre">覆盖</span></code> 按钮时，之前的历史数据并不会清除，而是从首次开始对后台历史数据产生覆盖。</p></li>
+<li><p>您按下 <code class="docutils literal notranslate"><span class="pre">清除</span></code> 按钮时，之前的历史数据会立即被清除，本次数据的历史记录将从头开始。</p></li>
+</ul>
+</div>
+</div>
+</div>
+<span id="document-note"></span><div class="section" id="id1">
+<h2><span class="section-number">6. </span>注意事项<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h2>
+</div>
+<span id="document-fault"></span><div class="section" id="id1">
+<h2><span class="section-number">7. </span>故障分析与排除<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h2>
+</div>
+<span id="document-rapair"></span><div class="section" id="id1">
+<h2><span class="section-number">8. </span>维修与保养<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h2>
+</div>
+</div>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">索引</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">模块索引</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">搜索页面</span></a></p></li>
+</ul>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; 版权所有 2021, LHC@云南兆富科技有限公司.
+
+    </p>
+  </div>
+    
+    
+    
+    利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用了 
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    
+    由 <a href="https://readthedocs.org">Read the Docs</a>开发. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

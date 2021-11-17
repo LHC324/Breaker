@@ -4,6 +4,7 @@
         "main.h": "c",
         "dwin.h": "c",
         "string": "c",
-        "usart.h": "c"
+        "usart.h": "c",
+        "cmsis_os.h": "c"
     }
 }

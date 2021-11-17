@@ -26,6 +26,8 @@
 #define TOUCH_CMD 0xD4
 /*时耗变量显示地址*/
 #define TIMECOUNSUM_ADDR 0x4000
+/*变量描述指针地址*/
+#define SP_ADDR 0x8000
 /*历史记录变量显示地址*/
 #define RECORDS_ADDR 0x4030
 /*复位变量地址*/
@@ -105,6 +107,7 @@ void Dwin_Curve(uint16_t Channel, uint16_t *dat, uint16_t length);
 void Dwin_Curve_Clear(uint16_t Channel);
 void Dwin_Curve_MuitiChannel(uint16_t Channelnum, DwinCurve *dat);
 void Dwin_Curve_SchMd(Dwin_List *list);
+void Dwin_Set_Color(uint16_t addr, uint16_t color);
 
 void Dwin_SendWithCRC(uint8_t *_pBuf, uint16_t _ucLen);
 void Dwin_Send(uint8_t *_pBuf, uint16_t _ucLen);

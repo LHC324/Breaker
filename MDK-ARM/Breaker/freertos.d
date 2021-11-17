@@ -39,6 +39,7 @@ breaker\freertos.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_flash_ex.h
 breaker\freertos.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_hsem.h
 breaker\freertos.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_i2c.h
 breaker\freertos.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_i2c_ex.h
+breaker\freertos.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_iwdg.h
 breaker\freertos.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_pwr.h
 breaker\freertos.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_pwr_ex.h
 breaker\freertos.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_tim.h
@@ -56,3 +57,4 @@ breaker\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h
 breaker\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h
 breaker\freertos.o: ../Core/Inc/usart.h
 breaker\freertos.o: ../Core/Inc/Dwin.h
+breaker\freertos.o: ../Core/Inc/iwdg.h
