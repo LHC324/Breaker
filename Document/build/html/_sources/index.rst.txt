@@ -10,10 +10,11 @@
    :maxdepth: 2
    :caption: Contents:
 
-.. figure:: ../样机.bmp
+.. figure:: ../source/picture/断路器测试仪外观.bmp
     :align: center
+    :scale: 20%
     :alt: NULL
-    :scale: 100%
+    
 
 - **公司主页（homepage）**：http://www.ynpax.com/cn/home/index.asp
 - **合作方主页**：http://www.yn.csg.cn/
