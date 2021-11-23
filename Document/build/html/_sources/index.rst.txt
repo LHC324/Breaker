@@ -12,7 +12,7 @@
 
 .. figure:: ../source/picture/断路器测试仪外观.bmp
     :align: center
-    :scale: 20%
+    :scale: 80%
     :alt: NULL
     
 
