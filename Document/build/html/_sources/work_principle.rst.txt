@@ -35,7 +35,7 @@
 .. figure:: ../source/picture/接线端子自动夹具.bmp
     :align: center
     :alt: NULL
-    :scale: 50%
+    :scale: 90%
 
     图 3.1.2 接线端子自动夹具结构设计图
 

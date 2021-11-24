@@ -12,7 +12,7 @@
 .. figure:: ../低压断路器.bmp
     :align: center
     :alt: NULL
-    :scale: 50%
+    :scale: 70%
 
     图 1.1 低压断路器控制回路
 
@@ -20,7 +20,7 @@
 .. figure:: ../高压断路器.bmp
     :align: center
     :alt: NULL
-    :scale: 50%
+    :scale: 70%
 
     图 1.2 高压断路器控制回路
 
