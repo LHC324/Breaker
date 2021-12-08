@@ -33,9 +33,7 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-#if (USING_DEBUG)
-uint32_t g_Value = 0;
-#endif
+// extern osSemaphoreId SynData_HandleHandle;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -213,74 +211,55 @@ void SystemClock_Config(void)
  * @param  list Pointer to the first node of the current linked list
  * @retval None
  */
-// static void Get_NodeTimes(Dwin_List *list)
-// {
-//   /*Counter overflow, time greater than 6.5536ms*/
-//   if (list->dcb_data[list->current_node].overflows_num > OVERFLOW_COUNTS(TIMES, FREQ))
-//   {
-//     list->dcb_data[list->current_node].consum_times = (float)((CVALUE - list->dcb_data[list->current_node].first_value) +
-//                                                               (list->dcb_data[list->current_node].overflows_num - (OVERFLOW_COUNTS(TIMES, FREQ) + 1U)) * CVALUE +
-//                                                               list->dcb_data[list->current_node].buf[list->dcb_data[list->current_node].data_len]) /
-//                                                       ACCU();
-//   }
-//   else /*The counter does not overflow and the time is within 6.5536ms*/
-//   {
-//     /*Calculate the settling time,last value - first value*/
-//     list->dcb_data[list->current_node].consum_times =
-//         (float)(list->dcb_data[list->current_node].buf[list->dcb_data[list->current_node].data_len] -
-//                 list->dcb_data[list->current_node].first_value) /
-//         ACCU();
-//   }
-// }
 #if (SWITCH_METHOD)
-#define GET_NODETIMES(list)                                                                                                                                                                 \
-  {                                                                                                                                                                                         \
-    uint32_t temp_times = 0;                                                                                                                                                                \
-    for (uint16_t i = 0; i < list->dcb_data[list->current_node].data_len; i++)                                                                                                              \
-    {                                                                                                                                                                                       \
-      {                                                                                                                                                                                     \
-        if (list->dcb_data[list->current_node].buf[list->dcb_data[list->current_node].data_len] < list->dcb_data[list->current_node].buf[list->dcb_data[list->current_node].data_len - 1U]) \
-        {                                                                                                                                                                                   \
-          temp_times += list->dcb_data[list->current_node].buf[list->dcb_data[list->current_node].data_len] +                                                                               \
-                        (CVALUE - list->dcb_data[list->current_node].buf[list->dcb_data[list->current_node].data_len - 1U]);                                                                \
-        }                                                                                                                                                                                   \
-        else                                                                                                                                                                                \
-        {                                                                                                                                                                                   \
-          temp_times += list->dcb_data[list->current_node].buf[list->dcb_data[list->current_node].data_len] -                                                                               \
-                        list->dcb_data[list->current_node].buf[list->dcb_data[list->current_node].data_len - 1U];                                                                           \
-        }                                                                                                                                                                                   \
-      }                                                                                                                                                                                     \
-    }                                                                                                                                                                                       \
-    list->dcb_data[list->current_node].consum_times = temp_times / ACCU();                                                                                                                  \
+#define GET_NODETIMES(list)                                                                         \
+  {                                                                                                 \
+    uint32_t temp_times = 0;                                                                        \
+    for (uint16_t i = 0; i < CURRENT_NODE.data_len; i++)                                            \
+    {                                                                                               \
+      {                                                                                             \
+        if (CURRENT_NODE.buf[CURRENT_NODE.data_len] < CURRENT_NODE.buf[CURRENT_NODE.data_len - 1U]) \
+        {                                                                                           \
+          temp_times += CURRENT_NODE.buf[CURRENT_NODE.data_len] +                                   \
+                        (CVALUE - CURRENT_NODE.buf[CURRENT_NODE.data_len - 1U]);                    \
+        }                                                                                           \
+        else                                                                                        \
+        {                                                                                           \
+          temp_times += CURRENT_NODE.buf[CURRENT_NODE.data_len] -                                   \
+                        CURRENT_NODE.buf[CURRENT_NODE.data_len - 1U];                               \
+        }                                                                                           \
+      }                                                                                             \
+    }                                                                                               \
+    CURRENT_NODE.consum_times = temp_times / ACCU();                                                \
   }
 #else
-#define GET_NODETIMES(list)                                                                                                                                         \
-  {                                                                                                                                                                 \
-    if (list->dcb_data[list->current_node].overflows_num > OVERFLOW_COUNTS(TIMES, FREQ))                                                                            \
-    {                                                                                                                                                               \
-      list->dcb_data[list->current_node].consum_times = (float)((CVALUE - list->dcb_data[list->current_node].first_value) +                                         \
-                                                                (list->dcb_data[list->current_node].overflows_num - (OVERFLOW_COUNTS(TIMES, FREQ) + 1U)) * CVALUE + \
-                                                                list->dcb_data[list->current_node].buf[list->dcb_data[list->current_node].data_len]) /              \
-                                                        ACCU();                                                                                                     \
-    }                                                                                                                                                               \
-    else                                                                                                                                                            \
-    {                                                                                                                                                               \
-      if (list->dcb_data[list->current_node].data_len == 1U)                                                                                                        \
-      {                                                                                                                                                             \
-        list->dcb_data[list->current_node].consum_times = 9999.999F;                                                                                                \
-      }                                                                                                                                                             \
-      else                                                                                                                                                          \
-      {                                                                                                                                                             \
-        list->dcb_data[list->current_node].consum_times =                                                                                                           \
-            (float)(list->dcb_data[list->current_node].buf[list->dcb_data[list->current_node].data_len] -                                                           \
-                    list->dcb_data[list->current_node].first_value) /                                                                                               \
-            ACCU();                                                                                                                                                 \
-        if (list->dcb_data[list->current_node].consum_times == 0U)                                                                                                  \
-        {                                                                                                                                                           \
-          list->dcb_data[list->current_node].data_flag = false;                                                                                                     \
-        }                                                                                                                                                           \
-      }                                                                                                                                                             \
-    }                                                                                                                                                               \
+#define GET_NODETIMES(list)                                                                                             \
+  {                                                                                                                     \
+    if (CURRENT_NODE.overflows_num > OVERFLOW_COUNTS(TIMES, FREQ))                                                      \
+    {                                                                                                                   \
+      CURRENT_NODE.consum_times = (float)((CVALUE - CURRENT_NODE.first_value) +                                         \
+                                          (CURRENT_NODE.overflows_num - (OVERFLOW_COUNTS(TIMES, FREQ) + 1U)) * CVALUE + \
+                                          CURRENT_NODE.buf[CURRENT_NODE.data_len]) /                                    \
+                                  ACCU();                                                                               \
+    }                                                                                                                   \
+    else                                                                                                                \
+    {                                                                                                                   \
+      if (CURRENT_NODE.data_len == 1U)                                                                                  \
+      {                                                                                                                 \
+        CURRENT_NODE.consum_times = 0.999F;                                                                             \
+      }                                                                                                                 \
+      else                                                                                                              \
+      {                                                                                                                 \
+        CURRENT_NODE.consum_times =                                                                                     \
+            (float)(CURRENT_NODE.buf[CURRENT_NODE.data_len] -                                                           \
+                    CURRENT_NODE.first_value) /                                                                         \
+            ACCU();                                                                                                     \
+        if (CURRENT_NODE.consum_times <= DATA_PRECISION)                                                                \
+        {                                                                                                               \
+          CURRENT_NODE.consum_times = 0.099F;                                                                           \
+        }                                                                                                               \
+      }                                                                                                                 \
+    }                                                                                                                   \
   }
 #endif
 
@@ -291,20 +270,12 @@ void SystemClock_Config(void)
  */
 static __inline void Overflow_Handle(Dwin_List *list)
 {
-  if (list->dcb_data[list->current_node].timer_synflag)
+  if (CURRENT_NODE.timer_synflag)
   {
     /*counter Number of overflows*/
-    list->dcb_data[list->current_node].overflows_num++;
+    CURRENT_NODE.overflows_num++;
   }
 }
-
-#define OVERFLOW_HANDLE(list)                           \
-  {                                                     \
-    if (list.dcb_data[list.current_node].timer_synflag) \
-    {                                                   \
-      list.dcb_data[list.current_node].overflows_num++; \
-    }                                                   \
-  }
 
 /**
  * @brief  timeout handler
@@ -314,33 +285,28 @@ static __inline void Overflow_Handle(Dwin_List *list)
 static __inline void Timeout_Handle(Dwin_List *list)
 {
   /*Avoid the error caused by the first overtime = 0*/
-  if ((list->dcb_data[list->current_node].overtimes) && (list->dcb_data[list->current_node].timer_synflag))
+  if ((CURRENT_NODE.overtimes) && (CURRENT_NODE.timer_synflag))
   { /*Timeout and more than two pulses must be captured*/
-    if (!(--list->dcb_data[list->current_node].overtimes))
+    if (!(--CURRENT_NODE.overtimes))
     {
-      /*Data collection completed*/
-      list->dcb_data[list->current_node].data_flag = true;
-      /*Reset first detection flag*/
-      list->dcb_data[list->current_node].first_flag = false;
       /*Reset timer synchronization flag*/
-      list->dcb_data[list->current_node].timer_synflag = false;
+      CURRENT_NODE.timer_synflag = false;
       /*Calculate the stabilization time on / off*/
       // Get_NodeTimes(list);
       GET_NODETIMES(list);
       /*Obtain the pin level at the end of capture*/
       list->end_sate = GET_CHANNEL_PIN_STATE(list);
-#if (USING_DEBUG)
-      g_Value = list->dcb_data[list->current_node].overflows_num;
-#endif
-      /*Clear counter overflow times*/
-      list->dcb_data[list->current_node].overflows_num = 0;
-      /*Clear first recorded value*/
-      list->dcb_data[list->current_node].first_value = 0;
+      /*Data collection completed*/
+      CURRENT_NODE.data_flag = true;
       /*Record currently captured nodes*/
       list->complete_node = list->current_node;
       /*Point to the next node*/
-      list->current_node++;
-      list->current_node %= LISTNODE_SIZE;
+      if ((++list->current_node) >= LISTNODE_SIZE)
+      {
+        list->current_node = 0U;
+      }
+      /*Send data processing signal*/
+      // osSemaphoreRelease(SynData_HandleHandle);
     }
   }
 }
@@ -406,6 +372,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
       Overflow_Handle(&List_Map[i]);
       // OVERFLOW_HANDLE(List_Map[i]);
     }
+    // Overflow_Handle(&List_Map[0]);
   }
   else if (htim->Instance == TIM4)
   {
@@ -423,6 +390,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     {
       Timeout_Handle(&List_Map[i]);
     }
+    // Timeout_Handle(&List_Map[0]);
   }
   /* USER CODE END Callback 1 */
 }

@@ -48,7 +48,7 @@ extern "C" {
     __IO uint32_t rx_len;
     /*RX receive buffer*/
     uint8_t rx_buffer[RX_BUF_SIZE];
-  } UART_DMA_BLOCK;
+  } UART_DMA_BLOCK; //__attribute__ ((at(0x24000000)))
 
   extern UART_DMA_BLOCK Uart_Dma;
 #endif

@@ -222,6 +222,8 @@ void Wave_HandleTask(void const * argument)
   {
     /*Set event flag bit*/
     xEventGroupSetBits(Event_Handle, WAVE_TASK_BIT);
+    /*Wait for data processing signal from interrupt*/
+    // osSemaphoreWait(SynData_HandleHandle, osWaitForever);
     if (Wave_Handle())
     {
       /*If you send a notification without a notification value

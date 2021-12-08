@@ -62,14 +62,14 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define Run_Led_Pin GPIO_PIN_4
+#define Run_Led_GPIO_Port GPIOE
 #define Capture_Channel_1_Pin GPIO_PIN_6
 #define Capture_Channel_1_GPIO_Port GPIOA
 #define Capture_Channel_2_Pin GPIO_PIN_7
 #define Capture_Channel_2_GPIO_Port GPIOA
 #define Capture_Channel_3_Pin GPIO_PIN_0
 #define Capture_Channel_3_GPIO_Port GPIOB
-#define Run_Led_Pin GPIO_PIN_1
-#define Run_Led_GPIO_Port GPIOB
 #define Capture_Channel_5_Pin GPIO_PIN_12
 #define Capture_Channel_5_GPIO_Port GPIOD
 #define Capture_Channel_6_Pin GPIO_PIN_13
@@ -78,15 +78,17 @@ void Error_Handler(void);
 #define Capture_Channel_4_GPIO_Port GPIOC
 /* USER CODE BEGIN Private defines */
 /*Debug options*/
-#define USING_DEBUG   0U
+#define USING_DEBUG   1U
 #define SWITCH_METHOD 0U
 #define LIST_SIZE     6U
 #define LISTNODE_SIZE 10U
 #define DLINKX(x) (DLink##x)
 /*Buffer size*/
 #define LIST_BUF_SIZE 512U
+/*Data accuracy*/
+#define DATA_PRECISION 0.00001f
 /*Count value*/
-#define CVALUE 65535U
+#define CVALUE 50000U
 /*Interruption time,Unit: S*/
 #define TIMES 1.0F
 /*Timeout*/
@@ -103,7 +105,15 @@ void Error_Handler(void);
 #define GET_CHANNEL_PIN_STATE(list) \
   (                                 \
       list->id == 0U ? HAL_GPIO_ReadPin(Capture_Channel_1_GPIO_Port, Capture_Channel_1_Pin) : (list->id == 1U ? HAL_GPIO_ReadPin(Capture_Channel_2_GPIO_Port, Capture_Channel_2_Pin) : (list->id == 2U ? HAL_GPIO_ReadPin(Capture_Channel_3_GPIO_Port, Capture_Channel_3_Pin) : (list->id == 3U ? HAL_GPIO_ReadPin(Capture_Channel_4_GPIO_Port, Capture_Channel_4_Pin) : (list->id == 4U ? HAL_GPIO_ReadPin(Capture_Channel_5_GPIO_Port, Capture_Channel_5_Pin) : (list->id == 5U ? HAL_GPIO_ReadPin(Capture_Channel_6_GPIO_Port, Capture_Channel_6_Pin) : (GPIO_PIN_RESET)))))))
-
+/*Define the current node*/
+#define CURRENT_NODE (list->dcb_data[list->current_node])
+/*Define the complete node*/
+#define COMPLETE_NODE (list->dcb_data[list->complete_node])
+#define LCOMPLETE_NONE (List_Map[i].dcb_data[List_Map[i].complete_node])
+/*First node*/
+#define FIRST_NODE()  (COMPLETE_NODE.buf[0])
+/*end node*/
+#define END_NODE()  (COMPLETE_NODE.buf[COMPLETE_NODE.data_len])
 typedef enum class
 { 
   Falling_Edge = 0U,
@@ -155,7 +165,7 @@ typedef struct DLink
   /*Completion node*/
   uint8_t complete_node;
   /*Edge polarity currently captured*/
-  EDGE current_edge;
+  // EDGE current_edge;
   /*Node pointer*/
 	struct DLink *next;
 }Dwin_List;

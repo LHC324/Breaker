@@ -44,7 +44,7 @@ void MX_TIM4_Init(void);
 void MX_TIM6_Init(void);
 
 /* USER CODE BEGIN Prototypes */
-void Save_CounterValue(Dwin_List *list);
+void Save_CounterValue(Dwin_List *list, uint32_t channel, TIM_HandleTypeDef timer);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

@@ -46,7 +46,7 @@ void MX_TIM3_Init(void)
   htim3.Instance = TIM3;
   htim3.Init.Prescaler = 24 - 1;
   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim3.Init.Period = 65535;
+  htim3.Init.Period = 50000;
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
   if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
@@ -110,7 +110,7 @@ void MX_TIM4_Init(void)
   htim4.Instance = TIM4;
   htim4.Init.Prescaler = 24 - 1;
   htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim4.Init.Period = 65535;
+  htim4.Init.Period = 50000;
   htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim4.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim4) != HAL_OK)
@@ -351,16 +351,16 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) /*Execute when capture 
     switch (htim->Channel)
     {
     case HAL_TIM_ACTIVE_CHANNEL_1:
-      Save_CounterValue(&List_Map[0]);
+      Save_CounterValue(&List_Map[0], TIM_CHANNEL_1, htim3);
       break;
     case HAL_TIM_ACTIVE_CHANNEL_2:
-      Save_CounterValue(&List_Map[1]);
+      Save_CounterValue(&List_Map[1], TIM_CHANNEL_2, htim3);
       break;
     case HAL_TIM_ACTIVE_CHANNEL_3:
-      Save_CounterValue(&List_Map[2]);
+      Save_CounterValue(&List_Map[2], TIM_CHANNEL_3, htim3);
       break;
     case HAL_TIM_ACTIVE_CHANNEL_4:
-      Save_CounterValue(&List_Map[3]);
+      Save_CounterValue(&List_Map[3], TIM_CHANNEL_4, htim3);
       break;
     default:
       break;
@@ -372,10 +372,10 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) /*Execute when capture 
     switch (htim->Channel)
     {
     case HAL_TIM_ACTIVE_CHANNEL_1:
-      Save_CounterValue(&List_Map[4]);
+      Save_CounterValue(&List_Map[4], TIM_CHANNEL_1, htim4);
       break;
     case HAL_TIM_ACTIVE_CHANNEL_2:
-      Save_CounterValue(&List_Map[5]);
+      Save_CounterValue(&List_Map[5], TIM_CHANNEL_2, htim4);
       break;
     default:
       break;
@@ -386,51 +386,46 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) /*Execute when capture 
 /**
  * @brief  Save captured counter values
  * @param  list First node pointer
+ * @param  channel Channel id
+ * @param  timer Timer handle
  * @retval None
  */
-static __inline void Save_CounterValue(Dwin_List *list)
+static __inline void Save_CounterValue(Dwin_List *list, uint32_t channel, TIM_HandleTypeDef timer)
 {
+  /*Entry parameter check*/
+  if (list == NULL)
+  {
+    return;
+  }
   /*Refresh the capture time of the current channel*/
-  list->dcb_data[list->current_node].overtimes = OVERTIMES;
+  CURRENT_NODE.overtimes = OVERTIMES;
   /*Stores the currently captured counter value*/
-  if (list->dcb_data[list->current_node].data_flag == false)
+  if (CURRENT_NODE.data_flag == false)
   {
     /*Get rising edge time point*/
-    list->dcb_data[list->current_node].buf[list->dcb_data[list->current_node].data_len++] = HAL_TIM_ReadCapturedValue(&htim3, TIM_CHANNEL_1);
-    /*Buffer circular storage*/
-    list->dcb_data[list->current_node].data_len %= LIST_BUF_SIZE;
-    if (list->current_edge == Falling_Edge)
+    CURRENT_NODE.buf[CURRENT_NODE.data_len] = HAL_TIM_ReadCapturedValue(&timer, channel);
+    /*First storage*/
+    if (!CURRENT_NODE.first_flag)
     {
-      /*High level is currently captured*/
-      list->current_edge = Rising_Edge;
-      // /*Get rising edge time point*/
-      // list->dcb_data[list->current_node].buf[list->dcb_data[list->current_node].data_len++] = HAL_TIM_ReadCapturedValue(&htim3, TIM_CHANNEL_1);
-      // /*Buffer circular storage*/
-      // list->dcb_data[list->current_node].data_len %= LIST_BUF_SIZE;
+      /*Set first detection flag*/
+      CURRENT_NODE.first_flag = true;
+      /*Set timer synchronization flag*/
+      CURRENT_NODE.timer_synflag = true;
+      /*Record the current state of the pin*/
+      list->start_sate = GET_CHANNEL_PIN_STATE(list);
+      /*Clear counter overflow times*/
+      CURRENT_NODE.overflows_num = 0U;
+      /*Save the value obtained for the first time*/
+      list->dcb_data->first_value =
+          CURRENT_NODE.buf[CURRENT_NODE.data_len];
     }
-    else
+    /*Storage location plus one and buffer circular storage*/
+    if ((++CURRENT_NODE.data_len) >= LIST_BUF_SIZE)
     {
-      /*Low level is currently captured*/
-      list->current_edge = Falling_Edge;
+      CURRENT_NODE.data_len = 0U;
     }
-  }
-
-  if (!list->dcb_data[list->current_node].first_flag)
-  {
-    /*Record the current state of the pin*/
-    list->start_sate = GET_CHANNEL_PIN_STATE(list);
-    /*Set timer synchronization flag*/
-    list->dcb_data[list->current_node].timer_synflag = true;
-    /*Set first detection flag*/
-    list->dcb_data[list->current_node].first_flag = true;
-    /*Clear counter overflow times*/
-    list->dcb_data[list->current_node].overflows_num = 0;
-    /*Save the value obtained for the first time*/
-    list->dcb_data->first_value =
-        list->dcb_data[list->current_node].buf[list->dcb_data[list->current_node].data_len];
   }
 }
-
 /* USER CODE END 1 */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

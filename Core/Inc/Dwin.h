@@ -43,12 +43,13 @@
 #define WAVE_CH_WIDTH 295U
 /*波形通道的高度*/
 #define WAVE_CH_HEIGHT 100U
-/*量化比例*/
-#define RATIO() (65535U / (WAVE_CH_HEIGHT - 20U))
-/*单个数据块尺寸*/
-#define SINGLE_SIZE 100U
 /*数据帧头和帧尾固定长度*/
 #define FIXED_SIZE 20U
+/*量化比例*/
+// #define RATIO() (65535U / (WAVE_CH_HEIGHT - 20U))
+#define RATIO() (CVALUE / (WAVE_CH_HEIGHT - FIXED_SIZE))
+/*单个数据块尺寸*/
+#define SINGLE_SIZE 100U
 
 #define GARTHER_FRAME(value)                            \
 	do                                                  \
