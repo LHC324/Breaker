@@ -293,7 +293,7 @@ static __inline void Timeout_Handle(Dwin_List *list)
       CURRENT_NODE.timer_synflag = false;
       /*Calculate the stabilization time on / off*/
       // Get_NodeTimes(list);
-      GET_NODETIMES(list);
+      // GET_NODETIMES(list);
       /*Obtain the pin level at the end of capture*/
       list->end_sate = GET_CHANNEL_PIN_STATE(list);
       /*Data collection completed*/

@@ -78,7 +78,7 @@ void Error_Handler(void);
 #define Capture_Channel_4_GPIO_Port GPIOC
 /* USER CODE BEGIN Private defines */
 /*Debug options*/
-#define USING_DEBUG   1U
+#define USING_DEBUG   0U
 #define SWITCH_METHOD 0U
 #define LIST_SIZE     6U
 #define LISTNODE_SIZE 10U
@@ -109,11 +109,11 @@ void Error_Handler(void);
 #define CURRENT_NODE (list->dcb_data[list->current_node])
 /*Define the complete node*/
 #define COMPLETE_NODE (list->dcb_data[list->complete_node])
-#define LCOMPLETE_NONE (List_Map[i].dcb_data[List_Map[i].complete_node])
+#define LCOMPLETE_NODE (List_Map[i].dcb_data[List_Map[i].complete_node])
 /*First node*/
 #define FIRST_NODE()  (COMPLETE_NODE.buf[0])
 /*end node*/
-#define END_NODE()  (COMPLETE_NODE.buf[COMPLETE_NODE.data_len])
+#define END_NODE()  (COMPLETE_NODE.buf[COMPLETE_NODE.data_len - 1U])
 typedef enum class
 { 
   Falling_Edge = 0U,
@@ -144,6 +144,8 @@ typedef struct
   uint16_t overtimes;
   /*Counter overflow times*/
   uint32_t overflows_num;
+  /*Effective overflow*/
+  uint32_t effect_overflows;
   /*Error value*/
   float error_value;
 	/*Time consumption*/
@@ -167,7 +169,7 @@ typedef struct DLink
   /*Edge polarity currently captured*/
   // EDGE current_edge;
   /*Node pointer*/
-	struct DLink *next;
+	// struct DLink *next;
 }Dwin_List;
 
 extern Dwin_List List_Map[LIST_SIZE];

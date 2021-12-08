@@ -21,7 +21,10 @@
 #include "tim.h"
 
 /* USER CODE BEGIN 0 */
-
+// #if (USING_DEBUG)
+// uint16_t test_buf[256] = {0};
+// uint32_t count = 0;
+// #endif
 /* USER CODE END 0 */
 
 TIM_HandleTypeDef htim3;
@@ -416,7 +419,7 @@ static __inline void Save_CounterValue(Dwin_List *list, uint32_t channel, TIM_Ha
       /*Clear counter overflow times*/
       CURRENT_NODE.overflows_num = 0U;
       /*Save the value obtained for the first time*/
-      list->dcb_data->first_value =
+      CURRENT_NODE.first_value =
           CURRENT_NODE.buf[CURRENT_NODE.data_len];
     }
     /*Storage location plus one and buffer circular storage*/
@@ -424,6 +427,8 @@ static __inline void Save_CounterValue(Dwin_List *list, uint32_t channel, TIM_Ha
     {
       CURRENT_NODE.data_len = 0U;
     }
+    /*Record effective overflow times*/
+    CURRENT_NODE.effect_overflows = CURRENT_NODE.overflows_num;
   }
 }
 /* USER CODE END 1 */

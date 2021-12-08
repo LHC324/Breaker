@@ -13,6 +13,11 @@
 Dwin_T g_Dwin = {0};
 DwinMap g_map[32U] = {0};
 
+#if (USING_DEBUG)
+extern uint16_t test_buf[256];
+extern uint32_t count;
+#endif
+
 #if (USING_CRC_TABLE)
 /*Devin screen CRC checklist*/
 uint8_t CRCTABH[256] = {
@@ -174,28 +179,33 @@ static void Get_NodeTimes(Dwin_List *list)
 {
 	uint16_t first_value = 0U;
 	uint16_t end_value = 0U;
+	uint16_t times_value = 0U;
 	/*Entry parameter check*/
 	if (list == NULL)
 	{
 		return;
 	}
-	/*The first node capture value is not 0*/
-	if (FIRST_NODE() > 0U)
-	{ /*Separately handle irregular values that overflow for the first time*/
-		first_value = CVALUE - COMPLETE_NODE.first_value;
-	}
 	/*During the capture, the counter overflowed*/
-	if (COMPLETE_NODE.overflows_num > OVERFLOW_COUNTS(TIMES, FREQ))
+	// if (COMPLETE_NODE.overflows_num > OVERFLOW_COUNTS(TIMES, FREQ))
+	if (COMPLETE_NODE.effect_overflows > 0U)
 	{
+		/*The first node capture value is not 0*/
+		if (FIRST_NODE() > 0U)
+		{ /*Separately handle irregular values that overflow for the first time*/
+			first_value = CVALUE - FIRST_NODE();
+			COMPLETE_NODE.effect_overflows -= 1U;
+		}
 		/*The last node happened to be not an overflow node*/
 		if (END_NODE() < CVALUE)
 		{
 			end_value = END_NODE();
 		}
 		/*Calculate the duration of the capture*/
-		COMPLETE_NODE.consum_times = (float)(first_value +
-											 (COMPLETE_NODE.overflows_num - (OVERFLOW_COUNTS(TIMES, FREQ) + 1.0F)) * CVALUE +
-											 end_value) /
+		// COMPLETE_NODE.consum_times = (float)(first_value +
+		// 									 (COMPLETE_NODE.overflows_num - (OVERFLOW_COUNTS(TIMES, FREQ) + 1.0F)) * CVALUE +
+		// 									 end_value) /
+		// 							 ACCU();
+		COMPLETE_NODE.consum_times = (float)(first_value + (COMPLETE_NODE.effect_overflows) * CVALUE + end_value) /
 									 ACCU();
 	}
 	else /*The pulse counter did not overflow*/
@@ -206,15 +216,24 @@ static void Get_NodeTimes(Dwin_List *list)
 		}
 		else /*There are multiple pulses*/
 		{
-			COMPLETE_NODE.consum_times =
-				(float)(COMPLETE_NODE.buf[COMPLETE_NODE.data_len] -
-						first_value) /
-				ACCU();
-			/*Calculation error*/
-			if (COMPLETE_NODE.consum_times <= DATA_PRECISION)
+
+			// DmaPrintf("first volue is %d, end value is %d, end - first = %d.\r\n",
+			// 		  FIRST_NODE(), COMPLETE_NODE.buf[COMPLETE_NODE.data_len - 1U], value);
+			// DmaPrintf("result = %f\t\n", COMPLETE_NODE.consum_times);
+
+			/*Avoid overflowing data, resulting in negative results*/
+			for (uint16_t i = COMPLETE_NODE.data_len - 1U; i != 0U; i--)
 			{
-				COMPLETE_NODE.consum_times = 0.999F;
+				if (COMPLETE_NODE.buf[i] < COMPLETE_NODE.buf[i - 1U])
+				{
+					times_value += COMPLETE_NODE.buf[i] + (CVALUE - COMPLETE_NODE.buf[i - 1U]);
+				}
+				else
+				{
+					times_value += (COMPLETE_NODE.buf[i] - COMPLETE_NODE.buf[i - 1U]);
+				}
 			}
+			COMPLETE_NODE.consum_times = (float)times_value / ACCU();
 		}
 	}
 }
@@ -222,9 +241,9 @@ static void Get_NodeTimes(Dwin_List *list)
 static void Get_NodeTimes(Dwin_List *list)
 {
 	uint32_t temp_times = 0;
-	for (uint16_t i = COMPLETE_NODE.data_len; i != 0U ; i--)
+	for (uint16_t i = COMPLETE_NODE.data_len; i != 0U; i--)
 	{
-		{	/*Counter overflow*/
+		{ /*Counter overflow*/
 			if (COMPLETE_NODE.buf[i] < COMPLETE_NODE.buf[i - 1U])
 			{
 				temp_times += COMPLETE_NODE.buf[i] +
@@ -233,7 +252,7 @@ static void Get_NodeTimes(Dwin_List *list)
 			else
 			{
 				temp_times += (COMPLETE_NODE.buf[i] -
-							  COMPLETE_NODE.buf[i - 1U]);
+							   COMPLETE_NODE.buf[i - 1U]);
 			}
 		}
 	}
@@ -286,11 +305,11 @@ bool Wave_Handle(void)
 	for (uint8_t i = 0; i < LIST_SIZE; i++)
 	{
 		/*One of the channels captured data*/
-		if (LCOMPLETE_NONE.data_flag)
+		if (LCOMPLETE_NODE.data_flag)
 		{ /*Capture success flag*/
 			Success_flag = true;
 			/*Calculate the duration of the capture*/
-			// Get_NodeTimes(&List_Map[i]);
+			Get_NodeTimes(&List_Map[i]);
 			/*Get the parity of the current capture times*/
 			if (!(List_Map[i].complete_node % 2U))
 			{ /*Even number of captures*/
@@ -307,39 +326,44 @@ bool Wave_Handle(void)
 #if (USING_DEBUG)
 			/*error compensation*/
 			// error = Get_Capture_Error(&List_Map[i]);
-			// LCOMPLETE_NONE.consum_times += error;
-			DmaPrintf("channel %d, node %d, overcounts %d, times is %02fms, first_value %d, first flag is %d.\r\n",
-					  List_Map[i].id, List_Map[i].complete_node, LCOMPLETE_NONE.overflows_num, LCOMPLETE_NONE.consum_times,
-					  LCOMPLETE_NONE.first_value, LCOMPLETE_NONE.first_flag);
+			// LCOMPLETE_NODE.consum_times += error;
+			DmaPrintf("i= %d,channel %d, node %d, overcounts %d, times is %02fms, first_value %d, effct overflows %d, count = %d.\r\n",
+					  i, List_Map[i].id, List_Map[i].complete_node, LCOMPLETE_NODE.overflows_num, LCOMPLETE_NODE.consum_times,
+					  LCOMPLETE_NODE.first_value, LCOMPLETE_NODE.effect_overflows, LCOMPLETE_NODE.data_len);
 
-			for (uint16_t k = 0; k < LCOMPLETE_NONE.data_len; k++)
-				DmaPrintf("buf[%d],value %d.\r\n", k, LCOMPLETE_NONE.buf[k]);
+			for (uint16_t k = 0; k < LCOMPLETE_NODE.data_len; k++)
+				DmaPrintf("buf[%d],value %d.\r\n", k, LCOMPLETE_NODE.buf[k]);
+				// for (uint16_t k = 0; k < count; k++)
+				// 	DmaPrintf("test_buf[%d],value %d, count = %d.\r\n", k, test_buf[k], count);
+				// count = 0U;
 #else
 			/*The existence of electromagnetic interference leads to the most ideal
 			situation. Only one pulse has been captured, and the equipment has been
 			close to stability*/
-			if (LCOMPLETE_NONE.consum_times >= DATA_PRECISION)
+			if (LCOMPLETE_NODE.consum_times >= DATA_PRECISION)
 			{
 				/*Store time data in temporary buffer*/
-				Report.handle_buf[i] = LCOMPLETE_NONE.consum_times;
+				Report.handle_buf[i] = LCOMPLETE_NODE.consum_times;
 			}
 			/*Draw waveform*/
 			Dwin_Curve_SchMd(&List_Map[i]);
 #endif
 			/*Reset data processing completion flag*/
-			LCOMPLETE_NONE.data_flag = false;
+			LCOMPLETE_NODE.data_flag = false;
 			/*Reset first detection flag*/
-			LCOMPLETE_NONE.first_flag = false;
+			LCOMPLETE_NODE.first_flag = false;
 			/*Clear counter overflow times*/
-			LCOMPLETE_NONE.overflows_num = 0U;
+			LCOMPLETE_NODE.overflows_num = 0U;
+			/*Clear valid overflow times*/
+			LCOMPLETE_NODE.effect_overflows = 0U;
 			/*Clear first recorded value*/
-			LCOMPLETE_NONE.first_value = 0U;
+			LCOMPLETE_NODE.first_value = 0U;
 			/*Clear data length*/
-			LCOMPLETE_NONE.data_len = 0U;
+			LCOMPLETE_NODE.data_len = 0U;
 			/*Clearing time consumption*/
-			LCOMPLETE_NONE.consum_times = 0U;
+			LCOMPLETE_NODE.consum_times = 0U;
 			/*After processing a node, clear the current buffer*/
-			memset((uint8_t *)LCOMPLETE_NONE.buf, 0U, LIST_BUF_SIZE);
+			memset((uint8_t *)LCOMPLETE_NODE.buf, 0U, LIST_BUF_SIZE);
 		}
 		/*If osdelay is used, it is possible that if and else conditions occur at the same time*/
 	}
@@ -353,20 +377,19 @@ bool Wave_Handle(void)
  */
 void Init_List(Dwin_List *list, uint8_t channel_id)
 {
-	uint16_t i = 0;
-
-	for (; i < LISTNODE_SIZE; i++)
+	list->id = channel_id;
+	list->current_node = 0;
+	// list->current_edge = Falling_Edge;
+	for (uint16_t i = 0; i < LISTNODE_SIZE; i++)
 	{
-		list->current_node = 0;
-		// list->current_edge = Falling_Edge;
 		list->dcb_data[i].overtimes = 10U;
-		list->id = channel_id;
 		list->dcb_data[i].first_flag = false;
 		list->dcb_data[i].first_value = 0;
 		list->dcb_data[i].data_flag = false;
 		list->dcb_data[i].timer_synflag = false;
 		list->dcb_data[i].data_len = 0;
 		list->dcb_data[i].overflows_num = 0;
+		list->dcb_data[i].effect_overflows = 0;
 		list->dcb_data[i].consum_times = 0.0F;
 		list->dcb_data[i].error_value = 0.0F;
 	}
