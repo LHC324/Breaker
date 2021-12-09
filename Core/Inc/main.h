@@ -130,8 +130,6 @@ typedef struct
 {
   /*First detection mark*/
   bool first_flag;
-  /*First value*/
-  uint16_t first_value;
 	/*Data receiving completion flag*/
 	bool data_flag;
   /*Timer synchronization flag*/

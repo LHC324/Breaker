@@ -356,8 +356,6 @@ bool Wave_Handle(void)
 			LCOMPLETE_NODE.overflows_num = 0U;
 			/*Clear valid overflow times*/
 			LCOMPLETE_NODE.effect_overflows = 0U;
-			/*Clear first recorded value*/
-			LCOMPLETE_NODE.first_value = 0U;
 			/*Clear data length*/
 			LCOMPLETE_NODE.data_len = 0U;
 			/*Clearing time consumption*/
@@ -384,7 +382,6 @@ void Init_List(Dwin_List *list, uint8_t channel_id)
 	{
 		list->dcb_data[i].overtimes = 10U;
 		list->dcb_data[i].first_flag = false;
-		list->dcb_data[i].first_value = 0;
 		list->dcb_data[i].data_flag = false;
 		list->dcb_data[i].timer_synflag = false;
 		list->dcb_data[i].data_len = 0;
