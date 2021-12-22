@@ -24,6 +24,9 @@ breaker\system_stm32h7xx.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_dm
 breaker\system_stm32h7xx.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_mdma.h
 breaker\system_stm32h7xx.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_exti.h
 breaker\system_stm32h7xx.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_cortex.h
+breaker\system_stm32h7xx.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_adc.h
+breaker\system_stm32h7xx.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_ll_adc.h
+breaker\system_stm32h7xx.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_adc_ex.h
 breaker\system_stm32h7xx.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_flash.h
 breaker\system_stm32h7xx.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_flash_ex.h
 breaker\system_stm32h7xx.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_hsem.h

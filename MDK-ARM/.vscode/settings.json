@@ -7,6 +7,8 @@
         "usart.h": "c",
         "cmsis_os.h": "c",
         "task.h": "c",
-        "freertos.h": "c"
+        "freertos.h": "c",
+        "adc.h": "c",
+        "string.h": "c"
     }
 }

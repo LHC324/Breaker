@@ -25,6 +25,9 @@ breaker\main.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_dma_ex.h
 breaker\main.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_mdma.h
 breaker\main.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_exti.h
 breaker\main.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_cortex.h
+breaker\main.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_adc.h
+breaker\main.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_ll_adc.h
+breaker\main.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_adc_ex.h
 breaker\main.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_flash.h
 breaker\main.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_flash_ex.h
 breaker\main.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_hsem.h
@@ -55,6 +58,8 @@ breaker\main.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/timers.h
 breaker\main.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h
 breaker\main.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h
 breaker\main.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h
+breaker\main.o: ../Core/Inc/adc.h
+breaker\main.o: ../Core/Inc/bdma.h
 breaker\main.o: ../Core/Inc/dma.h
 breaker\main.o: ../Core/Inc/iwdg.h
 breaker\main.o: ../Core/Inc/tim.h

@@ -30,15 +30,22 @@
 #define SP_ADDR 0x8000
 /*历史记录变量显示地址*/
 #define RECORDS_ADDR 0x4030
+/*关机变量地址*/
+#define SHUT_ADDR 0x4120
 /*复位变量地址*/
-#define RESET_ADDR 0x4120
+#define RESET_ADDR 0x4122
 /*确认按钮地址*/
-#define SURE_ADDR 0x4122
+#define SURE_ADDR 0x4124
+/*电池图标显示地址*/
+#define BATTERY_ICON_ADDR 0x4126
+/*+110v电压地址*/
+#define POSITIVE_110V_ADDR 0x4128
+/*关机变量值*/
+#define SHUT_DOWN_CODE 0x0A0A
 /*复位变量值*/
-#define RESET_CODE 0x0D0D
+#define RESET_CODE 0x0B0B
 /*确认变量值*/
-#define SURE_CODE 0x5373
-
+#define SURE_CODE 0x0C0C
 /*半波形通道的长度*/
 #define WAVE_CH_WIDTH 295U
 /*波形通道的高度*/

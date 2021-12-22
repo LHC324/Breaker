@@ -1,5 +1,4 @@
 breaker\dwin.o: ..\Core\Src\Dwin.c
-breaker\dwin.o: ../Core/Inc/Dwin.h
 breaker\dwin.o: ../Core/Inc/main.h
 breaker\dwin.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal.h
 breaker\dwin.o: ../Core/Inc/stm32h7xx_hal_conf.h
@@ -26,6 +25,9 @@ breaker\dwin.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_dma_ex.h
 breaker\dwin.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_mdma.h
 breaker\dwin.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_exti.h
 breaker\dwin.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_cortex.h
+breaker\dwin.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_adc.h
+breaker\dwin.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_ll_adc.h
+breaker\dwin.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_adc_ex.h
 breaker\dwin.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_flash.h
 breaker\dwin.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_flash_ex.h
 breaker\dwin.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_hsem.h
@@ -42,6 +44,7 @@ breaker\dwin.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
 breaker\dwin.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
 breaker\dwin.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
 breaker\dwin.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+breaker\dwin.o: ../Core/Inc/Dwin.h
 breaker\dwin.o: ../Core/Inc/usart.h
 breaker\dwin.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
 breaker\dwin.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h

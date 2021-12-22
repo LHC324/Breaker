@@ -26,7 +26,7 @@
 #endif
 
 #if (USING_DMA == 1)
-UART_DMA_BLOCK Uart_Dma;
+UART_DMA_BLOCK Uart_Dma __attribute__ ((at(0x24000100)));
 #endif
 /* USER CODE END 0 */
 
@@ -47,7 +47,7 @@ void MX_USART1_UART_Init(void)
 
   /* USER CODE END USART1_Init 1 */
   huart1.Instance = USART1;
-  huart1.Init.BaudRate = 3225600;
+  huart1.Init.BaudRate = 115200;
   huart1.Init.WordLength = UART_WORDLENGTH_8B;
   huart1.Init.StopBits = UART_STOPBITS_1;
   huart1.Init.Parity = UART_PARITY_NONE;
@@ -229,7 +229,7 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
   // Dma_Rx.recv_end_flag = true;
   // /* 再次启动 DMA */
   // HAL_UARTEx_ReceiveToIdle_DMA(&huart1, Dma_Rx.rx_buffer, BUFFER_SIZE);
-  // /*关闭DMA半传输中�?????????*/
+  // /*关闭DMA半传输中�?????????????*/
   // // __HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT);
 #endif
 }

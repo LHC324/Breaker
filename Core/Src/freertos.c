@@ -29,6 +29,7 @@
 #include "usart.h"
 #include "Dwin.h"
 #include "iwdg.h"
+#include "adc.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -42,7 +43,8 @@
 #define RUN_TASK_BIT (0x001 << 1U)
 #define WAVE_TASK_BIT (0x001 << 2U)
 #define DWIN_TASK_BIT (0x001 << 3U)
-#define EVENT_ALL_BIT (UART_TASK_BIT | RUN_TASK_BIT | WAVE_TASK_BIT | DWIN_TASK_BIT)
+#define ADC_TASK_BIT (0x001 << 4U)
+#define EVENT_ALL_BIT (UART_TASK_BIT | RUN_TASK_BIT | WAVE_TASK_BIT | DWIN_TASK_BIT | ADC_TASK_BIT)
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -60,6 +62,7 @@ osThreadId Run_TaskHandle;
 osThreadId Data_HandleTaskHandle;
 osThreadId Dwin_TaskHandle;
 osThreadId IWDG_TaskHandle;
+osThreadId Sampling_TaskHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -71,6 +74,7 @@ void Led_Task(void const * argument);
 void Wave_HandleTask(void const * argument);
 void Dwin_HandleTask(void const * argument);
 void Idog_Task(void const * argument);
+void Adc_Task(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -154,6 +158,10 @@ void MX_FREERTOS_Init(void) {
   /* definition and creation of IWDG_Task */
   osThreadDef(IWDG_Task, Idog_Task, osPriorityRealtime, 0, 128);
   IWDG_TaskHandle = osThreadCreate(osThread(IWDG_Task), NULL);
+
+  /* definition and creation of Sampling_Task */
+  osThreadDef(Sampling_Task, Adc_Task, osPriorityBelowNormal, 0, 256);
+  Sampling_TaskHandle = osThreadCreate(osThread(Sampling_Task), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -288,7 +296,7 @@ void Idog_Task(void const * argument)
                                  pdTRUE,         /* Task before exiting EVENT_ALL_BIT is cleared. This is EVENT_ALL_BITis set to indicate "exit"*/
                                  pdTRUE,         /* Set to pdtrue to wait for EVENT_ALL_BIT is set*/
                                  osWaitForever); /* Timeout has been waiting */
-    if((uxBits & EVENT_ALL_BIT) == EVENT_ALL_BIT)
+    if ((uxBits & EVENT_ALL_BIT) == EVENT_ALL_BIT)
     {
       /*feed a dog*/
       HAL_IWDG_Refresh(&hiwdg1);
@@ -296,6 +304,34 @@ void Idog_Task(void const * argument)
     // osDelay(200);
   }
   /* USER CODE END Idog_Task */
+}
+
+/* USER CODE BEGIN Header_Adc_Task */
+/**
+ * @brief Function implementing the Sampling_Task thread.
+ * @param argument: Not used
+ * @retval None
+ */
+/* USER CODE END Header_Adc_Task */
+void Adc_Task(void const * argument)
+{
+  /* USER CODE BEGIN Adc_Task */
+  /*Set event flag bit*/
+  xEventGroupSetBits(Event_Handle, ADC_TASK_BIT);
+  /* Infinite loop */
+  for (;;)
+  {
+    /*ADC data processing*/
+    // Adc_Handle();
+#if (USING_DEBUG)
+#if (ADC_DEBUG)
+    osDelay(1000);
+#endif
+#else
+    osDelay(2000);
+#endif
+  }
+  /* USER CODE END Adc_Task */
 }
 
 /* Private application code --------------------------------------------------*/

@@ -5,6 +5,7 @@
  *      Author: LHC
  */
 
+#include "main.h"
 #include "Dwin.h"
 #include "usart.h"
 #include "string.h"
@@ -88,16 +89,33 @@ Report_S Report = {0};
 // uint8_t g_CurNode[LIST_SIZE][LISTNODE_SIZE] = { 0 };
 
 //#define LIST_SIZE (sizeof(List_Map) / sizeof(Dwin_List))
-
+static void Shut_Down_option(uint8_t *dat, uint8_t len);
 static void Reset_Option(uint8_t *dat, uint8_t len);
 static void Sure_Option(uint8_t *dat, uint8_t len);
 /*Devon screen task event group*/
 DwinMap RecvHandle[] =
 	{
+		{SHUT_ADDR, Shut_Down_option},
 		{RESET_ADDR, Reset_Option},
 		{SURE_ADDR, Sure_Option}};
 
 #define EVENT_HANDLE_SIZE sizeof(RecvHandle) / sizeof(DwinMap)
+
+/**
+ * @brief  Dwin screen shut down
+ * @param  dat Data pointer
+ * @param  len Dtat length
+ * @retval None
+ */
+void Shut_Down_option(uint8_t *dat, uint8_t len)
+{
+	/*Check whether the variable data is legal*/
+	uint16_t data = ((uint16_t)dat[0]) << 8 | dat[1];
+	if (data != SHUT_DOWN_CODE)
+	{
+		return;
+	}
+}
 
 /**
  * @brief  Dwin screen reset
@@ -107,12 +125,15 @@ DwinMap RecvHandle[] =
  */
 void Reset_Option(uint8_t *dat, uint8_t len)
 {
+	
 	/*Check whether the variable data is legal*/
 	uint16_t data = ((uint16_t)dat[0]) << 8 | dat[1];
 	if (data != RESET_CODE)
 	{
 		return;
 	}
+
+
 	/*Reset current report type*/
 	Report.current_type = Even;
 	/*Clear the current reported times record*/
@@ -324,6 +345,7 @@ bool Wave_Handle(void)
 				Report.current_type = Odd;
 			}
 #if (USING_DEBUG)
+#if (CAPTURE_DEBUG)
 			/*error compensation*/
 			// error = Get_Capture_Error(&List_Map[i]);
 			// LCOMPLETE_NODE.consum_times += error;
@@ -336,6 +358,7 @@ bool Wave_Handle(void)
 				// for (uint16_t k = 0; k < count; k++)
 				// 	DmaPrintf("test_buf[%d],value %d, count = %d.\r\n", k, test_buf[k], count);
 				// count = 0U;
+#endif
 #else
 			/*The existence of electromagnetic interference leads to the most ideal
 			situation. Only one pulse has been captured, and the equipment has been
@@ -544,7 +567,10 @@ void Dwin_83H(void)
  */
 __inline void Dwin_ReciveNew(uint16_t len)
 {
+	/* Clean Data Cache to update the content of the SRAM to be used by the DMA */
+    // SCB_CleanDCache_by_Addr((uint32_t *)g_Dwin.RxBuf, len);
 	// memcpy(g_Dwin.RxBuf, rxBuf, len);
+	// SCB_CleanDCache();
 	g_Dwin.RxCount = len;
 }
 
@@ -588,11 +614,17 @@ void Dwin_Init(void)
  */
 void Dwin_Poll(void)
 {
+	// 	static GPIO_PinState state ;
+	// 	state ^= 1;
+	// HAL_GPIO_WritePin(Run_Led_GPIO_Port, Run_Led_Pin, state);
+	// DmaPrintf("rx->%s\r\t", g_Dwin.RxBuf);
+	// SCB_InvalidateDCache();
+
 	if ((g_Dwin.RxBuf[0] != 0x5A) || (g_Dwin.RxBuf[1] != 0xA5))
 	{
 		g_Dwin.RxCount = 0;
 		return;
-	}
+	}	
 	Dwin_AnalyzeApp();
 }
 
