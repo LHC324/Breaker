@@ -56,7 +56,7 @@ void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(Run_Led_GPIO_Port, Run_Led_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(Power_Output_GPIO_Port, Power_Output_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(Power_Off_GPIO_Port, Power_Off_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin : PtPin */
   GPIO_InitStruct.Pin = Run_Led_Pin;
@@ -66,17 +66,17 @@ void MX_GPIO_Init(void)
   HAL_GPIO_Init(Run_Led_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : PtPin */
-  GPIO_InitStruct.Pin = Power_Output_Pin;
+  GPIO_InitStruct.Pin = Power_Off_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(Power_Output_GPIO_Port, &GPIO_InitStruct);
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+  HAL_GPIO_Init(Power_Off_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : PtPin */
-  GPIO_InitStruct.Pin = Power_Input_Pin;
+  GPIO_InitStruct.Pin = Power_On_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(Power_Input_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(Power_On_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : PtPin */
   GPIO_InitStruct.Pin = Charge_State_Pin;

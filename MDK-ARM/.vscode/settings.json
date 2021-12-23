@@ -9,6 +9,7 @@
         "task.h": "c",
         "freertos.h": "c",
         "adc.h": "c",
-        "string.h": "c"
+        "string.h": "c",
+        "bdma.h": "c"
     }
 }

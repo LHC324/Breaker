@@ -64,10 +64,10 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define Run_Led_Pin GPIO_PIN_4
 #define Run_Led_GPIO_Port GPIOE
-#define Power_Output_Pin GPIO_PIN_9
-#define Power_Output_GPIO_Port GPIOI
-#define Power_Input_Pin GPIO_PIN_10
-#define Power_Input_GPIO_Port GPIOI
+#define Power_Off_Pin GPIO_PIN_9
+#define Power_Off_GPIO_Port GPIOI
+#define Power_On_Pin GPIO_PIN_10
+#define Power_On_GPIO_Port GPIOI
 #define Charge_State_Pin GPIO_PIN_3
 #define Charge_State_GPIO_Port GPIOF
 #define BatVoltage_Check_Pin GPIO_PIN_7

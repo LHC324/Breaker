@@ -322,7 +322,7 @@ void Adc_Task(void const * argument)
   for (;;)
   {
     /*ADC data processing*/
-    // Adc_Handle();
+    Adc_Handle();
 #if (USING_DEBUG)
 #if (ADC_DEBUG)
     osDelay(1000);

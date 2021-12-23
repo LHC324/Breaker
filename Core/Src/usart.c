@@ -229,7 +229,7 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
   // Dma_Rx.recv_end_flag = true;
   // /* 再次启动 DMA */
   // HAL_UARTEx_ReceiveToIdle_DMA(&huart1, Dma_Rx.rx_buffer, BUFFER_SIZE);
-  // /*关闭DMA半传输中�?????????????*/
+  // /*关闭DMA半传输中�????????????????*/
   // // __HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT);
 #endif
 }

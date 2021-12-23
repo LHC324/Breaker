@@ -115,6 +115,8 @@ void Shut_Down_option(uint8_t *dat, uint8_t len)
 	{
 		return;
 	}
+	osDelay(500);
+	HAL_GPIO_WritePin(Power_Off_GPIO_Port, Power_Off_Pin, GPIO_PIN_RESET);
 }
 
 /**
@@ -125,15 +127,12 @@ void Shut_Down_option(uint8_t *dat, uint8_t len)
  */
 void Reset_Option(uint8_t *dat, uint8_t len)
 {
-	
 	/*Check whether the variable data is legal*/
 	uint16_t data = ((uint16_t)dat[0]) << 8 | dat[1];
 	if (data != RESET_CODE)
 	{
 		return;
 	}
-
-
 	/*Reset current report type*/
 	Report.current_type = Even;
 	/*Clear the current reported times record*/
@@ -513,24 +512,6 @@ void Dwin_Send(uint8_t *_pBuf, uint16_t _ucLen)
 	}
 }
 
-/**
- * @brief  接收数据帧处理
- * @param  None
- * @retval None
- */
-void Dwin_AnalyzeApp(void)
-{
-	switch (g_Dwin.RxBuf[3])
-	{
-	case READ_CMD:
-	{
-		Dwin_83H();
-	}
-	break;
-	default:
-		break;
-	}
-}
 
 /**
  * @brief  读数据处理
@@ -625,7 +606,15 @@ void Dwin_Poll(void)
 		g_Dwin.RxCount = 0;
 		return;
 	}	
-	Dwin_AnalyzeApp();
+	switch (g_Dwin.RxBuf[3])
+	{
+		case READ_CMD:
+		{
+			Dwin_83H();
+		}break;
+	default:
+		break;
+	}
 }
 
 /**

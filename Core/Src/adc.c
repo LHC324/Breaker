@@ -313,15 +313,50 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
 
 /* USER CODE BEGIN 1 */
 /*Battery detection*/
-void Battery_Detection(float voltage)
+void Battery_Detection(uint16_t site)
 {
+  uint16_t last_icon = 0x0000;
+  uint16_t temp_icon = 0x0000;
 
+  /*The battery voltage is too low, give a prompt and shut down*/
+  if (!site)
+  {
+    HAL_GPIO_WritePin(Power_Off_GPIO_Port, Power_Off_Pin, GPIO_PIN_RESET);
+  }
+  /*Charger currently plugged in*/
+  if (HAL_GPIO_ReadPin(Charge_State_GPIO_Port, Charge_State_Pin) == GPIO_PIN_SET)
+  {
+    if (site <= 2U)
+    {
+      temp_icon = 0x0006;
+    }
+    else if (site <= 4U)
+    {
+      temp_icon = 0x0008;
+    }
+    else
+    {
+      temp_icon = 0x0007;
+    }
+  }
+  else
+  {
+    temp_icon = site;
+  }
+  if (site != last_icon)
+  {
+    /*Record the last status of the battery icon*/
+    last_icon = site;
+    /*The data is reported to the address specified on the Devon screen*/
+	  Endian_Swap((uint8_t *)&temp_icon, 0U, sizeof(temp_icon));
+    Dwin_Write(BATTERY_ICON_ADDR, (uint8_t *)&temp_icon, sizeof(temp_icon));
+  }
 }
 
 
 /**
  * @brief  Obtain the range of the current battery voltage
- * @param  voltage 输入电压值
+ * @param  voltage Input voltage
  * @retval current location
  */
 static uint16_t Get_VoltageInterval(float voltage)
@@ -343,9 +378,11 @@ void Adc_Handle(void)
 {
   float temp_value[4U] = {0};
   // uint16_t temp_buf[2U] = {0x00,0x05};
-  uint16_t icon_value = 0x0001;
-  uint16_t last_state = 0;
-
+  // uint16_t icon_value = 0x0100;
+  // uint16_t last_icon = 0x0000;
+  // uint16_t temp_icon = 0x0000;
+  /* CThe read variable is in the cache, invalidate the cache*/
+  SCB_InvalidateDCache_by_Addr((uint32_t *)adc_buf, ADC_CHANNEL_SIZE);
   temp_value[0U] = GET_CHECK_VOLTAGE(adc_buf[0U], P110V_P2) + 1.3F;
   temp_value[1U] = GET_CHECK_VOLTAGE(adc_buf[1U], N110V_P2) - 0.35F;
   temp_value[2U] = GET_BAT_VOLTAGE(adc_buf[2U]);
@@ -353,13 +390,16 @@ void Adc_Handle(void)
 #if (!USING_DEBUG)
 #if (!ADC_DEBUG)
   /*Get the battery icon corresponding to the current power*/
-  // temp_buf[1U] = 0x02;//Get_VoltageInterval(temp_value[2U]);
-  if (icon_value != last_state)
-  {
-    /*Record the last status of the battery icon*/
-    last_state = icon_value;
-    Dwin_Write(BATTERY_ICON_ADDR, (uint8_t *)&icon_value, sizeof(icon_value));
-  }
+  Battery_Detection(Get_VoltageInterval(temp_value[2U]));
+  // icon_value = Get_VoltageInterval(temp_value[2U]);
+  // if (icon_value != last_icon)
+  // {
+  //   /*Record the last status of the battery icon*/
+  //   temp_icon = last_icon = icon_value;
+  //   /*The data is reported to the address specified on the Devon screen*/
+	//   Endian_Swap((uint8_t *)&temp_icon, 0U, sizeof(temp_icon));
+  //   Dwin_Write(BATTERY_ICON_ADDR, (uint8_t *)&temp_icon, sizeof(temp_icon));
+  // }
   /*关机处理*/
   /*Shield unwanted interference*/
   for(uint8_t i = 0; i < sizeof(temp_value) / sizeof(float); i++)
