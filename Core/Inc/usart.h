@@ -31,9 +31,10 @@ extern "C" {
 #define USING_RTOS 1
 #define USING_DMA 1
 #define USING_PRINTF 1
+#define USING_UART4 0
 
 #if (USING_DMA == 1)
-#define TX_BUF_SIZE 1024U
+#define TX_BUF_SIZE 512U
 #define RX_BUF_SIZE 128U
 #if (USING_PRINTF)
 #if (USING_DMA)
@@ -68,15 +69,18 @@ extern "C" {
   } UART_DMA_BLOCK;
 
   extern UART_DMA_BLOCK Uart_Dma;
+  extern UART_DMA_BLOCK Uart_Dma4;
 #endif
 /* USER CODE END Includes */
 
+extern UART_HandleTypeDef huart4;
 extern UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
 
+void MX_UART4_Init(void);
 void MX_USART1_UART_Init(void);
 
 /* USER CODE BEGIN Prototypes */

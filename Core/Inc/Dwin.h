@@ -22,6 +22,14 @@
 #define READ_CMD 0x83
 /*页面切换*/
 #define PAGE_CHANGE_CMD 0x84
+/*电池电压低时提示图标*/
+#define LOW_CHARGERDIS_ICON 0x0006
+/*电池充满后充电器未拔下图标*/
+#define FULL_CHARGERDIS_ICON 0x0007
+/*正常电池充电时提示图标*/
+#define NORMAL_CHARGERDIS_ICON 0x0008
+/*警告页面下标*/
+#define WARNING_PAGE 0x0E
 /*触摸动作*/
 #define TOUCH_CMD 0xD4
 /*时耗变量显示地址*/
@@ -122,7 +130,6 @@ void Dwin_Send(uint8_t *_pBuf, uint16_t _ucLen);
 uint16_t Get_Crc16(uint8_t *ptr, uint16_t length, uint16_t IniDat);
 void Endian_Swap(uint8_t *pData, uint8_t start, uint8_t length);
 
-void Dwin_AnalyzeApp(void);
 void Dwin_ReciveNew(uint16_t len);
 void Dwin_InportMap(uint32_t addr, pfunc event);
 void Dwin_Init(void);

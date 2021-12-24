@@ -31,6 +31,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "Dwin.h"
+#include "mdrtuslave.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -117,6 +118,7 @@ int main(void)
   MX_IWDG1_Init();
   MX_ADC1_Init();
   MX_ADC3_Init();
+  MX_UART4_Init();
   /* USER CODE BEGIN 2 */
   HAL_TIM_IC_Start_IT(&htim3, TIM_CHANNEL_1);
   HAL_TIM_IC_Start_IT(&htim3, TIM_CHANNEL_2);
@@ -162,6 +164,12 @@ int main(void)
   }
   /*Initialize Devon screen*/
   Dwin_Init();
+  // HAL_Delay(1000);
+  HAL_GPIO_WritePin(Power_Off_GPIO_Port, Power_Off_Pin, GPIO_PIN_SET);
+#if (USING_UART4)
+  /*Initialize Modbus protocol stack*/
+  ModbusInit();
+#endif
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in freertos.c) */
@@ -275,7 +283,7 @@ void PeriphCommonClock_Config(void)
  * @param  list Pointer to the first node of the current linked list
  * @retval None
  */
-static __inline void Overflow_Handle(Dwin_List *list)
+__attribute__((section("ITCM"))) static __inline void Overflow_Handle(Dwin_List *list)
 {
   if (CURRENT_NODE.timer_synflag)
   {
@@ -289,7 +297,7 @@ static __inline void Overflow_Handle(Dwin_List *list)
  * @param  list Pointer to the first node of the current linked list
  * @retval None
  */
-static __inline void Timeout_Handle(Dwin_List *list)
+__attribute__((section("ITCM"))) static __inline void Timeout_Handle(Dwin_List *list)
 {
   /*Avoid the error caused by the first overtime = 0*/
   if ((CURRENT_NODE.overtimes) && (CURRENT_NODE.timer_synflag))

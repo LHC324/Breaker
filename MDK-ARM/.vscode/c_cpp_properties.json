@@ -11,13 +11,15 @@
                 "g:\\STM32_Workers\\STM32H7\\High_voltage_circuit_breaker\\Breaker\\Middlewares\\Third_Party\\FreeRTOS\\Source\\include",
                 "g:\\STM32_Workers\\STM32H7\\High_voltage_circuit_breaker\\Breaker\\Middlewares\\Third_Party\\FreeRTOS\\Source\\CMSIS_RTOS",
                 "g:\\STM32_Workers\\STM32H7\\High_voltage_circuit_breaker\\Breaker\\Middlewares\\Third_Party\\FreeRTOS\\Source\\portable\\RVDS\\ARM_CM4F",
+                "g:\\STM32_Workers\\STM32H7\\High_voltage_circuit_breaker\\Breaker\\FreeModBus\\Inc",
                 "C:\\Keil_v5\\ARM\\ARMCC\\include",
                 "C:\\Keil_v5\\ARM\\ARMCC\\include\\rw",
                 "g:\\STM32_Workers\\STM32H7\\High_voltage_circuit_breaker\\Breaker\\MDK-ARM",
                 "g:\\STM32_Workers\\STM32H7\\High_voltage_circuit_breaker\\Breaker\\Core\\Src",
-                "g:\\STM32_Workers\\STM32H7\\High_voltage_circuit_breaker\\Breaker\\Drivers\\STM32H7xx_HAL_Driver\\Src",
+                "g:\\STM32_Workers\\STM32H7\\High_voltage_circuit_breaker\\Breaker\\FreeModBus\\Src",
                 "g:\\STM32_Workers\\STM32H7\\High_voltage_circuit_breaker\\Breaker\\Middlewares\\Third_Party\\FreeRTOS\\Source",
-                "g:\\STM32_Workers\\STM32H7\\High_voltage_circuit_breaker\\Breaker\\Middlewares\\Third_Party\\FreeRTOS\\Source\\portable\\MemMang"
+                "g:\\STM32_Workers\\STM32H7\\High_voltage_circuit_breaker\\Breaker\\Middlewares\\Third_Party\\FreeRTOS\\Source\\portable\\MemMang",
+                "g:\\STM32_Workers\\STM32H7\\High_voltage_circuit_breaker\\Breaker\\Drivers\\STM32H7xx_HAL_Driver\\Src"
             ],
             "defines": [
                 "USE_HAL_DRIVER",

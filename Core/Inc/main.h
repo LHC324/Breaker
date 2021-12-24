@@ -88,6 +88,10 @@ void Error_Handler(void);
 #define Capture_Channel_6_GPIO_Port GPIOD
 #define Capture_Channel_4_Pin GPIO_PIN_9
 #define Capture_Channel_4_GPIO_Port GPIOC
+#define Wifi_Tx_Pin GPIO_PIN_0
+#define Wifi_Tx_GPIO_Port GPIOD
+#define Wifi_Rx_Pin GPIO_PIN_1
+#define Wifi_Rx_GPIO_Port GPIOD
 /* USER CODE BEGIN Private defines */
 /*Debug options*/
 #define USING_DEBUG   0U

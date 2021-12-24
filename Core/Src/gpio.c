@@ -56,7 +56,7 @@ void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(Run_Led_GPIO_Port, Run_Led_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(Power_Off_GPIO_Port, Power_Off_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(Power_Off_GPIO_Port, Power_Off_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : PtPin */
   GPIO_InitStruct.Pin = Run_Led_Pin;

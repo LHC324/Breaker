@@ -63,8 +63,11 @@ extern DMA_HandleTypeDef hdma_adc3;
 extern TIM_HandleTypeDef htim3;
 extern TIM_HandleTypeDef htim4;
 extern TIM_HandleTypeDef htim6;
+extern DMA_HandleTypeDef hdma_uart4_tx;
+extern DMA_HandleTypeDef hdma_uart4_rx;
 extern DMA_HandleTypeDef hdma_usart1_rx;
 extern DMA_HandleTypeDef hdma_usart1_tx;
+extern UART_HandleTypeDef huart4;
 extern UART_HandleTypeDef huart1;
 extern TIM_HandleTypeDef htim2;
 
@@ -213,6 +216,34 @@ void DMA1_Stream2_IRQHandler(void)
 }
 
 /**
+  * @brief This function handles DMA1 stream3 global interrupt.
+  */
+void DMA1_Stream3_IRQHandler(void)
+{
+  /* USER CODE BEGIN DMA1_Stream3_IRQn 0 */
+
+  /* USER CODE END DMA1_Stream3_IRQn 0 */
+  HAL_DMA_IRQHandler(&hdma_uart4_tx);
+  /* USER CODE BEGIN DMA1_Stream3_IRQn 1 */
+
+  /* USER CODE END DMA1_Stream3_IRQn 1 */
+}
+
+/**
+  * @brief This function handles DMA1 stream4 global interrupt.
+  */
+void DMA1_Stream4_IRQHandler(void)
+{
+  /* USER CODE BEGIN DMA1_Stream4_IRQn 0 */
+
+  /* USER CODE END DMA1_Stream4_IRQn 0 */
+  HAL_DMA_IRQHandler(&hdma_uart4_rx);
+  /* USER CODE BEGIN DMA1_Stream4_IRQn 1 */
+
+  /* USER CODE END DMA1_Stream4_IRQn 1 */
+}
+
+/**
   * @brief This function handles TIM2 global interrupt.
   */
 void TIM2_IRQHandler(void)
@@ -280,6 +311,36 @@ void USART1_IRQHandler(void)
   /* USER CODE BEGIN USART1_IRQn 1 */
 
   /* USER CODE END USART1_IRQn 1 */
+}
+
+/**
+  * @brief This function handles UART4 global interrupt.
+  */
+void UART4_IRQHandler(void)
+{
+  /* USER CODE BEGIN UART4_IRQn 0 */
+#if (USING_DMA == 1)
+#if (USING_UART4)
+  /*Gets the idle flag. The idle flag is set*/
+  if ((__HAL_UART_GET_FLAG(&huart4, UART_FLAG_IDLE) != RESET))
+  { /*Clear idle interrupt flag*/
+    __HAL_UART_CLEAR_IDLEFLAG(&huart4);
+    /*Stop DMA transmission to prevent interference caused by receiving data when processing data*/
+    HAL_UART_DMAStop(&huart4);
+    /*Get data not transferred in DMA. The total count subtracts the number of untransmitted data to obtain the number of received data*/
+    Uart_Dma4.rx_len = RX_BUF_SIZE - __HAL_DMA_GET_COUNTER(&hdma_uart4_rx);
+    /*Data is stored in the Devon buffer*/
+    Dwin_ReciveNew(Uart_Dma4.rx_len);
+    /*Receive completion flag set*/
+    Uart_Dma4.recv_end_flag = true;
+  }
+#endif
+#endif
+  /* USER CODE END UART4_IRQn 0 */
+  HAL_UART_IRQHandler(&huart4);
+  /* USER CODE BEGIN UART4_IRQn 1 */
+
+  /* USER CODE END UART4_IRQn 1 */
 }
 
 /**

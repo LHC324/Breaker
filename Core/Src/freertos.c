@@ -26,6 +26,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "mdrtuslave.h"
 #include "usart.h"
 #include "Dwin.h"
 #include "iwdg.h"
@@ -271,6 +272,20 @@ void Dwin_HandleTask(void const * argument)
       /*Reopen DMA reception*/
       HAL_UART_Receive_DMA(&huart1, Uart_Dma.rx_buffer, RX_BUF_SIZE);
     }
+#if (USING_UART4)
+    else if (Uart_Dma4.recv_end_flag)
+    {
+      /*Clear receive completion flag*/
+      Uart_Dma4.recv_end_flag = false;
+      /*WIFI response event polling*/
+      mdhandler->portRTUPushString(mdhandler, Uart_Dma4.rx_buffer, Uart_Dma4.rx_len);
+      /*Clear data buffer and data length*/
+      memset(Uart_Dma4.rx_buffer, 0, Uart_Dma4.rx_len);
+      Uart_Dma4.rx_len = 0;
+      /*Reopen DMA reception*/
+      HAL_UART_Receive_DMA(&huart4, Uart_Dma4.rx_buffer, RX_BUF_SIZE);
+    }
+#endif
     osDelay(1);
   }
   /* USER CODE END Dwin_HandleTask */

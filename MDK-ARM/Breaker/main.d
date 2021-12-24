@@ -66,3 +66,8 @@ breaker\main.o: ../Core/Inc/tim.h
 breaker\main.o: ../Core/Inc/usart.h
 breaker\main.o: ../Core/Inc/gpio.h
 breaker\main.o: ../Core/Inc/Dwin.h
+breaker\main.o: ..\FreeModBus\Inc\mdrtuslave.h
+breaker\main.o: ..\FreeModBus\Inc\mdtype.h
+breaker\main.o: ..\FreeModBus\Inc\mdconfig.h
+breaker\main.o: ..\FreeModBus\Inc\mdregpool.h
+breaker\main.o: ..\FreeModBus\Inc\mdrecbuffer.h

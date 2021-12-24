@@ -45,7 +45,7 @@ ROMTableAddr = 0xE00FE000
 Target info:
 ------------
 Device: STM32H743IITx
-VTarget = 3.300V
+VTarget = 3.287V
 State of Pins: TCK: 1, TDI: 0, TDO: 1, TMS: 0, TRES: 1, TRST: 1
 Hardware-Breakpoints: 8
 Software-Breakpoints: 8192
@@ -55,4 +55,4 @@ JTAG speed: 15000 kHz
 Erase Done.Programming Done.Verify OK.* JLink Info: Reset: Halt core after reset via DEMCR.VC_CORERESET.
 * JLink Info: Reset: Reset device via AIRCR.SYSRESETREQ.
 Application running ...
-Flash Load finished at 18:18:26
+Flash Load finished at 17:30:13

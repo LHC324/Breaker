@@ -21,6 +21,7 @@
 #include "adc.h"
 
 /* USER CODE BEGIN 0 */
+#include "cmsis_os.h"
 #include "usart.h"
 #include "Dwin.h"
 
@@ -31,11 +32,12 @@ ALIGN_32BYTES(uint16_t adc_buf[ADC_CHANNEL_SIZE]) __attribute__((at(0x38000000))
 static const float Voltage_Interval[][2] = 
 {	
 	{0, 							 						MIN_BATTERY_VOLTAGE}, /*Low voltage, shutdown*/
+	{MIN_BATTERY_VOLTAGE , MIN_BATTERY_VOLTAGE + 1U * VOLTAGE_REGION_RATIO()},
 	{MIN_BATTERY_VOLTAGE + 1U * VOLTAGE_REGION_RATIO(), MIN_BATTERY_VOLTAGE + 2U * VOLTAGE_REGION_RATIO()},
 	{MIN_BATTERY_VOLTAGE + 2U * VOLTAGE_REGION_RATIO(), MIN_BATTERY_VOLTAGE + 3U * VOLTAGE_REGION_RATIO()},
 	{MIN_BATTERY_VOLTAGE + 3U * VOLTAGE_REGION_RATIO(), MIN_BATTERY_VOLTAGE + 4U * VOLTAGE_REGION_RATIO()},
 	{MIN_BATTERY_VOLTAGE + 4U * VOLTAGE_REGION_RATIO(), MIN_BATTERY_VOLTAGE + 5U * VOLTAGE_REGION_RATIO()},
-	{MIN_BATTERY_VOLTAGE + 5U * VOLTAGE_REGION_RATIO(), MAX_BATTERY_VOLTAGE},
+  {MIN_BATTERY_VOLTAGE + 5U * VOLTAGE_REGION_RATIO(), MAX_BATTERY_VOLTAGE},
 };	
 /* USER CODE END 0 */
 
@@ -213,7 +215,7 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
     hdma_adc1.Init.PeriphDataAlignment = DMA_PDATAALIGN_HALFWORD;
     hdma_adc1.Init.MemDataAlignment = DMA_MDATAALIGN_HALFWORD;
     hdma_adc1.Init.Mode = DMA_CIRCULAR;
-    hdma_adc1.Init.Priority = DMA_PRIORITY_LOW;
+    hdma_adc1.Init.Priority = DMA_PRIORITY_MEDIUM;
     hdma_adc1.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
     if (HAL_DMA_Init(&hdma_adc1) != HAL_OK)
     {
@@ -313,35 +315,47 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
 
 /* USER CODE BEGIN 1 */
 /*Battery detection*/
-void Battery_Detection(uint16_t site)
+static void Battery_Detection(uint16_t site)
 {
   uint16_t last_icon = 0x0000;
   uint16_t temp_icon = 0x0000;
+  static uint16_t counters = 0;
 
   /*The battery voltage is too low, give a prompt and shut down*/
   if (!site)
-  {
-    HAL_GPIO_WritePin(Power_Off_GPIO_Port, Power_Off_Pin, GPIO_PIN_RESET);
-  }
-  /*Charger currently plugged in*/
-  if (HAL_GPIO_ReadPin(Charge_State_GPIO_Port, Charge_State_Pin) == GPIO_PIN_SET)
-  {
-    if (site <= 2U)
+  { 
+    Dwin_PageChange(WARNING_PAGE);
+    osDelay(1000);
+    Dwin_PageChange(0x02);
+    /*Continuous detection for 30s*/
+    if (++counters == 15U)
     {
-      temp_icon = 0x0006;
-    }
-    else if (site <= 4U)
-    {
-      temp_icon = 0x0008;
-    }
-    else
-    {
-      temp_icon = 0x0007;
+      counters = 0U;
+      HAL_GPIO_WritePin(Power_Off_GPIO_Port, Power_Off_Pin, GPIO_PIN_RESET);
     }
   }
   else
   {
+    counters = 0U;
+  }
+  /*Charger currently plugged in*/
+  if (HAL_GPIO_ReadPin(Charge_State_GPIO_Port, Charge_State_Pin) == GPIO_PIN_SET)
+  {
+    site <= 2U ? (temp_icon = LOW_CHARGERDIS_ICON) : 
+    (site <= 5U ? (temp_icon = NORMAL_CHARGERDIS_ICON) : (temp_icon = FULL_CHARGERDIS_ICON));
+  }
+  else
+  { /*An icon is missing*/
     temp_icon = site;
+    // if (site <= 1U)
+    // {
+    //   temp_icon = 1U;
+    // }
+    // else 
+    if (site >= 5U)
+    {
+      temp_icon = 5U;
+    }
   }
   if (site != last_icon)
   {
@@ -377,10 +391,7 @@ static uint16_t Get_VoltageInterval(float voltage)
 void Adc_Handle(void)
 {
   float temp_value[4U] = {0};
-  // uint16_t temp_buf[2U] = {0x00,0x05};
-  // uint16_t icon_value = 0x0100;
-  // uint16_t last_icon = 0x0000;
-  // uint16_t temp_icon = 0x0000;
+
   /* CThe read variable is in the cache, invalidate the cache*/
   SCB_InvalidateDCache_by_Addr((uint32_t *)adc_buf, ADC_CHANNEL_SIZE);
   temp_value[0U] = GET_CHECK_VOLTAGE(adc_buf[0U], P110V_P2) + 1.3F;
@@ -391,16 +402,6 @@ void Adc_Handle(void)
 #if (!ADC_DEBUG)
   /*Get the battery icon corresponding to the current power*/
   Battery_Detection(Get_VoltageInterval(temp_value[2U]));
-  // icon_value = Get_VoltageInterval(temp_value[2U]);
-  // if (icon_value != last_icon)
-  // {
-  //   /*Record the last status of the battery icon*/
-  //   temp_icon = last_icon = icon_value;
-  //   /*The data is reported to the address specified on the Devon screen*/
-	//   Endian_Swap((uint8_t *)&temp_icon, 0U, sizeof(temp_icon));
-  //   Dwin_Write(BATTERY_ICON_ADDR, (uint8_t *)&temp_icon, sizeof(temp_icon));
-  // }
-  /*关机处理*/
   /*Shield unwanted interference*/
   for(uint8_t i = 0; i < sizeof(temp_value) / sizeof(float); i++)
   { /*Remove jitter error*/

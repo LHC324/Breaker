@@ -10,6 +10,8 @@
         "freertos.h": "c",
         "adc.h": "c",
         "string.h": "c",
-        "bdma.h": "c"
+        "bdma.h": "c",
+        "mdrecbuffer.h": "c",
+        "mdregpool.h": "c"
     }
 }

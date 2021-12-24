@@ -58,6 +58,11 @@ breaker\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/timers.h
 breaker\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h
 breaker\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h
 breaker\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h
+breaker\freertos.o: ..\FreeModBus\Inc\mdrtuslave.h
+breaker\freertos.o: ..\FreeModBus\Inc\mdtype.h
+breaker\freertos.o: ..\FreeModBus\Inc\mdconfig.h
+breaker\freertos.o: ..\FreeModBus\Inc\mdregpool.h
+breaker\freertos.o: ..\FreeModBus\Inc\mdrecbuffer.h
 breaker\freertos.o: ../Core/Inc/usart.h
 breaker\freertos.o: ../Core/Inc/Dwin.h
 breaker\freertos.o: ../Core/Inc/iwdg.h

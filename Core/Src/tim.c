@@ -347,7 +347,7 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* tim_baseHandle)
 
 /* USER CODE BEGIN 1 */
 /*Timer input capture interrupt processing callback function, in HAL_TIM_IRQHandler will be called*/
-void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) /*Execute when capture interrupt occurs*/
+__attribute__((section("ITCM"))) void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) /*Execute when capture interrupt occurs*/
 {
   /*Shutdown timer interrupt*/
   // __HAL_TIM_DISABLE_IT(&htim6, TIM_IT_UPDATE);
@@ -396,7 +396,7 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) /*Execute when capture 
  * @param  timer Timer handle
  * @retval None
  */
-static __inline void Save_CounterValue(Dwin_List *list, uint32_t channel, TIM_HandleTypeDef timer)
+__attribute__((section("ITCM"))) static __inline void Save_CounterValue(Dwin_List *list, uint32_t channel, TIM_HandleTypeDef timer)
 {
   /*Entry parameter check*/
   if (list == NULL)
