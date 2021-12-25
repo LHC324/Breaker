@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>5. 操作指南 &mdash; 高压断路器动特性测试仪 V1.0.0 文档</title>
+  <title>5. 操作指南 &mdash; 高压断路器动特性测试仪 V1.0.1 文档</title>
   
 
   
@@ -94,9 +94,10 @@
 <li class="toctree-l1"><a class="reference internal" href="work_principle.html">3. 设计原理</a></li>
 <li class="toctree-l1"><a class="reference internal" href="structural_characteristics.html">4. 结构特性</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">5. 操作指南</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#id2">5.1. 开机/屏保界面</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id3">5.2. 前台界面</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id4">5.3. 后台界面</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id2">5.1. 后盖接线组说明</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id3">5.2. 开机/屏保界面</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id4">5.3. 前台界面</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id5">5.4. 后台界面</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="note.html">6. 注意事项</a></li>
@@ -172,39 +173,78 @@
   <div class="section" id="id1">
 <h1><span class="section-number">5. </span>操作指南<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h1>
 <div class="section" id="id2">
-<h2><span class="section-number">5.1. </span>开机/屏保界面<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h2>
-<div class="figure align-center" id="id5">
-<a class="reference internal image-reference" href="_images/00_屏保.jpg"><img alt="NULL" src="_images/00_屏保.jpg" style="width: 448.0px; height: 336.0px;" /></a>
-<p class="caption"><span class="caption-text">图 5.1.1 开机/屏保界面</span><a class="headerlink" href="#id5" title="永久链接至图片">¶</a></p>
+<h2><span class="section-number">5.1. </span>后盖接线组说明<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h2>
+<div class="figure align-center" id="id6">
+<a class="reference internal image-reference" href="_images/背板.jpg"><img alt="NULL" src="_images/背板.jpg" style="width: 512.0px; height: 384.0px;" /></a>
+<p class="caption"><span class="caption-text">图 5.1.1 后盖接线组</span><a class="headerlink" href="#id6" title="永久链接至图片">¶</a></p>
 </div>
 <ul class="simple">
-<li><p>打开电源开关或者接入外部电源后，您将会看到此界面。这个界面将会作为开机时首次显示的主界面和屏保模式下界面。
-<strong>注意，主机屏幕再无任何操作大约5min钟后进行熄屏以节省电量</strong> ，此时您仅需要触模屏幕即可点亮。</p></li>
+<li><p>① 区域为 <strong>12V/2ADC</strong> 充电电压输入口，当设备电池电压过低时通过该接口进行充电。</p></li>
+<li><p>② 区域为 <strong>USB-C</strong> 双线数据交互口，目前暂未添加任何功能。</p></li>
+<li><p>③ 区域为 <strong>六通道数据采集接线组及正负110V电压采集接线口</strong> ，是主要功能接线区域。</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">注解</p>
+<ul class="simple">
+<li><p>A/B/C1与A/B/C2构成组通道， 分别对应屏幕区域的通道0~5。例：<strong>A1对应通道0，A2对应通道1</strong>。</p></li>
+<li><p>特别说明：所有组通道的公共端为 <strong>GND</strong> 接线时，应该保证每个目标测量组通道与 <strong>GND</strong> 间形成回路，否则可能无法进行测量。</p></li>
+<li><p><strong>POWER</strong> 按钮为设备开机按钮， 当按下按钮1S-3S后，请观察屏幕是否亮起，条件成立，则开机成功。</p></li>
+</ul>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">警告</p>
+<ul class="simple">
+<li><p>尽可能不要往A/B/C三个接线组中接入高于110V DC/AC电压，尽管接线组的 <strong>GND</strong> 与正负110V <strong>GND</strong> 并不相同！</p></li>
+</ul>
+</div>
+<div class="figure align-center" id="id7">
+<a class="reference internal image-reference" href="_images/14_界面14.jpg"><img alt="NULL" src="_images/14_界面14.jpg" style="width: 512.0px; height: 384.0px;" /></a>
+<p class="caption"><span class="caption-text">图 5.1.2 电池电压过低提示</span><a class="headerlink" href="#id7" title="永久链接至图片">¶</a></p>
+</div>
+<ul class="simple">
+<li><p>如果开机成功后，间歇性（1S）弹出以上界面，请检查当前电池电压是否低于10.8V，条件成立，请连接充电器，否则，持续 <code class="docutils literal notranslate"><span class="pre">15</span></code> 次后
+设备将会自动关机。</p></li>
+<li><p>如果设备处于此情况，则设备 <strong>无法正常工作</strong>，您必须给电池充电一段时间后，方能使用。</p></li>
 </ul>
 </div>
 <div class="section" id="id3">
-<h2><span class="section-number">5.2. </span>前台界面<a class="headerlink" href="#id3" title="永久链接至标题">¶</a></h2>
-<div class="figure align-center" id="id6">
-<a class="reference internal image-reference" href="_images/01_界面1.jpg"><img alt="NULL" src="_images/01_界面1.jpg" style="width: 448.0px; height: 336.0px;" /></a>
-<p class="caption"><span class="caption-text">图 5.2.1 主界面1</span><a class="headerlink" href="#id6" title="永久链接至图片">¶</a></p>
+<h2><span class="section-number">5.2. </span>开机/屏保界面<a class="headerlink" href="#id3" title="永久链接至标题">¶</a></h2>
+<div class="figure align-center" id="id8">
+<a class="reference internal image-reference" href="_images/00_屏保.jpg"><img alt="NULL" src="_images/00_屏保.jpg" style="width: 512.0px; height: 384.0px;" /></a>
+<p class="caption"><span class="caption-text">图 5.2.1 开机/屏保界面</span><a class="headerlink" href="#id8" title="永久链接至图片">¶</a></p>
+</div>
+<ul class="simple">
+<li><p>打开电源开关后，您将会看到此界面。这个界面将会作为开机时首次显示的主界面和屏保模式下界面。
+<strong>注意，主机屏幕再无任何操作大约5min钟后进行熄屏以节省电量</strong> ，此时您仅需要触模屏幕即可点亮。</p></li>
+</ul>
+</div>
+<div class="section" id="id4">
+<h2><span class="section-number">5.3. </span>前台界面<a class="headerlink" href="#id4" title="永久链接至标题">¶</a></h2>
+<div class="figure align-center" id="id9">
+<a class="reference internal image-reference" href="_images/01_界面1.jpg"><img alt="NULL" src="_images/01_界面1.jpg" style="width: 512.0px; height: 384.0px;" /></a>
+<p class="caption"><span class="caption-text">图 5.3.1 主界面1</span><a class="headerlink" href="#id9" title="永久链接至图片">¶</a></p>
 </div>
 <ul class="simple">
 <li><p>此界面主要由类型操作按钮、两次测量时间以及两次测量波形三部分构成。</p></li>
 <li><p>左边第一个按钮为 <strong>返回上一页（开机/屏保界面）</strong> ，您触摸它将会触发相应功能。</p></li>
-<li><p>中间按钮为 <strong>复位</strong>，您触摸它将会触发相应功能。</p></li>
+<li><p>中间第一个按钮为 <strong>关机</strong> ，您触摸它将会触发相应功能。</p></li>
+<li><p>中间第二个按钮为 <strong>复位</strong>，您触摸它将会触发相应功能。</p></li>
 <li><p>最右边按钮为 <strong>跳转到下一页（主界面二）</strong> ，您触摸它将会触发相应功能。</p></li>
 </ul>
-<div class="figure align-left" id="id7">
-<a class="reference internal image-reference" href="_images/按钮1.bmp"><img alt="后退按钮" src="_images/按钮1.bmp" /></a>
-<p class="caption"><span class="caption-text">后退按钮</span><a class="headerlink" href="#id7" title="永久链接至图片">¶</a></p>
+<div class="figure align-center" id="id10">
+<a class="reference internal image-reference" href="_images/菜单显示栏.jpg"><img alt="菜单栏" src="_images/菜单显示栏.jpg" style="width: 640.0px; height: 47.5px;" /></a>
+<p class="caption"><span class="caption-text">图 5.3.2 菜单栏1</span><a class="headerlink" href="#id10" title="永久链接至图片">¶</a></p>
 </div>
-<div class="figure align-right" id="id8">
-<a class="reference internal image-reference" href="_images/按钮3.bmp"><img alt="前进按钮" src="_images/按钮3.bmp" /></a>
-<p class="caption"><span class="caption-text">前进按钮</span><a class="headerlink" href="#id8" title="永久链接至图片">¶</a></p>
+<div class="admonition tip">
+<p class="admonition-title">小技巧</p>
+<ul class="simple">
+<li><p><strong>关机按钮使用介绍</strong> :</p></li>
+<li><p>请您保持在 <code class="docutils literal notranslate"><span class="pre">sure</span></code> 按钮上长按1-2s后，设备整机工作电源将会被关闭。</p></li>
+</ul>
 </div>
-<div class="figure align-center" id="id9">
-<a class="reference internal image-reference" href="_images/按钮2.bmp"><img alt="复位按钮" src="_images/按钮2.bmp" /></a>
-<p class="caption"><span class="caption-text">复位按钮</span><a class="headerlink" href="#id9" title="永久链接至图片">¶</a></p>
+<div class="figure align-center" id="id11">
+<a class="reference internal image-reference" href="_images/13_界面13.jpg"><img alt="NULL" src="_images/13_界面13.jpg" style="width: 512.0px; height: 384.0px;" /></a>
+<p class="caption"><span class="caption-text">图 5.3.3 关机弹窗</span><a class="headerlink" href="#id11" title="永久链接至图片">¶</a></p>
 </div>
 <div class="admonition tip">
 <p class="admonition-title">小技巧</p>
@@ -212,12 +252,12 @@
 <li><p><strong>复位按钮使用介绍</strong> :</p></li>
 <li><p>1、如果您当前的测试需求是需要多通道/全六通道同时测量，但是当前通道0-5中 <code class="docutils literal notranslate"><span class="pre">某一个/多个通道</span></code> ,已经存在数据和波形，为了方便获得全新的界面，
 您可以使用 <code class="docutils literal notranslate"><span class="pre">复位</span></code> 按钮。</p></li>
-<li><p>2、另一种情况是：当前有各别通道已经产生了 <code class="docutils literal notranslate"><span class="pre">异常、干扰、非同步通道使用</span></code> 所造成的极少数通道彼此间数据波形出现不同步情况 ，也可以使用 <code class="docutils literal notranslate"><span class="pre">复位</span></code> 按钮来解决您的问题。</p></li>
+<li><p>2、另一种情况是：当前有各别通道已经产生了 <code class="docutils literal notranslate"><span class="pre">异常、干扰、非同步通道使用</span></code> 所造成的极少数通道彼此间数据/波形出现不同步情况 ，也可以使用 <code class="docutils literal notranslate"><span class="pre">复位</span></code> 按钮来解决您的问题。</p></li>
 </ul>
 </div>
-<div class="figure align-center" id="id10">
-<a class="reference internal image-reference" href="_images/12_界面12.jpg"><img alt="NULL" src="_images/12_界面12.jpg" style="width: 448.0px; height: 336.0px;" /></a>
-<p class="caption"><span class="caption-text">图 5.2.2 复位弹窗</span><a class="headerlink" href="#id10" title="永久链接至图片">¶</a></p>
+<div class="figure align-center" id="id12">
+<a class="reference internal image-reference" href="_images/12_界面12.jpg"><img alt="NULL" src="_images/12_界面12.jpg" style="width: 512.0px; height: 384.0px;" /></a>
+<p class="caption"><span class="caption-text">图 5.3.4 复位弹窗</span><a class="headerlink" href="#id12" title="永久链接至图片">¶</a></p>
 </div>
 <div class="admonition tip">
 <p class="admonition-title">小技巧</p>
@@ -225,16 +265,25 @@
 <li><p>当您按下 <code class="docutils literal notranslate"><span class="pre">sure</span></code> 按钮后，所有通道的 <code class="docutils literal notranslate"><span class="pre">前后台数据</span></code> 将会被立即清除。</p></li>
 </ul>
 </div>
-<div class="figure align-center" id="id11">
-<a class="reference internal image-reference" href="_images/02_界面2.jpg"><img alt="NULL" src="_images/02_界面2.jpg" style="width: 448.0px; height: 336.0px;" /></a>
-<p class="caption"><span class="caption-text">图 5.2.3 主界面2</span><a class="headerlink" href="#id11" title="永久链接至图片">¶</a></p>
+<div class="figure align-center" id="id13">
+<a class="reference internal image-reference" href="_images/02_界面2.jpg"><img alt="NULL" src="_images/02_界面2.jpg" style="width: 512.0px; height: 384.0px;" /></a>
+<p class="caption"><span class="caption-text">图 5.3.5 主界面2</span><a class="headerlink" href="#id13" title="永久链接至图片">¶</a></p>
 </div>
 <ul class="simple">
-<li><p>图 <strong>5.2.1</strong> 和图 <strong>5.2.2</strong> 共同构成高压断路器动特性检测仪的前台界面，通道按0-5顺序排列，唯一区别的的是，界面图 <strong>5.2.1</strong> 上有 <code class="docutils literal notranslate"><span class="pre">复位</span></code> 按钮，而界面图 <strong>5.2.2</strong> 没有。</p></li>
+<li><p>左边显示的是当前 <strong>电池电压</strong>。</p></li>
+<li><p>中间显示的是当前电压对应的 <strong>电池图标</strong>。</p></li>
+<li><p>最右边显示的是当前 <strong>CPU温度</strong> ，它将会告诉您当前环境是否适合设备工作。</p></li>
 </ul>
-<div class="figure align-center" id="id12">
-<a class="reference internal image-reference" href="_images/结果显示栏.bmp"><img alt="NULL" src="_images/结果显示栏.bmp" /></a>
-<p class="caption"><span class="caption-text">图 5.2.4 测量结果显示栏</span><a class="headerlink" href="#id12" title="永久链接至图片">¶</a></p>
+<div class="figure align-center" id="id14">
+<a class="reference internal image-reference" href="_images/菜单显示栏2.jpg"><img alt="菜单栏2" src="_images/菜单显示栏2.jpg" style="width: 640.0px; height: 47.5px;" /></a>
+<p class="caption"><span class="caption-text">图 5.3.6 菜单栏2</span><a class="headerlink" href="#id14" title="永久链接至图片">¶</a></p>
+</div>
+<ul class="simple">
+<li><p>图 <strong>5.3.1</strong> 和图 <strong>5.3.5</strong> 共同构成高压断路器动特性检测仪的前台界面，通道按0-5顺序排列。</p></li>
+</ul>
+<div class="figure align-center" id="id15">
+<a class="reference internal image-reference" href="_images/结果显示栏.jpg"><img alt="NULL" src="_images/结果显示栏.jpg" style="width: 716.8000000000001px; height: 44.0px;" /></a>
+<p class="caption"><span class="caption-text">图 5.3.7 测量结果显示栏</span><a class="headerlink" href="#id15" title="永久链接至图片">¶</a></p>
 </div>
 <div class="admonition note">
 <p class="admonition-title">注解</p>
@@ -245,9 +294,9 @@
 <li><p>①区域和②区域中测量所得到的时间单位固定为 <code class="docutils literal notranslate"><span class="pre">ms</span></code>，数据整数为可表示为 <code class="docutils literal notranslate"><span class="pre">9999.999ms</span></code>。</p></li>
 </ul>
 </div>
-<div class="figure align-center" id="id13">
-<a class="reference internal image-reference" href="_images/波形显示栏.bmp"><img alt="NULL" src="_images/波形显示栏.bmp" /></a>
-<p class="caption"><span class="caption-text">图 5.2.5 波形显示栏</span><a class="headerlink" href="#id13" title="永久链接至图片">¶</a></p>
+<div class="figure align-center" id="id16">
+<a class="reference internal image-reference" href="_images/波形显示栏.jpg"><img alt="NULL" src="_images/波形显示栏.jpg" style="width: 716.0px; height: 109.60000000000001px;" /></a>
+<p class="caption"><span class="caption-text">图 5.3.8 波形显示栏</span><a class="headerlink" href="#id16" title="永久链接至图片">¶</a></p>
 </div>
 <div class="admonition note">
 <p class="admonition-title">注解</p>
@@ -258,34 +307,34 @@
 <li><p>波形的显示顺序总是从左到右，当区域①和区域②都存在波形显示时，下一次测量将会清除全部波形，回到区域①进行显示，依次循环。</p></li>
 </ul>
 </div>
-<div class="figure align-center" id="id14">
-<a class="reference internal image-reference" href="_images/实测效果图.jpg"><img alt="NULL" src="_images/实测效果图.jpg" style="width: 502.79999999999995px; height: 383.7px;" /></a>
-<p class="caption"><span class="caption-text">图 5.2.6 实测效果图</span><a class="headerlink" href="#id14" title="永久链接至图片">¶</a></p>
+<div class="figure align-center" id="id17">
+<a class="reference internal image-reference" href="_images/实测效果图.jpg"><img alt="NULL" src="_images/实测效果图.jpg" style="width: 512.0px; height: 384.0px;" /></a>
+<p class="caption"><span class="caption-text">图 5.3.9 实测效果图</span><a class="headerlink" href="#id17" title="永久链接至图片">¶</a></p>
 </div>
 </div>
-<div class="section" id="id4">
-<h2><span class="section-number">5.3. </span>后台界面<a class="headerlink" href="#id4" title="永久链接至标题">¶</a></h2>
-<div class="figure align-center" id="id15">
-<a class="reference internal image-reference" href="_images/03_界面3.jpg"><img alt="NULL" src="_images/03_界面3.jpg" style="width: 448.0px; height: 336.0px;" /></a>
-<p class="caption"><span class="caption-text">图 5.3.1 所有通道历史记录选择页面</span><a class="headerlink" href="#id15" title="永久链接至图片">¶</a></p>
+<div class="section" id="id5">
+<h2><span class="section-number">5.4. </span>后台界面<a class="headerlink" href="#id5" title="永久链接至标题">¶</a></h2>
+<div class="figure align-center" id="id18">
+<a class="reference internal image-reference" href="_images/03_界面3.jpg"><img alt="NULL" src="_images/03_界面3.jpg" style="width: 512.0px; height: 384.0px;" /></a>
+<p class="caption"><span class="caption-text">图 5.4.1 所有通道历史记录选择页面</span><a class="headerlink" href="#id18" title="永久链接至图片">¶</a></p>
 </div>
 <ul class="simple">
 <li><p><strong>您通过触摸上图中相应通道标号，即可进入对应通道的历史记录界面</strong></p></li>
 </ul>
-<div class="figure align-center" id="id16">
-<a class="reference internal image-reference" href="_images/04_界面4.jpg"><img alt="NULL" src="_images/04_界面4.jpg" style="width: 448.0px; height: 336.0px;" /></a>
-<p class="caption"><span class="caption-text">图 5.3.2 通道0历史历史数据记录</span><a class="headerlink" href="#id16" title="永久链接至图片">¶</a></p>
+<div class="figure align-center" id="id19">
+<a class="reference internal image-reference" href="_images/04_界面4.jpg"><img alt="NULL" src="_images/04_界面4.jpg" style="width: 512.0px; height: 384.0px;" /></a>
+<p class="caption"><span class="caption-text">图 5.4.2 通道0历史历史数据记录</span><a class="headerlink" href="#id19" title="永久链接至图片">¶</a></p>
 </div>
 <ul class="simple">
 <li><p>上图显示的是通道 <code class="docutils literal notranslate"><span class="pre">0</span></code> 的后台历史数据，总共分为 <code class="docutils literal notranslate"><span class="pre">5</span></code> 组，每组包含 <code class="docutils literal notranslate"><span class="pre">2</span></code> 次测量的历史数据。</p></li>
 </ul>
-<div class="figure align-center" id="id17">
-<a class="reference internal image-reference" href="_images/实测历史记录数据.jpg"><img alt="NULL" src="_images/实测历史记录数据.jpg" style="width: 523.8px; height: 383.7px;" /></a>
-<p class="caption"><span class="caption-text">图 5.3.3 实测效果图</span><a class="headerlink" href="#id17" title="永久链接至图片">¶</a></p>
+<div class="figure align-center" id="id20">
+<a class="reference internal image-reference" href="_images/实测历史记录数据.jpg"><img alt="NULL" src="_images/实测历史记录数据.jpg" style="width: 512.0px; height: 384.0px;" /></a>
+<p class="caption"><span class="caption-text">图 5.4.3 实测效果图</span><a class="headerlink" href="#id20" title="永久链接至图片">¶</a></p>
 </div>
-<div class="figure align-center" id="id18">
-<a class="reference internal image-reference" href="_images/11_界面11.jpg"><img alt="NULL" src="_images/11_界面11.jpg" style="width: 448.0px; height: 336.0px;" /></a>
-<p class="caption"><span class="caption-text">图 5.3.4 历史数据清除弹窗</span><a class="headerlink" href="#id18" title="永久链接至图片">¶</a></p>
+<div class="figure align-center" id="id21">
+<a class="reference internal image-reference" href="_images/11_界面11.jpg"><img alt="NULL" src="_images/11_界面11.jpg" style="width: 512.0px; height: 384.0px;" /></a>
+<p class="caption"><span class="caption-text">图 5.4.4 历史数据清除弹窗</span><a class="headerlink" href="#id21" title="永久链接至图片">¶</a></p>
 </div>
 <div class="admonition note">
 <p class="admonition-title">注解</p>

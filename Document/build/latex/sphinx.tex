@@ -98,8 +98,8 @@ cautionBgColor = {named}{LightPink}}
 
 
 \title{高压断路器动特性测试仪}
-\date{2021 年 11 月 24 日}
-\release{V1.0.0}
+\date{2021 年 12 月 25 日}
+\release{V1.0.1}
 \author{LHC@云南兆富科技有限公司}
 \newcommand{\sphinxlogo}{\vbox{}}
 \renewcommand{\releasename}{发布}
@@ -122,7 +122,7 @@ cautionBgColor = {named}{LightPink}}
 \begin{figure}[htbp]
 \centering
 
-\noindent\sphinxincludegraphics[scale=0.5]{{断路器测试仪外观}.bmp}
+\noindent\sphinxincludegraphics[scale=0.7]{{断路器测试仪外观}.jpg}
 \end{figure}
 \begin{itemize}
 \item {} 
@@ -168,14 +168,14 @@ cautionBgColor = {named}{LightPink}}
 \centering
 \capstart
 
-\noindent\sphinxincludegraphics[scale=0.7]{{低压断路器}.bmp}
+\noindent\sphinxincludegraphics[scale=0.8]{{低压断路器}.jpg}
 \caption{图 1.1 低压断路器控制回路}\label{\detokenize{summary:id2}}\end{figure}
 
 \begin{figure}[htbp]
 \centering
 \capstart
 
-\noindent\sphinxincludegraphics[scale=0.7]{{高压断路器}.bmp}
+\noindent\sphinxincludegraphics[scale=0.8]{{高压断路器}.jpg}
 \caption{图 1.2 高压断路器控制回路}\label{\detokenize{summary:id3}}\end{figure}
 
 
@@ -191,7 +191,7 @@ cautionBgColor = {named}{LightPink}}
 
 \item {} 
 \sphinxAtStartPar
-\sphinxstylestrong{本产品内置12V/5Ah超长寿命电池，可持续至少一周连续使用，并且具有高达500次以上的充放电循环周期}
+\sphinxstylestrong{本产品内置12V/7Ah * 2个超长寿命电池，可持续至少一周连续使用，并且具有高达500次以上的充放电循环周期}
 
 \item {} 
 \sphinxAtStartPar
@@ -200,6 +200,10 @@ cautionBgColor = {named}{LightPink}}
 \item {} 
 \sphinxAtStartPar
 \sphinxstylestrong{本产品自带充电保护功能，可避免大部分使用过程中由于电源造成的安全问题}
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstylestrong{本产品带有WIFI物联网功能，可把检测数据保存至物联网终端，已被查阅（WIFI模块可选）}
 
 \end{itemize}
 
@@ -241,7 +245,7 @@ cautionBgColor = {named}{LightPink}}
 \centering
 \capstart
 
-\noindent\sphinxincludegraphics[scale=0.7]{{控制柜接线图}.bmp}
+\noindent\sphinxincludegraphics[scale=0.6]{{控制柜接线图}.jpg}
 \caption{图 3.1.1 柜内接线图}\label{\detokenize{work_principle:id4}}\end{figure}
 
 \begin{sphinxadmonition}{note}{注解:}
@@ -254,7 +258,7 @@ cautionBgColor = {named}{LightPink}}
 \centering
 \capstart
 
-\noindent\sphinxincludegraphics[scale=0.9]{{接线端子自动夹具}.bmp}
+\noindent\sphinxincludegraphics[scale=0.8]{{接线端子自动夹具}.jpg}
 \caption{图 3.1.2 接线端子自动夹具结构设计图}\label{\detokenize{work_principle:id5}}\end{figure}
 
 \begin{sphinxadmonition}{note}{注解:}\begin{itemize}
@@ -324,7 +328,7 @@ cautionBgColor = {named}{LightPink}}
 \centering
 \capstart
 
-\noindent\sphinxincludegraphics[scale=1.0]{{高空自动夹具}.bmp}
+\noindent\sphinxincludegraphics[scale=1.0]{{高空自动夹具}.jpg}
 \caption{图 3.2.1 高空自动夹具结构设计图}\label{\detokenize{work_principle:id6}}\end{figure}
 
 \begin{sphinxadmonition}{note}{注解:}
@@ -341,36 +345,108 @@ cautionBgColor = {named}{LightPink}}
 
 
 \section{结构特性}
-\label{\detokenize{structural_characteristics:id1}}\label{\detokenize{structural_characteristics::doc}}
+\label{\detokenize{structural_characteristics:id1}}\label{\detokenize{structural_characteristics::doc}}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+此部分，暂不做说明。
+
+\end{itemize}
+
 
 \section{操作指南}
 \label{\detokenize{operation_guide:id1}}\label{\detokenize{operation_guide::doc}}
 
-\subsection{开机/屏保界面}
+\subsection{后盖接线组说明}
 \label{\detokenize{operation_guide:id2}}
 \begin{figure}[htbp]
 \centering
 \capstart
 
-\noindent\sphinxincludegraphics[scale=0.7]{{00_屏保}.jpg}
-\caption{图 5.1.1 开机/屏保界面}\label{\detokenize{operation_guide:id5}}\end{figure}
+\noindent\sphinxincludegraphics[scale=0.8]{{背板}.jpg}
+\caption{图 5.1.1 后盖接线组}\label{\detokenize{operation_guide:id6}}\end{figure}
 \begin{itemize}
 \item {} 
 \sphinxAtStartPar
-打开电源开关或者接入外部电源后，您将会看到此界面。这个界面将会作为开机时首次显示的主界面和屏保模式下界面。
+① 区域为 \sphinxstylestrong{12V/2ADC} 充电电压输入口，当设备电池电压过低时通过该接口进行充电。
+
+\item {} 
+\sphinxAtStartPar
+② 区域为 \sphinxstylestrong{USB\sphinxhyphen{}C} 双线数据交互口，目前暂未添加任何功能。
+
+\item {} 
+\sphinxAtStartPar
+③ 区域为 \sphinxstylestrong{六通道数据采集接线组及正负110V电压采集接线口} ，是主要功能接线区域。
+
+\end{itemize}
+
+\begin{sphinxadmonition}{note}{注解:}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+A/B/C1与A/B/C2构成组通道， 分别对应屏幕区域的通道0\textasciitilde{}5。例：\sphinxstylestrong{A1对应通道0，A2对应通道1}。
+
+\item {} 
+\sphinxAtStartPar
+特别说明：所有组通道的公共端为 \sphinxstylestrong{GND} 接线时，应该保证每个目标测量组通道与 \sphinxstylestrong{GND} 间形成回路，否则可能无法进行测量。
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstylestrong{POWER} 按钮为设备开机按钮， 当按下按钮1S\sphinxhyphen{}3S后，请观察屏幕是否亮起，条件成立，则开机成功。
+
+\end{itemize}
+\end{sphinxadmonition}
+
+\begin{sphinxadmonition}{warning}{警告:}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+尽可能不要往A/B/C三个接线组中接入高于110V DC/AC电压，尽管接线组的 \sphinxstylestrong{GND} 与正负110V \sphinxstylestrong{GND} 并不相同！
+
+\end{itemize}
+\end{sphinxadmonition}
+
+\begin{figure}[htbp]
+\centering
+\capstart
+
+\noindent\sphinxincludegraphics[scale=0.8]{{14_界面14}.jpg}
+\caption{图 5.1.2 电池电压过低提示}\label{\detokenize{operation_guide:id7}}\end{figure}
+\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+如果开机成功后，间歇性（1S）弹出以上界面，请检查当前电池电压是否低于10.8V，条件成立，请连接充电器，否则，持续 \sphinxcode{\sphinxupquote{15}} 次后
+设备将会自动关机。
+
+\item {} 
+\sphinxAtStartPar
+如果设备处于此情况，则设备 \sphinxstylestrong{无法正常工作}，您必须给电池充电一段时间后，方能使用。
+
+\end{itemize}
+
+
+\subsection{开机/屏保界面}
+\label{\detokenize{operation_guide:id3}}
+\begin{figure}[htbp]
+\centering
+\capstart
+
+\noindent\sphinxincludegraphics[scale=0.8]{{00_屏保}.jpg}
+\caption{图 5.2.1 开机/屏保界面}\label{\detokenize{operation_guide:id8}}\end{figure}
+\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+打开电源开关后，您将会看到此界面。这个界面将会作为开机时首次显示的主界面和屏保模式下界面。
 \sphinxstylestrong{注意，主机屏幕再无任何操作大约5min钟后进行熄屏以节省电量} ，此时您仅需要触模屏幕即可点亮。
 
 \end{itemize}
 
 
 \subsection{前台界面}
-\label{\detokenize{operation_guide:id3}}
+\label{\detokenize{operation_guide:id4}}
 \begin{figure}[htbp]
 \centering
 \capstart
 
-\noindent\sphinxincludegraphics[scale=0.7]{{01_界面1}.jpg}
-\caption{图 5.2.1 主界面1}\label{\detokenize{operation_guide:id6}}\end{figure}
+\noindent\sphinxincludegraphics[scale=0.8]{{01_界面1}.jpg}
+\caption{图 5.3.1 主界面1}\label{\detokenize{operation_guide:id9}}\end{figure}
 \begin{itemize}
 \item {} 
 \sphinxAtStartPar
@@ -382,7 +458,11 @@ cautionBgColor = {named}{LightPink}}
 
 \item {} 
 \sphinxAtStartPar
-中间按钮为 \sphinxstylestrong{复位}，您触摸它将会触发相应功能。
+中间第一个按钮为 \sphinxstylestrong{关机} ，您触摸它将会触发相应功能。
+
+\item {} 
+\sphinxAtStartPar
+中间第二个按钮为 \sphinxstylestrong{复位}，您触摸它将会触发相应功能。
 
 \item {} 
 \sphinxAtStartPar
@@ -390,24 +470,31 @@ cautionBgColor = {named}{LightPink}}
 
 \end{itemize}
 
-
-\begin{wrapfigure}{l}{0pt}
+\begin{figure}[htbp]
 \centering
-\noindent\sphinxincludegraphics[scale=1.0]{{按钮1}.bmp}
-\caption{后退按钮}\label{\detokenize{operation_guide:id7}}\end{wrapfigure}
+\capstart
 
+\noindent\sphinxincludegraphics[scale=0.5]{{菜单显示栏}.jpg}
+\caption{图 5.3.2 菜单栏1}\label{\detokenize{operation_guide:id10}}\end{figure}
 
-\begin{wrapfigure}{r}{0pt}
-\centering
-\noindent\sphinxincludegraphics[scale=1.0]{{按钮3}.bmp}
-\caption{前进按钮}\label{\detokenize{operation_guide:id8}}\end{wrapfigure}
+\begin{sphinxadmonition}{tip}{小技巧:}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+\sphinxstylestrong{关机按钮使用介绍} :
+
+\item {} 
+\sphinxAtStartPar
+请您保持在 \sphinxcode{\sphinxupquote{sure}} 按钮上长按1\sphinxhyphen{}2s后，设备整机工作电源将会被关闭。
+
+\end{itemize}
+\end{sphinxadmonition}
 
 \begin{figure}[htbp]
 \centering
 \capstart
 
-\noindent\sphinxincludegraphics[scale=1.0]{{按钮2}.bmp}
-\caption{复位按钮}\label{\detokenize{operation_guide:id9}}\end{figure}
+\noindent\sphinxincludegraphics[scale=0.8]{{13_界面13}.jpg}
+\caption{图 5.3.3 关机弹窗}\label{\detokenize{operation_guide:id11}}\end{figure}
 
 \begin{sphinxadmonition}{tip}{小技巧:}\begin{itemize}
 \item {} 
@@ -421,7 +508,7 @@ cautionBgColor = {named}{LightPink}}
 
 \item {} 
 \sphinxAtStartPar
-2、另一种情况是：当前有各别通道已经产生了 \sphinxcode{\sphinxupquote{异常、干扰、非同步通道使用}} 所造成的极少数通道彼此间数据波形出现不同步情况 ，也可以使用 \sphinxcode{\sphinxupquote{复位}} 按钮来解决您的问题。
+2、另一种情况是：当前有各别通道已经产生了 \sphinxcode{\sphinxupquote{异常、干扰、非同步通道使用}} 所造成的极少数通道彼此间数据/波形出现不同步情况 ，也可以使用 \sphinxcode{\sphinxupquote{复位}} 按钮来解决您的问题。
 
 \end{itemize}
 \end{sphinxadmonition}
@@ -430,8 +517,8 @@ cautionBgColor = {named}{LightPink}}
 \centering
 \capstart
 
-\noindent\sphinxincludegraphics[scale=0.7]{{12_界面12}.jpg}
-\caption{图 5.2.2 复位弹窗}\label{\detokenize{operation_guide:id10}}\end{figure}
+\noindent\sphinxincludegraphics[scale=0.8]{{12_界面12}.jpg}
+\caption{图 5.3.4 复位弹窗}\label{\detokenize{operation_guide:id12}}\end{figure}
 
 \begin{sphinxadmonition}{tip}{小技巧:}\begin{itemize}
 \item {} 
@@ -445,12 +532,20 @@ cautionBgColor = {named}{LightPink}}
 \centering
 \capstart
 
-\noindent\sphinxincludegraphics[scale=0.7]{{02_界面2}.jpg}
-\caption{图 5.2.3 主界面2}\label{\detokenize{operation_guide:id11}}\end{figure}
+\noindent\sphinxincludegraphics[scale=0.8]{{02_界面2}.jpg}
+\caption{图 5.3.5 主界面2}\label{\detokenize{operation_guide:id13}}\end{figure}
 \begin{itemize}
 \item {} 
 \sphinxAtStartPar
-图 \sphinxstylestrong{5.2.1} 和图 \sphinxstylestrong{5.2.2} 共同构成高压断路器动特性检测仪的前台界面，通道按0\sphinxhyphen{}5顺序排列，唯一区别的的是，界面图 \sphinxstylestrong{5.2.1} 上有 \sphinxcode{\sphinxupquote{复位}} 按钮，而界面图 \sphinxstylestrong{5.2.2} 没有。
+左边显示的是当前 \sphinxstylestrong{电池电压}。
+
+\item {} 
+\sphinxAtStartPar
+中间显示的是当前电压对应的 \sphinxstylestrong{电池图标}。
+
+\item {} 
+\sphinxAtStartPar
+最右边显示的是当前 \sphinxstylestrong{CPU温度} ，它将会告诉您当前环境是否适合设备工作。
 
 \end{itemize}
 
@@ -458,8 +553,21 @@ cautionBgColor = {named}{LightPink}}
 \centering
 \capstart
 
-\noindent\sphinxincludegraphics[scale=1.0]{{结果显示栏}.bmp}
-\caption{图 5.2.4 测量结果显示栏}\label{\detokenize{operation_guide:id12}}\end{figure}
+\noindent\sphinxincludegraphics[scale=0.5]{{菜单显示栏2}.jpg}
+\caption{图 5.3.6 菜单栏2}\label{\detokenize{operation_guide:id14}}\end{figure}
+\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+图 \sphinxstylestrong{5.3.1} 和图 \sphinxstylestrong{5.3.5} 共同构成高压断路器动特性检测仪的前台界面，通道按0\sphinxhyphen{}5顺序排列。
+
+\end{itemize}
+
+\begin{figure}[htbp]
+\centering
+\capstart
+
+\noindent\sphinxincludegraphics[scale=0.8]{{结果显示栏}.jpg}
+\caption{图 5.3.7 测量结果显示栏}\label{\detokenize{operation_guide:id15}}\end{figure}
 
 \begin{sphinxadmonition}{note}{注解:}\begin{itemize}
 \item {} 
@@ -482,8 +590,8 @@ cautionBgColor = {named}{LightPink}}
 \centering
 \capstart
 
-\noindent\sphinxincludegraphics[scale=1.0]{{波形显示栏}.bmp}
-\caption{图 5.2.5 波形显示栏}\label{\detokenize{operation_guide:id13}}\end{figure}
+\noindent\sphinxincludegraphics[scale=0.8]{{波形显示栏}.jpg}
+\caption{图 5.3.8 波形显示栏}\label{\detokenize{operation_guide:id16}}\end{figure}
 
 \begin{sphinxadmonition}{note}{注解:}\begin{itemize}
 \item {} 
@@ -509,18 +617,18 @@ cautionBgColor = {named}{LightPink}}
 \centering
 \capstart
 
-\noindent\sphinxincludegraphics[scale=0.3]{{实测效果图}.jpg}
-\caption{图 5.2.6 实测效果图}\label{\detokenize{operation_guide:id14}}\end{figure}
+\noindent\sphinxincludegraphics[scale=0.8]{{实测效果图}.jpg}
+\caption{图 5.3.9 实测效果图}\label{\detokenize{operation_guide:id17}}\end{figure}
 
 
 \subsection{后台界面}
-\label{\detokenize{operation_guide:id4}}
+\label{\detokenize{operation_guide:id5}}
 \begin{figure}[htbp]
 \centering
 \capstart
 
-\noindent\sphinxincludegraphics[scale=0.7]{{03_界面3}.jpg}
-\caption{图 5.3.1 所有通道历史记录选择页面}\label{\detokenize{operation_guide:id15}}\end{figure}
+\noindent\sphinxincludegraphics[scale=0.8]{{03_界面3}.jpg}
+\caption{图 5.4.1 所有通道历史记录选择页面}\label{\detokenize{operation_guide:id18}}\end{figure}
 \begin{itemize}
 \item {} 
 \sphinxAtStartPar
@@ -532,8 +640,8 @@ cautionBgColor = {named}{LightPink}}
 \centering
 \capstart
 
-\noindent\sphinxincludegraphics[scale=0.7]{{04_界面4}.jpg}
-\caption{图 5.3.2 通道0历史历史数据记录}\label{\detokenize{operation_guide:id16}}\end{figure}
+\noindent\sphinxincludegraphics[scale=0.8]{{04_界面4}.jpg}
+\caption{图 5.4.2 通道0历史历史数据记录}\label{\detokenize{operation_guide:id19}}\end{figure}
 \begin{itemize}
 \item {} 
 \sphinxAtStartPar
@@ -545,15 +653,15 @@ cautionBgColor = {named}{LightPink}}
 \centering
 \capstart
 
-\noindent\sphinxincludegraphics[scale=0.3]{{实测历史记录数据}.jpg}
-\caption{图 5.3.3 实测效果图}\label{\detokenize{operation_guide:id17}}\end{figure}
+\noindent\sphinxincludegraphics[scale=0.8]{{实测历史记录数据}.jpg}
+\caption{图 5.4.3 实测效果图}\label{\detokenize{operation_guide:id20}}\end{figure}
 
 \begin{figure}[htbp]
 \centering
 \capstart
 
-\noindent\sphinxincludegraphics[scale=0.7]{{11_界面11}.jpg}
-\caption{图 5.3.4 历史数据清除弹窗}\label{\detokenize{operation_guide:id18}}\end{figure}
+\noindent\sphinxincludegraphics[scale=0.8]{{11_界面11}.jpg}
+\caption{图 5.4.4 历史数据清除弹窗}\label{\detokenize{operation_guide:id21}}\end{figure}
 
 \begin{sphinxadmonition}{note}{注解:}\begin{itemize}
 \item {} 
@@ -577,10 +685,26 @@ cautionBgColor = {named}{LightPink}}
 
 
 \section{注意事项}
-\label{\detokenize{note:id1}}\label{\detokenize{note::doc}}
+\label{\detokenize{note:id1}}\label{\detokenize{note::doc}}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+本产品需要在合适温度下使用。
+
+\item {} 
+\sphinxAtStartPar
+本产品正常使用需要按照操作指导部分规范操作。
+
+\end{itemize}
+
 
 \section{故障分析与排除}
-\label{\detokenize{fault:id1}}\label{\detokenize{fault::doc}}
+\label{\detokenize{fault:id1}}\label{\detokenize{fault::doc}}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+略。
+
+\end{itemize}
+
 
 \section{维修与保养}
 \label{\detokenize{rapair:id1}}\label{\detokenize{rapair::doc}}\begin{itemize}

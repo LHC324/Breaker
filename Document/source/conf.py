@@ -22,7 +22,7 @@ copyright = '2021, LHC@云南兆富科技有限公司'
 author = 'LHC@云南兆富科技有限公司'
 
 # The full version, including alpha/beta/rc tags
-release = 'V1.0.0'
+release = 'V1.0.1'
 
 
 # -- General configuration ---------------------------------------------------

@@ -10,9 +10,9 @@
    :maxdepth: 2
    :caption: Contents:
 
-.. figure:: ../source/picture/断路器测试仪外观.bmp
+.. figure:: ../source/picture/断路器测试仪外观.jpg
     :align: center
-    :scale: 50%
+    :scale: 70%
     :alt: NULL
     
 
@@ -27,7 +27,7 @@
   
 .. toctree::
    :numbered: 8 
-   :maxdepth: 4
+   :maxdepth: 2
 
    summary
    te_characteristics

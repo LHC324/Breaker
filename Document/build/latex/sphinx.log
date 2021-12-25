@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2021/W32TeX) (preloaded format=xelatex 2021.7.26)  24 NOV 2021 09:09
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2021/W32TeX) (preloaded format=xelatex 2021.7.26)  25 DEC 2021 14:13
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1255,60 +1255,62 @@ Package fontspec Info: Font family 'FandolFang-Regular(0)' created for font
 (fontspec)             <->"[FandolFang-Regular.otf]/OT:language=dflt;"
 (fontspec)             - 'small caps'  (m/sc) with NFSS spec.: 
 
-File: 断路器测试仪外观.bmp Graphic file (type bmp)
-<断路器测试仪外观.bmp>
+File: 断路器测试仪外观.jpg Graphic file (type bmp)
+<断路器测试仪外观.jpg>
 [1] [2
 
 ]
 Chapter 1.
-File: 低压断路器.bmp Graphic file (type bmp)
-<低压断路器.bmp>
-File: 高压断路器.bmp Graphic file (type bmp)
-<高压断路器.bmp>
+File: 低压断路器.jpg Graphic file (type bmp)
+<低压断路器.jpg>
+File: 高压断路器.jpg Graphic file (type bmp)
+<高压断路器.jpg>
 [3] [4]
-File: 控制柜接线图.bmp Graphic file (type bmp)
-<控制柜接线图.bmp>
-File: 接线端子自动夹具.bmp Graphic file (type bmp)
-<接线端子自动夹具.bmp>
+File: 控制柜接线图.jpg Graphic file (type bmp)
+<控制柜接线图.jpg>
+File: 接线端子自动夹具.jpg Graphic file (type bmp)
+<接线端子自动夹具.jpg>
 
-Overfull \hbox (167.0321pt too wide) in paragraph at lines 262--262
+Overfull \hbox (167.0321pt too wide) in paragraph at lines 266--266
 []
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 262--262
+Underfull \hbox (badness 10000) in paragraph at lines 266--266
 
  []
 
 [5]
-File: 高空自动夹具.bmp Graphic file (type bmp)
-<高空自动夹具.bmp>
+File: 高空自动夹具.jpg Graphic file (type bmp)
+<高空自动夹具.jpg>
  [6]
+File: 背板.jpg Graphic file (type bmp)
+<背板.jpg>
+ [7]
+File: 14_界面14.jpg Graphic file (type bmp)
+<14_界面14.jpg>
 File: 00_屏保.jpg Graphic file (type bmp)
 <00_屏保.jpg>
+ [8] [9]
 File: 01_界面1.jpg Graphic file (type bmp)
 <01_界面1.jpg>
-File: 按钮1.bmp Graphic file (type bmp)
-<按钮1.bmp>
-
-
-Package wrapfig Warning: Collision between wrapping environments on input line 
-400.
-
-File: 按钮3.bmp Graphic file (type bmp)
-<按钮3.bmp>
-File: 按钮2.bmp Graphic file (type bmp)
-<按钮2.bmp>
-[7] [8]
+File: 菜单显示栏.jpg Graphic file (type bmp)
+<菜单显示栏.jpg>
+File: 13_界面13.jpg Graphic file (type bmp)
+<13_界面13.jpg>
+ [10]
 File: 12_界面12.jpg Graphic file (type bmp)
 <12_界面12.jpg>
 File: 02_界面2.jpg Graphic file (type bmp)
 <02_界面2.jpg>
-File: 结果显示栏.bmp Graphic file (type bmp)
-<结果显示栏.bmp>
- [9]
-File: 波形显示栏.bmp Graphic file (type bmp)
-<波形显示栏.bmp>
+File: 菜单显示栏2.jpg Graphic file (type bmp)
+<菜单显示栏2.jpg>
+ [11]
+File: 结果显示栏.jpg Graphic file (type bmp)
+<结果显示栏.jpg>
+File: 波形显示栏.jpg Graphic file (type bmp)
+<波形显示栏.jpg>
+ [12]
 File: 实测效果图.jpg Graphic file (type bmp)
 <实测效果图.jpg>
 File: 03_界面3.jpg Graphic file (type bmp)
@@ -1319,20 +1321,21 @@ File: 实测历史记录数据.jpg Graphic file (type bmp)
 <实测历史记录数据.jpg>
 File: 11_界面11.jpg Graphic file (type bmp)
 <11_界面11.jpg>
- [10] [11] [12] (./sphinx.ind) [13] (./sphinx.aux)
+ [13] [14] [15] (./sphinx.ind) [16]
+(./sphinx.aux)
 
 LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
 Package rerunfilecheck Info: File `sphinx.out' has not changed.
-(rerunfilecheck)             Checksum: 6F87A04B236FEBDE9D87ECE3D6F26C67;1398.
+(rerunfilecheck)             Checksum: A941429DF9BD06692D2753D2D0235620;1516.
  ) 
 Here is how much of TeX's memory you used:
- 18655 strings out of 476919
- 377186 string characters out of 5813328
- 769713 words of memory out of 5000000
- 38174 multiletter control sequences out of 15000+600000
+ 18680 strings out of 476919
+ 378229 string characters out of 5813328
+ 766993 words of memory out of 5000000
+ 38198 multiletter control sequences out of 15000+600000
  413665 words of font info for 124 fonts, out of 8000000 for 9000
  1349 hyphenation exceptions out of 8191
- 83i,11n,104p,398b,574s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 83i,11n,104p,398b,572s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on sphinx.pdf (17 pages).
+Output written on sphinx.pdf (20 pages).
